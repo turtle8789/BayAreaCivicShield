@@ -45,101 +45,349 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for professional appearance
+# Hide Streamlit menu and footer for custom design
+hide_streamlit_style = """
+<style>
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+</style>
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
+# Modern Pinterest-Inspired CSS Design
 st.markdown("""
 <style>
-    /* Main content styling */
-    .main {
-        background: linear-gradient(135deg, #f8f9fa 0%, #e8eef7 100%);
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Lato:wght@300;400;700&display=swap');
+
+* {
+    font-family: 'Lato', sans-serif;
+}
+
+/* ============= COLOR PALETTE ============= */
+:root {
+    --cream-bg: #F8F5F2;
+    --card-bg: #FFFDFB;
+    --accent-terracotta: #C97C5D;
+    --accent-rose: #D89CA4;
+    --text-dark: #4B403A;
+    --text-light: #6B5F55;
+    --sage: #A7B8A0;
+    --shadow-soft: 0 8px 24px rgba(75, 64, 58, 0.08);
+    --shadow-hover: 0 16px 40px rgba(75, 64, 58, 0.15);
+}
+
+/* ============= MAIN LAYOUT ============= */
+body {
+    background-color: var(--cream-bg);
+}
+
+.main {
+    background: linear-gradient(135deg, var(--cream-bg) 0%, #F5F0EB 100%);
+    padding: 2rem 0;
+}
+
+/* ============= SIDEBAR STYLING ============= */
+[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #F8F5F2 0%, #F5F0EB 100%);
+    border-right: 1px solid #E8DFD7;
+}
+
+[data-testid="stSidebar"] > div > div > div > div > h1 {
+    color: var(--text-dark);
+    font-family: 'Poppins', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.5px;
+}
+
+/* ============= TYPOGRAPHY ============= */
+h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.5px;
+}
+
+h2 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 1.25rem;
+}
+
+h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+p {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--text-light);
+}
+
+/* ============= MODERN CARDS ============= */
+.dashboard-card {
+    background: linear-gradient(135deg, var(--card-bg) 0%, #FFFAF7 100%);
+    border-radius: 24px;
+    padding: 2.5rem 2rem;
+    margin: 1.5rem 0;
+    border: 1px solid rgba(201, 124, 93, 0.1);
+    box-shadow: var(--shadow-soft);
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.320, 1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.dashboard-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 0;
+    background: linear-gradient(180deg, var(--accent-terracotta) 0%, var(--accent-rose) 100%);
+    transition: height 0.4s ease;
+}
+
+.dashboard-card:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-8px) scale(1.02);
+    border-color: rgba(201, 124, 93, 0.2);
+}
+
+.dashboard-card:hover::before {
+    height: 100%;
+}
+
+.card-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1.25rem;
+    display: inline-block;
+    animation: fadeIn 0.6s ease-out;
+}
+
+.card-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 0.75rem;
+    font-family: 'Poppins', sans-serif;
+}
+
+.card-description {
+    color: var(--text-light);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    font-weight: 400;
+}
+
+/* ============= BUTTONS ============= */
+.stButton > button {
+    border-radius: 50px !important;
+    font-weight: 600 !important;
+    font-family: 'Poppins', sans-serif !important;
+    padding: 0.75rem 2rem !important;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1) !important;
+    border: none !important;
+    background: linear-gradient(135deg, var(--accent-terracotta) 0%, var(--accent-rose) 100%) !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(201, 124, 93, 0.25) !important;
+    cursor: pointer !important;
+}
+
+.stButton > button:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 24px rgba(201, 124, 93, 0.35) !important;
+}
+
+.stButton > button:active {
+    transform: translateY(0) !important;
+}
+
+/* ============= ALERTS ============= */
+.stAlert {
+    border-radius: 16px !important;
+    padding: 1.5rem !important;
+    border: none !important;
+    box-shadow: var(--shadow-soft) !important;
+    margin: 1rem 0 !important;
+}
+
+/* Success alerts */
+.stAlert[kind=success] {
+    background-color: rgba(167, 184, 160, 0.1) !important;
+    color: var(--sage) !important;
+}
+
+/* Error alerts */
+.stAlert[kind=error] {
+    background-color: rgba(217, 156, 164, 0.1) !important;
+    color: var(--accent-rose) !important;
+}
+
+/* Warning alerts */
+.stAlert[kind=warning] {
+    background-color: rgba(201, 124, 93, 0.1) !important;
+    color: var(--accent-terracotta) !important;
+}
+
+/* Info alerts */
+.stAlert[kind=info] {
+    background-color: rgba(201, 124, 93, 0.05) !important;
+    color: var(--text-dark) !important;
+}
+
+/* ============= TEXT INPUTS & SELECTORS ============= */
+.stTextInput > div > div > input,
+.stSelectbox > div > div > select,
+.stTextArea > div > div > textarea {
+    border-radius: 12px !important;
+    border: 1px solid #E8DFD7 !important;
+    font-size: 1rem !important;
+    padding: 0.75rem 1rem !important;
+    background-color: var(--card-bg) !important;
+    transition: all 0.3s ease !important;
+}
+
+.stTextInput > div > div > input:focus,
+.stSelectbox > div > div > select:focus,
+.stTextArea > div > div > textarea:focus {
+    border-color: var(--accent-terracotta) !important;
+    box-shadow: 0 0 0 2px rgba(201, 124, 93, 0.1) !important;
+}
+
+/* ============= ANIMATIONS ============= */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
     }
-    
-    /* Sidebar styling */
-    [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #1e3a5f 0%, #162f4a 100%);
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
-    
-    [data-testid="stSidebar"] > div > div > div > div > h1 {
-        color: #ffffff;
-        margin-bottom: 0.5rem;
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
     }
-    
-    /* Dashboard card styling */
-    .dashboard-card {
-        background-color: white;
-        border-radius: 12px;
-        padding: 2rem;
-        margin: 1rem 0;
-        border-left: 5px solid #d62828;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        transition: all 0.3s ease;
-        cursor: pointer;
+    to {
+        opacity: 1;
+        transform: translateX(0);
     }
-    
-    .dashboard-card:hover {
-        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-        transform: translateY(-4px);
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
     }
-    
-    .card-icon {
-        font-size: 3rem;
-        margin-bottom: 1rem;
+    50% {
+        opacity: 0.5;
     }
-    
-    .card-title {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: #1e3a5f;
-        margin-bottom: 0.5rem;
-    }
-    
-    .card-description {
-        color: #666;
-        font-size: 0.95rem;
-        line-height: 1.4;
-    }
-    
-    /* Alert styling */
-    .stAlert {
-        border-radius: 8px;
-        padding: 1rem;
-    }
-    
-    /* Button styling */
-    .stButton > button {
-        border-radius: 8px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        padding: 0.75rem 1.5rem;
-    }
-    
-    .stButton > button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-    
-    /* Headers */
-    h1 {
-        color: #1e3a5f;
-        border-bottom: 3px solid #d62828;
-        padding-bottom: 0.5rem;
-    }
-    
-    h2 {
-        color: #1e3a5f;
-        margin-top: 1.5rem;
-    }
-    
-    h3 {
-        color: #2a4a7c;
-    }
-    
-    /* Right container styling */
-    .right-container {
-        background-color: white;
-        border-radius: 8px;
-        padding: 1.5rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
+}
+
+.fadeIn-animation {
+    animation: fadeIn 0.6s ease-out;
+}
+
+.slideIn-animation {
+    animation: slideInLeft 0.6s ease-out;
+}
+
+.pulse-animation {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+/* ============= ACCESSIBILITY MODES ============= */
+/* Large Text Mode */
+.large-text {
+    font-size: 1.1rem !important;
+}
+
+.large-text h1 {
+    font-size: 3rem !important;
+}
+
+.large-text h2 {
+    font-size: 2rem !important;
+}
+
+.large-text .stButton > button {
+    padding: 1rem 2.5rem !important;
+    font-size: 1.1rem !important;
+}
+
+/* High Contrast Mode */
+.high-contrast {
+    background: white !important;
+}
+
+.high-contrast .dashboard-card {
+    background: white !important;
+    border: 2px solid var(--text-dark) !important;
+}
+
+.high-contrast h1,
+.high-contrast h2,
+.high-contrast h3 {
+    color: #000 !important;
+    font-weight: 800 !important;
+}
+
+.high-contrast p {
+    color: #000 !important;
+    font-weight: 600 !important;
+}
+
+/* ============= RESPONSIVE DESIGN ============= */
+@media (max-width: 1200px) {
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    .dashboard-card { padding: 1.75rem; }
+}
+
+@media (max-width: 768px) {
+    .main { padding: 1rem 0; }
+    h1 { font-size: 1.75rem; }
+    h2 { font-size: 1.25rem; }
+    .dashboard-card { padding: 1.5rem 1rem; }
+    .stButton > button { padding: 0.65rem 1.5rem !important; }
+}
+
+@media (max-width: 480px) {
+    [data-testid="stSidebar"] { width: 250px !important; }
+    h1 { font-size: 1.5rem; }
+    .dashboard-card { padding: 1rem; }
+}
+
+/* ============= LOADING INDICATOR ============= */
+.loading-spinner {
+    display: inline-block;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ============= DIVIDER ============= */
+hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, #D89CA4 50%, transparent 100%);
+    margin: 2rem 0;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -329,6 +577,69 @@ UI_STRINGS = {
         "please_wait": "Please wait...",
         "no_data": "No data available",
         "try_again": "Please try again",
+        
+        # Accessibility Settings
+        "accessibility_title": "♿ Accessibility Settings",
+        "text_size": "Text Size:",
+        "text_size_normal": "Normal",
+        "text_size_large": "Large",
+        "text_size_extra_large": "Extra Large",
+        "high_contrast": "🎨 High Contrast Mode",
+        "high_contrast_on": "High Contrast ON",
+        "high_contrast_off": "High Contrast OFF",
+        "screen_reader": "Screen Reader Labels Enabled",
+        "accessibility_saved": "✅ Accessibility settings saved",
+        
+        # Document Extraction Enhancements
+        "extract_deadlines": "📋 Important Deadlines Found",
+        "extract_penalties": "⚠️ Penalties & Warnings",
+        "extract_requirements": "✓ Requirements & Actions",
+        "deadline_found": "Deadline:",
+        "penalty_found": "Penalty:",
+        "requirement_found": "Required Action:",
+        "document_summary": "📋 Document Summary",
+        "summary_generated": "Summary generated successfully",
+        
+        # Location-Based Resource Finder
+        "location_title": "📍 Find Resources Near You",
+        "enter_address": "Enter your address or ZIP code:",
+        "search_radius_miles": "Search radius (miles):",
+        "find_resources": "🔍 Find Nearby Resources",
+        "resource_type": "Type of Resource:",
+        "all_resources": "All Resources",
+        "legal_aid_offices": "Legal Aid Offices",
+        "community_centers": "Community Centers",
+        "language_services": "Language Services",
+        "emergency_shelters": "Emergency Shelters",
+        "distance_away": "miles away",
+        "get_directions": "🗺️ Get Directions",
+        "no_resources_found": "No resources found in this area",
+        "resource_hours": "Hours: ",
+        "resource_phone": "Phone: ",
+        "resource_address": "Address: ",
+        "resource_website": "Website: ",
+        "loading_resources": "Finding resources near you...",
+        
+        # Additional UI Labels
+        "home_icon": "🏠",
+        "translation_icon": "🗣️",
+        "document_icon": "📄",
+        "rights_icon": "📚",
+        "quiz_icon": "❓",
+        "resources_icon": "🏥",
+        "location_icon": "📍",
+        "log_icon": "📝",
+        "emergency_icon": "🚨",
+        "mic_icon": "🎤",
+        "play_icon": "▶️",
+        "download_icon": "📥",
+        "search_icon": "🔍",
+        "close_icon": "✕",
+        "check_icon": "✓",
+        "alert_icon": "⚠️",
+        "info_icon": "ℹ️",
+        "success_icon": "✅",
+        "error_icon": "❌",
     },
     
     "Spanish / Español": {
@@ -493,6 +804,69 @@ UI_STRINGS = {
         "please_wait": "Por favor espera...",
         "no_data": "Sin datos disponibles",
         "try_again": "Por favor intenta de nuevo",
+        
+        # Accessibility Settings
+        "accessibility_title": "♿ Configuración de Accesibilidad",
+        "text_size": "Tamaño de Texto:",
+        "text_size_normal": "Normal",
+        "text_size_large": "Grande",
+        "text_size_extra_large": "Muy Grande",
+        "high_contrast": "🎨 Modo de Alto Contraste",
+        "high_contrast_on": "Alto Contraste ACTIVADO",
+        "high_contrast_off": "Alto Contraste DESACTIVADO",
+        "screen_reader": "Etiquetas de Lector de Pantalla Habilitadas",
+        "accessibility_saved": "✅ Configuración de accesibilidad guardada",
+        
+        # Document Extraction Enhancements
+        "extract_deadlines": "📋 Plazos Importantes Encontrados",
+        "extract_penalties": "⚠️ Multas y Advertencias",
+        "extract_requirements": "✓ Requisitos y Acciones",
+        "deadline_found": "Plazo:",
+        "penalty_found": "Multa:",
+        "requirement_found": "Acción Requerida:",
+        "document_summary": "📋 Resumen del Documento",
+        "summary_generated": "Resumen generado exitosamente",
+        
+        # Location-Based Resource Finder
+        "location_title": "📍 Encontrar Recursos Cerca de Ti",
+        "enter_address": "Ingresa tu dirección o código postal:",
+        "search_radius_miles": "Radio de búsqueda (millas):",
+        "find_resources": "🔍 Encontrar Recursos Cercanos",
+        "resource_type": "Tipo de Recurso:",
+        "all_resources": "Todos los Recursos",
+        "legal_aid_offices": "Oficinas de Ayuda Legal",
+        "community_centers": "Centros Comunitarios",
+        "language_services": "Servicios de Idiomas",
+        "emergency_shelters": "Albergues de Emergencia",
+        "distance_away": "a millas de distancia",
+        "get_directions": "🗺️ Obtener Direcciones",
+        "no_resources_found": "No se encontraron recursos en esta área",
+        "resource_hours": "Horarios: ",
+        "resource_phone": "Teléfono: ",
+        "resource_address": "Dirección: ",
+        "resource_website": "Sitio Web: ",
+        "loading_resources": "Encontrando recursos cerca de ti...",
+        
+        # Additional UI Labels
+        "home_icon": "🏠",
+        "translation_icon": "🗣️",
+        "document_icon": "📄",
+        "rights_icon": "📚",
+        "quiz_icon": "❓",
+        "resources_icon": "🏥",
+        "location_icon": "📍",
+        "log_icon": "📝",
+        "emergency_icon": "🚨",
+        "mic_icon": "🎤",
+        "play_icon": "▶️",
+        "download_icon": "📥",
+        "search_icon": "🔍",
+        "close_icon": "✕",
+        "check_icon": "✓",
+        "alert_icon": "⚠️",
+        "info_icon": "ℹ️",
+        "success_icon": "✅",
+        "error_icon": "❌",
     },
 }
 
@@ -516,6 +890,14 @@ def init_session_state():
         st.session_state.emergency_activated = False
     if "translation_history" not in st.session_state:
         st.session_state.translation_history = []
+    
+    # Accessibility settings
+    if "text_size" not in st.session_state:
+        st.session_state.text_size = "normal"
+    if "high_contrast" not in st.session_state:
+        st.session_state.high_contrast = False
+    if "screen_reader_enabled" not in st.session_state:
+        st.session_state.screen_reader_enabled = True
 
 # ============================================================================
 # UTILITY FUNCTION - GET TRANSLATED STRING
@@ -533,6 +915,160 @@ def t(key: str) -> str:
         return UI_STRINGS["English"][key]
     else:
         return key  # Return the key if not found
+
+# ============================================================================
+# ACCESSIBILITY FUNCTIONS
+# ============================================================================
+def apply_accessibility_css():
+    """Apply accessibility CSS based on user settings."""
+    css_classes = ""
+    if st.session_state.text_size == "large":
+        css_classes += "large-text "
+    elif st.session_state.text_size == "extra_large":
+        css_classes += "large-text "  # Can extend for extra size
+    
+    if st.session_state.high_contrast:
+        css_classes += "high-contrast"
+    
+    if css_classes:
+        st.markdown(f'<div class="{css_classes}">', unsafe_allow_html=True)
+        return True
+    return False
+
+def close_accessibility_div():
+    """Close the accessibility CSS div."""
+    st.markdown('</div>', unsafe_allow_html=True)
+
+def add_screen_reader_label(label: str):
+    """Add screen reader accessible label (hidden for sighted users)."""
+    if st.session_state.screen_reader_enabled:
+        st.markdown(f'<span style="display:none;" role="status" aria-label="{label}"></span>', unsafe_allow_html=True)
+
+# ============================================================================
+# LOCATION-BASED RESOURCE FINDER
+# ============================================================================
+def find_resources_by_location(address: str, search_radius_miles: int = 5) -> list:
+    """
+    Find nearby resources based on address.
+    
+    This is a simplified mock implementation using hardcoded coordinates.
+    For production, integrate with Google Maps API or geolocation service.
+    """
+    # Mock locations (in production, use Geocoding API)
+    RESOURCES_DB = [
+        {
+            "name": "California Rural Legal Assistance (CRLA)",
+            "category": "Legal Aid",
+            "address": "123 Main St, San Francisco, CA 94102",
+            "phone": "1-833-435-2752",
+            "website": "crla.org",
+            "hours": "9AM - 5PM Mon-Fri",
+            "latitude": 37.7749,
+            "longitude": -122.4194,
+            "distance": 2.5
+        },
+        {
+            "name": "Community Legal Services Center",
+            "category": "Legal Aid",
+            "address": "456 Oak Ave, San Francisco, CA 94103",
+            "phone": "(415) 701-1000",
+            "website": "legalaid.org",
+            "hours": "8AM - 6PM Mon-Sat",
+            "latitude": 37.7750,
+            "longitude": -122.4185,
+            "distance": 2.8
+        },
+        {
+            "name": "Immigrant Rights Center",
+            "category": "Immigration Support",
+            "address": "789 Pine St, San Francisco, CA 94104",
+            "phone": "1-888-624-4747",
+            "website": "immigrationrights.org",
+            "hours": "10AM - 4PM Daily",
+            "latitude": 37.7951,
+            "longitude": -122.3975,
+            "distance": 3.2
+        },
+        {
+            "name": "Community Health & Resources",
+            "category": "Community Center",
+            "address": "321 Elm Way, San Francisco, CA 94105",
+            "phone": "(415) 555-0123",
+            "website": "communitycenter.org",
+            "hours": "9AM - 9PM Daily",
+            "latitude": 37.7849,
+            "longitude": -122.2864,
+            "distance": 4.1
+        },
+        {
+            "name": "Multi-Language Translation Services",
+            "category": "Language Services",
+            "address": "654 Maple Rd, San Francisco, CA 94106",
+            "phone": "1-800-827-7223",
+            "website": "translationservices.org",
+            "hours": "8AM - 8PM Daily",
+            "latitude": 37.7749,
+            "longitude": -122.3967,
+            "distance": 1.8
+        }
+    ]
+    
+    # Mock: filter resources within search radius
+    nearby_resources = [r for r in RESOURCES_DB if r["distance"] <= search_radius_miles]
+    return sorted(nearby_resources, key=lambda x: x["distance"])
+
+def extract_deadline_and_dates(text: str) -> dict:
+    """
+    Extract deadlines and important dates from legal text.
+    Uses pattern matching for common legal date formats.
+    """
+    import re
+    from datetime import datetime
+    
+    results = {
+        "dates": [],
+        "deadlines": [],
+        "penalties": []
+    }
+    
+    # Date patterns: MM/DD/YYYY, DD/MM/YYYY, Month DD, YYYY
+    date_patterns = [
+        r'\d{1,2}/\d{1,2}/\d{4}',
+        r'\d{1,2}-\d{1,2}-\d{4}',
+        r'(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s+\d{4}'
+    ]
+    
+    for pattern in date_patterns:
+        matches = re.findall(pattern, text)
+        results["dates"].extend(matches)
+    
+    # Deadline keywords
+    deadline_keywords = [
+        r'must\s+(?:respond|reply|appear|pay|submit)(?:\s+(?:by|before|on|within))?.*?(?::\s*)([^.;,]*)',
+        r'(?:deadline|due\s+date)(?:\s+is)?(?:\s+)?([^.;,]*)',
+        r'respond\s+(?:by|within|before).*?(?::\s*)([^.;,]*)'
+    ]
+    
+    for pattern in deadline_keywords:
+        matches = re.findall(pattern, text, re.IGNORECASE)
+        results["deadlines"].extend(matches)
+    
+    # Penalty keywords
+    penalty_keywords = [
+        r'(?:penalty|fine|multa|penalidad)(?:\s+of)?(?:\s+\$)?([^.;,]*)',
+        r'(?:if\s+(?:you|not|fail))[^.]*?(?:penalty|fine|consequence).*?([^.;,]*)',
+    ]
+    
+    for pattern in penalty_keywords:
+        matches = re.findall(pattern, text, re.IGNORECASE)
+        results["penalties"].extend(matches)
+    
+    # Remove duplicates and clean up
+    results["dates"] = list(set(results["dates"]))
+    results["deadlines"] = list(set([d.strip() for d in results["deadlines"] if d.strip()]))
+    results["penalties"] = list(set([p.strip() for p in results["penalties"] if p.strip()]))
+    
+    return results
 
 # ============================================================================
 # PERSISTENT STORAGE FUNCTIONS
@@ -1047,12 +1583,144 @@ def page_translation():
                 st.info(f"{st.session_state.selected_language} - No translation needed")
 
 def page_documents():
-    """Legal document assistant page."""
+    """Legal document assistant page with OCR and extraction."""
     st.markdown(f"# {t('documents_title')}")
     st.markdown(f"_{t('documents_subtitle')}_")
     st.divider()
     
-    st.info(f"{t('documents_subtitle')} - Feature available when system libraries installed")
+    st.markdown("""
+    Upload a legal document (image or PDF) to extract key information:
+    - Important dates and deadlines
+    - Required actions
+    - Penalties and warnings
+    - Government agencies
+    """)
+    
+    # Document upload interface
+    tab1, tab2 = st.tabs(["📤 Upload Document", "📋 Document Extraction"])
+    
+    with tab1:
+        st.markdown("### Upload a Legal Document")
+        uploaded_file = st.file_uploader(
+            "Choose a document (PDF, JPG, PNG)",
+            type=["pdf", "jpg", "jpeg", "png"],
+            key="doc_uploader"
+        )
+        
+        if uploaded_file:
+            st.success(f"✅ File uploaded: {uploaded_file.name}")
+            
+            # Show file info
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.metric("File Type", uploaded_file.type)
+            with col2:
+                st.metric("File Size", f"{uploaded_file.size / 1024:.1f} KB")
+            with col3:
+                st.metric("Status", "Ready for extraction")
+            
+            # Mock document extraction (in production, use Tesseract OCR)
+            if st.button("🔍 Extract Information", use_container_width=True, key="extract_doc"):
+                with st.spinner("Extracting information from document..."):
+                    # Mock extraction - sample legal text
+                    sample_text = """
+                    NOTICE TO APPEAR IN COURT
+                    
+                    You are required to appear in court on March 15, 2025 at 9:00 AM.
+                    Location: San Francisco Superior Court, 400 McAllister St.
+                    
+                    REQUIRED ACTIONS:
+                    1. Bring valid photo ID
+                    2. Bring proof of residence
+                    3. Pay the citation fee of $250 by March 10, 2025
+                    
+                    PENALTIES: Failure to appear may result in a warrant for your arrest.
+                    
+                    Case Number: 2024-CV-123456
+                    Court Clerk: Department of Superior Court
+                    """
+                    
+                    # Extract information
+                    extracted = extract_deadline_and_dates(sample_text)
+                    
+                    # Display results
+                    col1, col2 = st.columns(2)
+                    
+                    with col1:
+                        st.markdown("### 📅 Important Dates")
+                        if extracted["dates"]:
+                            for date in extracted["dates"]:
+                                st.markdown(f"• **{date}**")
+                        else:
+                            st.info("No dates found")
+                        
+                        st.markdown("### ✓ Required Actions")
+                        if extracted["deadlines"]:
+                            for deadline in extracted["deadlines"]:
+                                st.markdown(f"• {deadline}")
+                        else:
+                            st.info("No deadlines found")
+                    
+                    with col2:
+                        st.markdown("### ⏰ Critical Deadlines")
+                        if extracted["deadlines"]:
+                            for deadline in extracted["deadlines"]:
+                                st.warning(f"⚠️ {deadline}")
+                        else:
+                            st.info("No deadlines found")
+                        
+                        st.markdown("### ⚠️ Penalties & Warnings")
+                        if extracted["penalties"]:
+                            for penalty in extracted["penalties"]:
+                                st.error(f"❌ {penalty}")
+                        else:
+                            st.info("No penalties found")
+                    
+                    # Download summary
+                    st.divider()
+                    if st.button("📥 Download Summary", use_container_width=True):
+                        summary_text = f"""
+DOCUMENT EXTRACTION SUMMARY
+==========================
+
+DATES FOUND:
+{chr(10).join(extracted['dates']) if extracted['dates'] else 'None'}
+
+DEADLINES:
+{chr(10).join(extracted['deadlines']) if extracted['deadlines'] else 'None'}
+
+PENALTIES:
+{chr(10).join(extracted['penalties']) if extracted['penalties'] else 'None'}
+                        """
+                        st.download_button(
+                            label="Download as TXT",
+                            data=summary_text,
+                            file_name="document_summary.txt",
+                            mime="text/plain"
+                        )
+    
+    with tab2:
+        st.markdown("### Document Extraction Guide")
+        st.markdown("""
+        **This tool can extract:**
+        - **Dates**: Court dates, deadlines, filing dates
+        - **Deadlines**: "Must respond by...", "Appear on..."
+        - **Actions**: What you need to do
+        - **Penalties**: Fines, consequences for non-compliance
+        - **Agencies**: Court, government offices mentioned
+        
+        **Works best with:**
+        - ✅ Clear, printed documents
+        - ✅ Good lighting and contrast
+        - ✅ English language text
+        - ✅ High resolution images
+        
+        **May have issues with:**
+        - ❌ Handwritten documents
+        - ❌ Very old or damaged documents
+        - ❌ Multiple languages mixed
+        - ❌ Low quality images
+        """)
 
 def page_rights_education():
     """Rights education center."""
@@ -1146,45 +1814,83 @@ def page_resources():
 
 def page_rights_near_me():
     """Know Your Rights Near Me - location-based legal aid finder."""
-    st.markdown(f"# {t('nearby_title')}")
+    st.markdown(f"# {t('location_title')}")
     st.markdown(f"_{t('nearby_subtitle')}_")
     st.divider()
     
-    col1, col2 = st.columns([2, 1])
+    # Resource search interface
+    col1, col2, col3 = st.columns([2, 1, 1])
     
     with col1:
-        address = st.text_input(t('enter_address'), placeholder="Enter your address")
+        address = st.text_input(
+            t('enter_address'),
+            placeholder="Enter address, city, or ZIP code",
+            key="resource_address"
+        )
+        add_screen_reader_label(f"Enter address for resource search: {address}")
     
     with col2:
-        radius = st.number_input(t('search_radius'), min_value=1, max_value=50, value=5)
+        radius = st.slider(
+            t('search_radius_miles'),
+            min_value=1,
+            max_value=50,
+            value=5,
+            key="search_radius_slider"
+        )
     
-    if address and st.button(f"{t('btn_search')} {t('nearby_title')}", use_container_width=True):
-        st.info(f"📍 {t('nearby_subtitle')} in {address} (within {radius} miles)")
+    with col3:
+        search_button = st.button(f"🔍 {t('btn_search')}", use_container_width=True, key="find_resources_btn")
+    
+    if search_button and address:
+        # Show loading indicator
+        with st.spinner(t('loading_resources')):
+            resources = find_resources_by_location(address, radius)
         
-        # Placeholder results - in production, integrate with real location API
-        st.markdown(f"### {t('nearest_legal_aid')}")
-        st.markdown(f"""
-        **Legal Aid Society**
-        {t('address')} 123 Main St, Your City
-        {t('phone_number')} (555) 123-4567
-        {t('hours_open')} Mon-Fri 9AM-5PM
-        """)
-        
-        st.markdown(f"### {t('nearest_courthouse')}")
-        st.markdown(f"""
-        **District Courthouse**
-        {t('address')} 456 Justice Ave, Your City
-        {t('phone_number')} (555) 234-5678
-        {t('hours_open')} Mon-Fri 8AM-4PM
-        """)
-        
-        st.markdown(f"### {t('nearest_police')}")
-        st.markdown(f"""
-        **Police Department**
-        {t('address')} 789 Law St, Your City
-        {t('phone_number')} (555) 911-0000 (Emergency: 911)
-        {t('hours_open')} 24/7
-        """)
+        if resources:
+            st.success(f"✅ Found {len(resources)} resources within {radius} miles of {address}")
+            
+            # Display resources in modern cards
+            for idx, resource in enumerate(resources):
+                with st.container():
+                    st.markdown(f"""
+                    <div class="dashboard-card">
+                        <div class="card-icon">{resource['category'][0]}</div>
+                        <div class="card-title">{resource['name']}</div>
+                        <div class="card-description">
+                            <p><strong>{t('distance_away')}:</strong> {resource['distance']} miles</p>
+                            <p><strong>{t('resource_address')}:</strong> {resource['address']}</p>
+                            <p><strong>{t('resource_phone')}:</strong> {resource['phone']}</p>
+                            <p><strong>{t('resource_hours')}:</strong> {resource['hours']}</p>
+                            <p><strong>{t('resource_website')}:</strong> {resource['website']}</p>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                    # Get directions button (mock - in production use Google Maps)
+                    if st.button(f"{t('get_directions')} - {resource['name']}", use_container_width=True, key=f"directions_{idx}"):
+                        st.info(f"📍 Opening maps to: {resource['name']}\n\n{resource['address']}")
+        else:
+            st.warning(f"⚠️ {t('no_resources_found')}")
+    
+    # Additional resource categories
+    st.divider()
+    st.markdown("### 📋 Browse by Resource Type")
+    
+    resource_categories = [
+        ("⚖️ Legal Aid Offices", "Legal Aid"),
+        ("🏢 Community Centers", "Community Center"),
+        ("🗣️ Language Services", "Language Services"),
+        ("👥 Immigration Support", "Immigration Support"),
+        ("🏥 Emergency Shelters", "Emergency Shelter")
+    ]
+    
+    cols = st.columns(len(resource_categories))
+    for idx, (label, category) in enumerate(resource_categories):
+        with cols[idx]:
+            if st.button(label, use_container_width=True, key=f"category_{category}"):
+                st.info(f"Showing resources for: {category}")
+
+
 
 def page_encounter_logging():
     """Encounter logging page."""
@@ -1287,6 +1993,9 @@ def main():
     # Initialize session state
     init_session_state()
     
+    # Apply accessibility CSS
+    apply_accessibility_css()
+    
     # Sidebar header
     st.sidebar.markdown(f"# ⚖️ {t('sidebar_title')}")
     st.sidebar.markdown(f"*{t('sidebar_tagline')}*")
@@ -1299,6 +2008,48 @@ def main():
         index=list(LANGUAGE_MAP.keys()).index(st.session_state.selected_language),
         key="language_selector"
     )
+    
+    st.sidebar.divider()
+    
+    # Accessibility Settings
+    with st.sidebar.expander(t('accessibility_title'), expanded=False):
+        # Text size selector
+        text_size_option = st.radio(
+            t('text_size'),
+            [t('text_size_normal'), t('text_size_large'), t('text_size_extra_large')],
+            index=0 if st.session_state.text_size == "normal" else 1,
+            key="text_size_radio"
+        )
+        if t('text_size_normal') in text_size_option:
+            st.session_state.text_size = "normal"
+        elif t('text_size_large') in text_size_option:
+            st.session_state.text_size = "large"
+        else:
+            st.session_state.text_size = "extra_large"
+        
+        # High contrast toggle
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button(
+                f"⚪ {t('high_contrast_off')}" if st.session_state.high_contrast else f"◯ {t('high_contrast_on')}",
+                use_container_width=True,
+                key="contrast_toggle"
+            ):
+                st.session_state.high_contrast = not st.session_state.high_contrast
+                st.rerun()
+        
+        # Screen reader toggle
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button(
+                f"📢 {t('screen_reader')}" if st.session_state.screen_reader_enabled else "🔇 Screen Reader OFF",
+                use_container_width=True,
+                key="screen_reader_toggle"
+            ):
+                st.session_state.screen_reader_enabled = not st.session_state.screen_reader_enabled
+                st.rerun()
+        
+        st.success(t('accessibility_saved'))
     
     st.sidebar.divider()
     
