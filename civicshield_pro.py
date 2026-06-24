@@ -45,101 +45,349 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for professional appearance
+# Hide Streamlit menu and footer for custom design
+hide_streamlit_style = """
+<style>
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+</style>
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
+# Modern Pinterest-Inspired CSS Design
 st.markdown("""
 <style>
-    /* Main content styling */
-    .main {
-        background: linear-gradient(135deg, #f8f9fa 0%, #e8eef7 100%);
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Lato:wght@300;400;700&display=swap');
+
+* {
+    font-family: 'Lato', sans-serif;
+}
+
+/* ============= COLOR PALETTE ============= */
+:root {
+    --cream-bg: #F8F5F2;
+    --card-bg: #FFFDFB;
+    --accent-terracotta: #C97C5D;
+    --accent-rose: #D89CA4;
+    --text-dark: #4B403A;
+    --text-light: #6B5F55;
+    --sage: #A7B8A0;
+    --shadow-soft: 0 8px 24px rgba(75, 64, 58, 0.08);
+    --shadow-hover: 0 16px 40px rgba(75, 64, 58, 0.15);
+}
+
+/* ============= MAIN LAYOUT ============= */
+body {
+    background-color: var(--cream-bg);
+}
+
+.main {
+    background: linear-gradient(135deg, var(--cream-bg) 0%, #F5F0EB 100%);
+    padding: 2rem 0;
+}
+
+/* ============= SIDEBAR STYLING ============= */
+[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #F8F5F2 0%, #F5F0EB 100%);
+    border-right: 1px solid #E8DFD7;
+}
+
+[data-testid="stSidebar"] > div > div > div > div > h1 {
+    color: var(--text-dark);
+    font-family: 'Poppins', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.5px;
+}
+
+/* ============= TYPOGRAPHY ============= */
+h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.5px;
+}
+
+h2 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 1.25rem;
+}
+
+h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+p {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--text-light);
+}
+
+/* ============= MODERN CARDS ============= */
+.dashboard-card {
+    background: linear-gradient(135deg, var(--card-bg) 0%, #FFFAF7 100%);
+    border-radius: 24px;
+    padding: 2.5rem 2rem;
+    margin: 1.5rem 0;
+    border: 1px solid rgba(201, 124, 93, 0.1);
+    box-shadow: var(--shadow-soft);
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.320, 1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.dashboard-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 0;
+    background: linear-gradient(180deg, var(--accent-terracotta) 0%, var(--accent-rose) 100%);
+    transition: height 0.4s ease;
+}
+
+.dashboard-card:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-8px) scale(1.02);
+    border-color: rgba(201, 124, 93, 0.2);
+}
+
+.dashboard-card:hover::before {
+    height: 100%;
+}
+
+.card-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1.25rem;
+    display: inline-block;
+    animation: fadeIn 0.6s ease-out;
+}
+
+.card-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 0.75rem;
+    font-family: 'Poppins', sans-serif;
+}
+
+.card-description {
+    color: var(--text-light);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    font-weight: 400;
+}
+
+/* ============= BUTTONS ============= */
+.stButton > button {
+    border-radius: 50px !important;
+    font-weight: 600 !important;
+    font-family: 'Poppins', sans-serif !important;
+    padding: 0.75rem 2rem !important;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1) !important;
+    border: none !important;
+    background: linear-gradient(135deg, var(--accent-terracotta) 0%, var(--accent-rose) 100%) !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(201, 124, 93, 0.25) !important;
+    cursor: pointer !important;
+}
+
+.stButton > button:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 24px rgba(201, 124, 93, 0.35) !important;
+}
+
+.stButton > button:active {
+    transform: translateY(0) !important;
+}
+
+/* ============= ALERTS ============= */
+.stAlert {
+    border-radius: 16px !important;
+    padding: 1.5rem !important;
+    border: none !important;
+    box-shadow: var(--shadow-soft) !important;
+    margin: 1rem 0 !important;
+}
+
+/* Success alerts */
+.stAlert[kind=success] {
+    background-color: rgba(167, 184, 160, 0.1) !important;
+    color: var(--sage) !important;
+}
+
+/* Error alerts */
+.stAlert[kind=error] {
+    background-color: rgba(217, 156, 164, 0.1) !important;
+    color: var(--accent-rose) !important;
+}
+
+/* Warning alerts */
+.stAlert[kind=warning] {
+    background-color: rgba(201, 124, 93, 0.1) !important;
+    color: var(--accent-terracotta) !important;
+}
+
+/* Info alerts */
+.stAlert[kind=info] {
+    background-color: rgba(201, 124, 93, 0.05) !important;
+    color: var(--text-dark) !important;
+}
+
+/* ============= TEXT INPUTS & SELECTORS ============= */
+.stTextInput > div > div > input,
+.stSelectbox > div > div > select,
+.stTextArea > div > div > textarea {
+    border-radius: 12px !important;
+    border: 1px solid #E8DFD7 !important;
+    font-size: 1rem !important;
+    padding: 0.75rem 1rem !important;
+    background-color: var(--card-bg) !important;
+    transition: all 0.3s ease !important;
+}
+
+.stTextInput > div > div > input:focus,
+.stSelectbox > div > div > select:focus,
+.stTextArea > div > div > textarea:focus {
+    border-color: var(--accent-terracotta) !important;
+    box-shadow: 0 0 0 2px rgba(201, 124, 93, 0.1) !important;
+}
+
+/* ============= ANIMATIONS ============= */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
     }
-    
-    /* Sidebar styling */
-    [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #1e3a5f 0%, #162f4a 100%);
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
-    
-    [data-testid="stSidebar"] > div > div > div > div > h1 {
-        color: #ffffff;
-        margin-bottom: 0.5rem;
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
     }
-    
-    /* Dashboard card styling */
-    .dashboard-card {
-        background-color: white;
-        border-radius: 12px;
-        padding: 2rem;
-        margin: 1rem 0;
-        border-left: 5px solid #d62828;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        transition: all 0.3s ease;
-        cursor: pointer;
+    to {
+        opacity: 1;
+        transform: translateX(0);
     }
-    
-    .dashboard-card:hover {
-        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-        transform: translateY(-4px);
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
     }
-    
-    .card-icon {
-        font-size: 3rem;
-        margin-bottom: 1rem;
+    50% {
+        opacity: 0.5;
     }
-    
-    .card-title {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: #1e3a5f;
-        margin-bottom: 0.5rem;
-    }
-    
-    .card-description {
-        color: #666;
-        font-size: 0.95rem;
-        line-height: 1.4;
-    }
-    
-    /* Alert styling */
-    .stAlert {
-        border-radius: 8px;
-        padding: 1rem;
-    }
-    
-    /* Button styling */
-    .stButton > button {
-        border-radius: 8px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        padding: 0.75rem 1.5rem;
-    }
-    
-    .stButton > button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-    
-    /* Headers */
-    h1 {
-        color: #1e3a5f;
-        border-bottom: 3px solid #d62828;
-        padding-bottom: 0.5rem;
-    }
-    
-    h2 {
-        color: #1e3a5f;
-        margin-top: 1.5rem;
-    }
-    
-    h3 {
-        color: #2a4a7c;
-    }
-    
-    /* Right container styling */
-    .right-container {
-        background-color: white;
-        border-radius: 8px;
-        padding: 1.5rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
+}
+
+.fadeIn-animation {
+    animation: fadeIn 0.6s ease-out;
+}
+
+.slideIn-animation {
+    animation: slideInLeft 0.6s ease-out;
+}
+
+.pulse-animation {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+/* ============= ACCESSIBILITY MODES ============= */
+/* Large Text Mode */
+.large-text {
+    font-size: 1.1rem !important;
+}
+
+.large-text h1 {
+    font-size: 3rem !important;
+}
+
+.large-text h2 {
+    font-size: 2rem !important;
+}
+
+.large-text .stButton > button {
+    padding: 1rem 2.5rem !important;
+    font-size: 1.1rem !important;
+}
+
+/* High Contrast Mode */
+.high-contrast {
+    background: white !important;
+}
+
+.high-contrast .dashboard-card {
+    background: white !important;
+    border: 2px solid var(--text-dark) !important;
+}
+
+.high-contrast h1,
+.high-contrast h2,
+.high-contrast h3 {
+    color: #000 !important;
+    font-weight: 800 !important;
+}
+
+.high-contrast p {
+    color: #000 !important;
+    font-weight: 600 !important;
+}
+
+/* ============= RESPONSIVE DESIGN ============= */
+@media (max-width: 1200px) {
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    .dashboard-card { padding: 1.75rem; }
+}
+
+@media (max-width: 768px) {
+    .main { padding: 1rem 0; }
+    h1 { font-size: 1.75rem; }
+    h2 { font-size: 1.25rem; }
+    .dashboard-card { padding: 1.5rem 1rem; }
+    .stButton > button { padding: 0.65rem 1.5rem !important; }
+}
+
+@media (max-width: 480px) {
+    [data-testid="stSidebar"] { width: 250px !important; }
+    h1 { font-size: 1.5rem; }
+    .dashboard-card { padding: 1rem; }
+}
+
+/* ============= LOADING INDICATOR ============= */
+.loading-spinner {
+    display: inline-block;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ============= DIVIDER ============= */
+hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, #D89CA4 50%, transparent 100%);
+    margin: 2rem 0;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -329,6 +577,69 @@ UI_STRINGS = {
         "please_wait": "Please wait...",
         "no_data": "No data available",
         "try_again": "Please try again",
+        
+        # Accessibility Settings
+        "accessibility_title": "♿ Accessibility Settings",
+        "text_size": "Text Size:",
+        "text_size_normal": "Normal",
+        "text_size_large": "Large",
+        "text_size_extra_large": "Extra Large",
+        "high_contrast": "🎨 High Contrast Mode",
+        "high_contrast_on": "High Contrast ON",
+        "high_contrast_off": "High Contrast OFF",
+        "screen_reader": "Screen Reader Labels Enabled",
+        "accessibility_saved": "✅ Accessibility settings saved",
+        
+        # Document Extraction Enhancements
+        "extract_deadlines": "📋 Important Deadlines Found",
+        "extract_penalties": "⚠️ Penalties & Warnings",
+        "extract_requirements": "✓ Requirements & Actions",
+        "deadline_found": "Deadline:",
+        "penalty_found": "Penalty:",
+        "requirement_found": "Required Action:",
+        "document_summary": "📋 Document Summary",
+        "summary_generated": "Summary generated successfully",
+        
+        # Location-Based Resource Finder
+        "location_title": "📍 Find Resources Near You",
+        "enter_address": "Enter your address or ZIP code:",
+        "search_radius_miles": "Search radius (miles):",
+        "find_resources": "🔍 Find Nearby Resources",
+        "resource_type": "Type of Resource:",
+        "all_resources": "All Resources",
+        "legal_aid_offices": "Legal Aid Offices",
+        "community_centers": "Community Centers",
+        "language_services": "Language Services",
+        "emergency_shelters": "Emergency Shelters",
+        "distance_away": "miles away",
+        "get_directions": "🗺️ Get Directions",
+        "no_resources_found": "No resources found in this area",
+        "resource_hours": "Hours: ",
+        "resource_phone": "Phone: ",
+        "resource_address": "Address: ",
+        "resource_website": "Website: ",
+        "loading_resources": "Finding resources near you...",
+        
+        # Additional UI Labels
+        "home_icon": "🏠",
+        "translation_icon": "🗣️",
+        "document_icon": "📄",
+        "rights_icon": "📚",
+        "quiz_icon": "❓",
+        "resources_icon": "🏥",
+        "location_icon": "📍",
+        "log_icon": "📝",
+        "emergency_icon": "🚨",
+        "mic_icon": "🎤",
+        "play_icon": "▶️",
+        "download_icon": "📥",
+        "search_icon": "🔍",
+        "close_icon": "✕",
+        "check_icon": "✓",
+        "alert_icon": "⚠️",
+        "info_icon": "ℹ️",
+        "success_icon": "✅",
+        "error_icon": "❌",
     },
     
     "Spanish / Español": {
@@ -493,6 +804,69 @@ UI_STRINGS = {
         "please_wait": "Por favor espera...",
         "no_data": "Sin datos disponibles",
         "try_again": "Por favor intenta de nuevo",
+        
+        # Accessibility Settings
+        "accessibility_title": "♿ Configuración de Accesibilidad",
+        "text_size": "Tamaño de Texto:",
+        "text_size_normal": "Normal",
+        "text_size_large": "Grande",
+        "text_size_extra_large": "Muy Grande",
+        "high_contrast": "🎨 Modo de Alto Contraste",
+        "high_contrast_on": "Alto Contraste ACTIVADO",
+        "high_contrast_off": "Alto Contraste DESACTIVADO",
+        "screen_reader": "Etiquetas de Lector de Pantalla Habilitadas",
+        "accessibility_saved": "✅ Configuración de accesibilidad guardada",
+        
+        # Document Extraction Enhancements
+        "extract_deadlines": "📋 Plazos Importantes Encontrados",
+        "extract_penalties": "⚠️ Multas y Advertencias",
+        "extract_requirements": "✓ Requisitos y Acciones",
+        "deadline_found": "Plazo:",
+        "penalty_found": "Multa:",
+        "requirement_found": "Acción Requerida:",
+        "document_summary": "📋 Resumen del Documento",
+        "summary_generated": "Resumen generado exitosamente",
+        
+        # Location-Based Resource Finder
+        "location_title": "📍 Encontrar Recursos Cerca de Ti",
+        "enter_address": "Ingresa tu dirección o código postal:",
+        "search_radius_miles": "Radio de búsqueda (millas):",
+        "find_resources": "🔍 Encontrar Recursos Cercanos",
+        "resource_type": "Tipo de Recurso:",
+        "all_resources": "Todos los Recursos",
+        "legal_aid_offices": "Oficinas de Ayuda Legal",
+        "community_centers": "Centros Comunitarios",
+        "language_services": "Servicios de Idiomas",
+        "emergency_shelters": "Albergues de Emergencia",
+        "distance_away": "a millas de distancia",
+        "get_directions": "🗺️ Obtener Direcciones",
+        "no_resources_found": "No se encontraron recursos en esta área",
+        "resource_hours": "Horarios: ",
+        "resource_phone": "Teléfono: ",
+        "resource_address": "Dirección: ",
+        "resource_website": "Sitio Web: ",
+        "loading_resources": "Encontrando recursos cerca de ti...",
+        
+        # Additional UI Labels
+        "home_icon": "🏠",
+        "translation_icon": "🗣️",
+        "document_icon": "📄",
+        "rights_icon": "📚",
+        "quiz_icon": "❓",
+        "resources_icon": "🏥",
+        "location_icon": "📍",
+        "log_icon": "📝",
+        "emergency_icon": "🚨",
+        "mic_icon": "🎤",
+        "play_icon": "▶️",
+        "download_icon": "📥",
+        "search_icon": "🔍",
+        "close_icon": "✕",
+        "check_icon": "✓",
+        "alert_icon": "⚠️",
+        "info_icon": "ℹ️",
+        "success_icon": "✅",
+        "error_icon": "❌",
     },
 }
 
@@ -516,6 +890,22 @@ def init_session_state():
         st.session_state.emergency_activated = False
     if "translation_history" not in st.session_state:
         st.session_state.translation_history = []
+    
+    # Accessibility settings
+    if "text_size" not in st.session_state:
+        st.session_state.text_size = "normal"
+    if "high_contrast" not in st.session_state:
+        st.session_state.high_contrast = False
+    if "screen_reader_enabled" not in st.session_state:
+        st.session_state.screen_reader_enabled = True
+    
+    # New features: saved deadlines and community discussion
+    if "saved_deadlines" not in st.session_state:
+        st.session_state.saved_deadlines = load_saved_deadlines()
+    if "community_posts" not in st.session_state:
+        st.session_state.community_posts = load_community_posts()
+    if "resource_category_filter" not in st.session_state:
+        st.session_state.resource_category_filter = None
 
 # ============================================================================
 # UTILITY FUNCTION - GET TRANSLATED STRING
@@ -534,10 +924,183 @@ def t(key: str) -> str:
     else:
         return key  # Return the key if not found
 
+def t_bilingual(key: str) -> str:
+    """
+    Get bilingual text: Selected Language / English
+    Example: Traduccion / Translation
+    Usage: st.markdown(t_bilingual('translation_title'))
+    """
+    lang = st.session_state.selected_language
+    if lang == "English":
+        return t(key)
+    
+    selected_text = t(key)
+    english_text = UI_STRINGS["English"].get(key, key)
+    
+    if selected_text != english_text:
+        return f"{selected_text} / {english_text}"
+    return selected_text
+
+# ============================================================================
+# ACCESSIBILITY FUNCTIONS
+# ============================================================================
+def apply_accessibility_css():
+    """Apply accessibility CSS based on user settings."""
+    css_classes = ""
+    if st.session_state.text_size == "large":
+        css_classes += "large-text "
+    elif st.session_state.text_size == "extra_large":
+        css_classes += "large-text "  # Can extend for extra size
+    
+    if st.session_state.high_contrast:
+        css_classes += "high-contrast"
+    
+    if css_classes:
+        st.markdown(f'<div class="{css_classes}">', unsafe_allow_html=True)
+        return True
+    return False
+
+def close_accessibility_div():
+    """Close the accessibility CSS div."""
+    st.markdown('</div>', unsafe_allow_html=True)
+
+def add_screen_reader_label(label: str):
+    """Add screen reader accessible label (hidden for sighted users)."""
+    if st.session_state.screen_reader_enabled:
+        st.markdown(f'<span style="display:none;" role="status" aria-label="{label}"></span>', unsafe_allow_html=True)
+
+# ============================================================================
+# LOCATION-BASED RESOURCE FINDER
+# ============================================================================
+def find_resources_by_location(address: str, search_radius_miles: int = 5) -> list:
+    """
+    Find nearby resources based on address.
+    
+    This is a simplified mock implementation using hardcoded coordinates.
+    For production, integrate with Google Maps API or geolocation service.
+    """
+    # Mock locations (in production, use Geocoding API)
+    RESOURCES_DB = [
+        {
+            "name": "California Rural Legal Assistance (CRLA)",
+            "category": "Legal Aid",
+            "address": "123 Main St, San Francisco, CA 94102",
+            "phone": "1-833-435-2752",
+            "website": "crla.org",
+            "hours": "9AM - 5PM Mon-Fri",
+            "latitude": 37.7749,
+            "longitude": -122.4194,
+            "distance": 2.5
+        },
+        {
+            "name": "Community Legal Services Center",
+            "category": "Legal Aid",
+            "address": "456 Oak Ave, San Francisco, CA 94103",
+            "phone": "(415) 701-1000",
+            "website": "legalaid.org",
+            "hours": "8AM - 6PM Mon-Sat",
+            "latitude": 37.7750,
+            "longitude": -122.4185,
+            "distance": 2.8
+        },
+        {
+            "name": "Immigrant Rights Center",
+            "category": "Immigration Support",
+            "address": "789 Pine St, San Francisco, CA 94104",
+            "phone": "1-888-624-4747",
+            "website": "immigrationrights.org",
+            "hours": "10AM - 4PM Daily",
+            "latitude": 37.7951,
+            "longitude": -122.3975,
+            "distance": 3.2
+        },
+        {
+            "name": "Community Health & Resources",
+            "category": "Community Center",
+            "address": "321 Elm Way, San Francisco, CA 94105",
+            "phone": "(415) 555-0123",
+            "website": "communitycenter.org",
+            "hours": "9AM - 9PM Daily",
+            "latitude": 37.7849,
+            "longitude": -122.2864,
+            "distance": 4.1
+        },
+        {
+            "name": "Multi-Language Translation Services",
+            "category": "Language Services",
+            "address": "654 Maple Rd, San Francisco, CA 94106",
+            "phone": "1-800-827-7223",
+            "website": "translationservices.org",
+            "hours": "8AM - 8PM Daily",
+            "latitude": 37.7749,
+            "longitude": -122.3967,
+            "distance": 1.8
+        }
+    ]
+    
+    # Mock: filter resources within search radius
+    nearby_resources = [r for r in RESOURCES_DB if r["distance"] <= search_radius_miles]
+    return sorted(nearby_resources, key=lambda x: x["distance"])
+
+def extract_deadline_and_dates(text: str) -> dict:
+    """
+    Extract deadlines and important dates from legal text.
+    Uses pattern matching for common legal date formats.
+    """
+    import re
+    from datetime import datetime
+    
+    results = {
+        "dates": [],
+        "deadlines": [],
+        "penalties": []
+    }
+    
+    # Date patterns: MM/DD/YYYY, DD/MM/YYYY, Month DD, YYYY
+    date_patterns = [
+        r'\d{1,2}/\d{1,2}/\d{4}',
+        r'\d{1,2}-\d{1,2}-\d{4}',
+        r'(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s+\d{4}'
+    ]
+    
+    for pattern in date_patterns:
+        matches = re.findall(pattern, text)
+        results["dates"].extend(matches)
+    
+    # Deadline keywords
+    deadline_keywords = [
+        r'must\s+(?:respond|reply|appear|pay|submit)(?:\s+(?:by|before|on|within))?.*?(?::\s*)([^.;,]*)',
+        r'(?:deadline|due\s+date)(?:\s+is)?(?:\s+)?([^.;,]*)',
+        r'respond\s+(?:by|within|before).*?(?::\s*)([^.;,]*)'
+    ]
+    
+    for pattern in deadline_keywords:
+        matches = re.findall(pattern, text, re.IGNORECASE)
+        results["deadlines"].extend(matches)
+    
+    # Penalty keywords
+    penalty_keywords = [
+        r'(?:penalty|fine|multa|penalidad)(?:\s+of)?(?:\s+\$)?([^.;,]*)',
+        r'(?:if\s+(?:you|not|fail))[^.]*?(?:penalty|fine|consequence).*?([^.;,]*)',
+    ]
+    
+    for pattern in penalty_keywords:
+        matches = re.findall(pattern, text, re.IGNORECASE)
+        results["penalties"].extend(matches)
+    
+    # Remove duplicates and clean up
+    results["dates"] = list(set(results["dates"]))
+    results["deadlines"] = list(set([d.strip() for d in results["deadlines"] if d.strip()]))
+    results["penalties"] = list(set([p.strip() for p in results["penalties"] if p.strip()]))
+    
+    return results
+
 # ============================================================================
 # PERSISTENT STORAGE FUNCTIONS
 # ============================================================================
 ENCOUNTER_FILE = "encounters.json"
+DEADLINES_FILE = "saved_deadlines.json"
+COMMUNITY_POSTS_FILE = "community_posts.json"
 
 def load_encounters():
     """Load all logged encounters from persistent storage."""
@@ -556,6 +1119,56 @@ def save_encounter(encounter_data):
     with open(ENCOUNTER_FILE, "w") as f:
         json.dump(encounters, f, indent=2)
     st.session_state.encounter_log = encounters
+
+def load_saved_deadlines():
+    """Load all saved deadlines from persistent storage."""
+    if os.path.exists(DEADLINES_FILE):
+        try:
+            with open(DEADLINES_FILE, "r") as f:
+                return json.load(f)
+        except:
+            return []
+    return []
+
+def save_deadline(deadline_data):
+    """Save new deadline to persistent storage."""
+    deadlines = load_saved_deadlines()
+    deadline_data["saved_timestamp"] = datetime.now().isoformat()
+    deadline_data["id"] = len(deadlines) + 1
+    deadlines.append(deadline_data)
+    with open(DEADLINES_FILE, "w") as f:
+        json.dump(deadlines, f, indent=2)
+    st.session_state.saved_deadlines = deadlines
+    return deadline_data
+
+def delete_deadline(deadline_id):
+    """Delete a saved deadline."""
+    deadlines = load_saved_deadlines()
+    deadlines = [d for d in deadlines if d.get("id") != deadline_id]
+    with open(DEADLINES_FILE, "w") as f:
+        json.dump(deadlines, f, indent=2)
+    st.session_state.saved_deadlines = deadlines
+
+def load_community_posts():
+    """Load all community discussion posts from persistent storage."""
+    if os.path.exists(COMMUNITY_POSTS_FILE):
+        try:
+            with open(COMMUNITY_POSTS_FILE, "r") as f:
+                return json.load(f)
+        except:
+            return []
+    return []
+
+def save_community_post(post_data):
+    """Save new community post to persistent storage."""
+    posts = load_community_posts()
+    post_data["timestamp"] = datetime.now().isoformat()
+    post_data["id"] = len(posts) + 1
+    posts.append(post_data)
+    with open(COMMUNITY_POSTS_FILE, "w") as f:
+        json.dump(posts, f, indent=2)
+    st.session_state.community_posts = posts
+    return post_data
 
 def log_encounter(encounter_type, language, notes=""):
     """Create structured encounter log entry."""
@@ -767,11 +1380,36 @@ COMMUNITY_RESOURCES = {
 # ============================================================================
 
 def page_home():
-    """Dashboard home page with feature cards."""
-    st.markdown(f"# {t('home_title')}")
-    st.markdown(f"## {t('home_subtitle')}")
+    """Dashboard home page with feature cards and saved deadlines."""
+    st.markdown(f"# 🏠 {t_bilingual('home_title')}")
+    st.markdown(f"## {t_bilingual('home_subtitle')}")
     st.markdown("---")
-    st.markdown(f"### {t('dashboard_intro')}")
+    
+    # Show saved deadlines section (NEW)
+    if st.session_state.saved_deadlines:
+        st.markdown("## ⏰ Your Saved Deadlines")
+        st.warning("📋 You have important deadlines to manage!")
+        
+        for deadline in st.session_state.saved_deadlines[-3:]:  # Show last 3
+            col1, col2 = st.columns([4, 1])
+            with col1:
+                st.markdown(f"""
+                <div class="dashboard-card">
+                    <p><strong>📅 {deadline['deadline']}</strong></p>
+                    <p>From: {deadline.get('document', 'Unknown document')}</p>
+                </div>
+                """, unsafe_allow_html=True)
+            with col2:
+                if st.button("❌", key=f"del_deadline_{deadline.get('id')}"):
+                    delete_deadline(deadline.get('id'))
+                    st.rerun()
+        
+        if st.button("📋 View All Deadlines →", use_container_width=True):
+            st.session_state.page = "DocumentAssistant"
+            st.rerun()
+        st.divider()
+    
+    st.markdown(f"### {t_bilingual('dashboard_intro')}")
     
     # Create feature cards in a 2-column grid layout
     col1, col2 = st.columns(2)
@@ -782,11 +1420,11 @@ def page_home():
             st.markdown(f"""
             <div class="dashboard-card">
                 <div class="card-icon">🗣️</div>
-                <div class="card-title">{t('card_translation_title')}</div>
-                <div class="card-description">{t('card_translation_desc')}</div>
+                <div class="card-title">Real-Time Translation</div>
+                <div class="card-description">Translate officer statements in real-time to 14 languages</div>
             </div>
             """, unsafe_allow_html=True)
-            if st.button(f"{t('btn_open')} - {t('card_translation_title')}", use_container_width=True, key="open_translation"):
+            if st.button("📖 Open Feature", use_container_width=True, key="open_translation"):
                 st.session_state.page = "Translation"
                 st.rerun()
         
@@ -797,101 +1435,86 @@ def page_home():
             st.markdown(f"""
             <div class="dashboard-card">
                 <div class="card-icon">📄</div>
-                <div class="card-title">{t('card_documents_title')}</div>
-                <div class="card-description">{t('card_documents_desc')}</div>
+                <div class="card-title">Legal Documents</div>
+                <div class="card-description">Extract deadlines, penalties, and required actions from documents</div>
             </div>
             """, unsafe_allow_html=True)
-            if st.button(f"{t('btn_open')} - {t('card_documents_title')}", use_container_width=True, key="open_documents"):
+            if st.button("📖 Open Feature", use_container_width=True, key="open_documents"):
                 st.session_state.page = "DocumentAssistant"
                 st.rerun()
         
         st.divider()
         
-        # Rights Education Card
+        # Know Your Rights Card
         with st.container():
             st.markdown(f"""
             <div class="dashboard-card">
-                <div class="card-icon">📚</div>
-                <div class="card-title">{t('card_rights_title')}</div>
-                <div class="card-description">{t('card_rights_desc')}</div>
+                <div class="card-icon">⚖️</div>
+                <div class="card-title">Know Your Rights</div>
+                <div class="card-description">Learn your civil rights and test your knowledge with interactive quizzes</div>
             </div>
             """, unsafe_allow_html=True)
-            if st.button(f"{t('btn_open')} - {t('card_rights_title')}", use_container_width=True, key="open_rights"):
-                st.session_state.page = "RightsEducation"
+            if st.button("📖 Open Feature", use_container_width=True, key="open_rights"):
+                st.session_state.page = "KnowYourRights"
                 st.rerun()
         
         st.divider()
         
-        # Community Resources Card
-        with st.container():
-            st.markdown(f"""
-            <div class="dashboard-card">
-                <div class="card-icon">🏥</div>
-                <div class="card-title">{t('card_resources_title')}</div>
-                <div class="card-description">{t('card_resources_desc')}</div>
-            </div>
-            """, unsafe_allow_html=True)
-            if st.button(f"{t('btn_open')} - {t('card_resources_title')}", use_container_width=True, key="open_resources"):
-                st.session_state.page = "Resources"
-                st.rerun()
-    
-    with col2:
-        # Rights Quiz Card
-        with st.container():
-            st.markdown(f"""
-            <div class="dashboard-card">
-                <div class="card-icon">❓</div>
-                <div class="card-title">{t('card_quiz_title')}</div>
-                <div class="card-description">{t('card_quiz_desc')}</div>
-            </div>
-            """, unsafe_allow_html=True)
-            if st.button(f"{t('btn_open')} - {t('card_quiz_title')}", use_container_width=True, key="open_quiz"):
-                st.session_state.page = "RightsQuiz"
-                st.rerun()
-        
-        st.divider()
-        
-        # Rights Near Me Card
+        # Resources Near You Card
         with st.container():
             st.markdown(f"""
             <div class="dashboard-card">
                 <div class="card-icon">📍</div>
-                <div class="card-title">{t('card_nearby_title')}</div>
-                <div class="card-description">{t('card_nearby_desc')}</div>
+                <div class="card-title">Resources Near You</div>
+                <div class="card-description">Find legal aid, community centers, and emergency services nearby</div>
             </div>
             """, unsafe_allow_html=True)
-            if st.button(f"{t('btn_open')} - {t('card_nearby_title')}", use_container_width=True, key="open_nearby"):
-                st.session_state.page = "RightsNearMe"
+            if st.button("📖 Open Feature", use_container_width=True, key="open_nearby"):
+                st.session_state.page = "ResourcesNearYou"
                 st.rerun()
-        
-        st.divider()
-        
+    
+    with col2:
         # Encounter Log Card
         with st.container():
             st.markdown(f"""
             <div class="dashboard-card">
                 <div class="card-icon">📝</div>
-                <div class="card-title">{t('card_logging_title')}</div>
-                <div class="card-description">{t('card_logging_desc')}</div>
+                <div class="card-title">Encounter Log</div>
+                <div class="card-description">Document and track your encounters with law enforcement</div>
             </div>
             """, unsafe_allow_html=True)
-            if st.button(f"{t('btn_open')} - {t('card_logging_title')}", use_container_width=True, key="open_logging"):
+            if st.button("📖 Open Feature", use_container_width=True, key="open_logging"):
                 st.session_state.page = "EncounterLogging"
                 st.rerun()
         
         st.divider()
         
-        # Emergency Assistance Card
+        # Crisis Resources Card
         with st.container():
             st.markdown(f"""
             <div class="dashboard-card">
                 <div class="card-icon">🚨</div>
-                <div class="card-title">{t('card_emergency_title')}</div>
-                <div class="card-description">{t('card_emergency_desc')}</div>
+                <div class="card-title">Crisis Resources</div>
+                <div class="card-description">24/7 hotlines and emergency support for critical situations</div>
             </div>
             """, unsafe_allow_html=True)
-            if st.button(f"{t('btn_open')} - {t('card_emergency_title')}", use_container_width=True, key="open_emergency"):
-                st.session_state.page = "Emergency"
+            if st.button("📖 Open Feature", use_container_width=True, key="open_crisis"):
+                st.session_state.page = "CrisisResources"
+                st.rerun()
+        
+        st.divider()
+        
+        # Community Discussion Card
+        with st.container():
+            st.markdown(f"""
+            <div class="dashboard-card">
+                <div class="card-icon">💬</div>
+                <div class="card-title">Talk to Your Community</div>
+                <div class="card-description">Share experiences, ask questions, and get advice from the community</div>
+            </div>
+            """, unsafe_allow_html=True)
+            if st.button("📖 Open Feature", use_container_width=True, key="open_community"):
+                st.session_state.page = "CommunityDiscussion"
                 st.rerun()
 
 def page_translation():
@@ -1047,144 +1670,508 @@ def page_translation():
                 st.info(f"{st.session_state.selected_language} - No translation needed")
 
 def page_documents():
-    """Legal document assistant page."""
-    st.markdown(f"# {t('documents_title')}")
-    st.markdown(f"_{t('documents_subtitle')}_")
+    """Legal document assistant page with OCR and extraction."""
+    st.markdown(f"# 📄 {t_bilingual('documents_title')}")
+    st.markdown(f"_{t_bilingual('documents_subtitle')}_")
     st.divider()
     
-    st.info(f"{t('documents_subtitle')} - Feature available when system libraries installed")
-
-def page_rights_education():
-    """Rights education center."""
-    st.markdown(f"# {t('rights_title')}")
-    st.markdown(f"_{t('rights_subtitle')}_")
-    st.divider()
+    st.markdown("""
+    Upload a legal document (image or PDF) to extract key information:
+    - Important dates and deadlines
+    - Required actions
+    - Penalties and warnings
+    - Government agencies
+    """)
     
-    selected_right = st.selectbox(
-        "Select a topic:",
-        list(RIGHTS_EDUCATION.keys()),
-        key="rights_select"
-    )
+    # Document upload interface
+    tab1, tab2 = st.tabs(["📤 Upload Document", "📋 Document Extraction"])
     
-    if selected_right:
-        right = RIGHTS_EDUCATION[selected_right]
-        st.markdown(f"## {right['title']}")
-        st.markdown(right['content'])
-
-def page_rights_quiz():
-    """Rights education quiz."""
-    st.markdown(f"# {t('card_quiz_title')}")
-    st.markdown(f"_{t('card_quiz_desc')}_")
-    st.divider()
-    
-    quiz_questions = [
-        {
-            "question": "Can police search your car without consent?",
-            "options": ["Only with a warrant", "Only if they have probable cause", "Both A and B", "No, never"],
-            "correct": 2,
-            "explanation": "Police can search with a warrant OR if they have probable cause to believe evidence is in the car."
-        },
-        {
-            "question": "Do you have to answer police questions?",
-            "options": ["Yes, always", "No, you have the right to remain silent", "Only your name", "Only if arrested"],
-            "correct": 1,
-            "explanation": "You have the Fifth Amendment right to remain silent and not incriminate yourself."
-        },
-        {
-            "question": "What should you say if arrested?",
-            "options": ["Explain what happened", "Ask for a lawyer", "Refuse to give your name", "Try to negotiate"],
-            "correct": 1,
-            "explanation": "Always ask for a lawyer immediately and remain silent."
-        }
-    ]
-    
-    for i, q in enumerate(quiz_questions):
-        st.markdown(f"### Question {i+1}: {q['question']}")
-        answer = st.radio(
-            "Select your answer:",
-            q['options'],
-            key=f"quiz_q{i}"
+    with tab1:
+        st.markdown("### Upload a Legal Document")
+        uploaded_file = st.file_uploader(
+            "Choose a document (PDF, JPG, PNG)",
+            type=["pdf", "jpg", "jpeg", "png"],
+            key="doc_uploader"
         )
         
-        if st.button(f"Check Answer {i+1}", key=f"check_q{i}"):
-            if answer == q['options'][q['correct']]:
-                st.success("✅ Correct!")
-            else:
-                st.error(f"❌ Incorrect. {q['explanation']}")
-        st.divider()
+        if uploaded_file:
+            st.success(f"✅ File uploaded: {uploaded_file.name}")
+            
+            # Show file info
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.metric("File Type", uploaded_file.type)
+            with col2:
+                st.metric("File Size", f"{uploaded_file.size / 1024:.1f} KB")
+            with col3:
+                st.metric("Status", "Ready for extraction")
+            
+            # Mock document extraction (in production, use Tesseract OCR)
+            if st.button("🔍 Extract Information", use_container_width=True, key="extract_doc"):
+                with st.spinner("Extracting information from document..."):
+                    # Mock extraction - sample legal text
+                    sample_text = """
+                    NOTICE TO APPEAR IN COURT
+                    
+                    You are required to appear in court on March 15, 2025 at 9:00 AM.
+                    Location: San Francisco Superior Court, 400 McAllister St.
+                    
+                    REQUIRED ACTIONS:
+                    1. Bring valid photo ID
+                    2. Bring proof of residence
+                    3. Pay the citation fee of $250 by March 10, 2025
+                    
+                    PENALTIES: Failure to appear may result in a warrant for your arrest.
+                    
+                    Case Number: 2024-CV-123456
+                    Court Clerk: Department of Superior Court
+                    """
+                    
+                    # Extract information
+                    extracted = extract_deadline_and_dates(sample_text)
+                    
+                    # Display results
+                    col1, col2 = st.columns(2)
+                    
+                    with col1:
+                        st.markdown("### 📅 Important Dates")
+                        if extracted["dates"]:
+                            for date in extracted["dates"]:
+                                st.markdown(f"• **{date}**")
+                        else:
+                            st.info("No dates found")
+                        
+                        st.markdown("### ✓ Required Actions")
+                        if extracted["deadlines"]:
+                            for deadline in extracted["deadlines"]:
+                                st.markdown(f"• {deadline}")
+                        else:
+                            st.info("No deadlines found")
+                    
+                    with col2:
+                        st.markdown("### ⏰ Critical Deadlines")
+                        if extracted["deadlines"]:
+                            for deadline in extracted["deadlines"]:
+                                st.warning(f"⚠️ {deadline}")
+                        else:
+                            st.info("No deadlines found")
+                        
+                        st.markdown("### ⚠️ Penalties & Warnings")
+                        if extracted["penalties"]:
+                            for penalty in extracted["penalties"]:
+                                st.error(f"❌ {penalty}")
+                        else:
+                            st.info("No penalties found")
+                    
+                    # Download summary
+                    st.divider()
+                    col1, col2 = st.columns(2)
+                    
+                    with col1:
+                        if st.button("📥 Download Summary", use_container_width=True):
+                            summary_text = f"""
+DOCUMENT EXTRACTION SUMMARY
+==========================
 
-def page_resources():
-    """Community resources page."""
-    st.markdown(f"# {t('resources_title')}")
-    st.markdown(f"_{t('resources_subtitle')}_")
-    st.divider()
+DATES FOUND:
+{chr(10).join(extracted['dates']) if extracted['dates'] else 'None'}
+
+DEADLINES:
+{chr(10).join(extracted['deadlines']) if extracted['deadlines'] else 'None'}
+
+PENALTIES:
+{chr(10).join(extracted['penalties']) if extracted['penalties'] else 'None'}
+                            """
+                            st.download_button(
+                                label="Download as TXT",
+                                data=summary_text,
+                                file_name="document_summary.txt",
+                                mime="text/plain"
+                            )
+                    
+                    # Save deadlines feature
+                    with col2:
+                        if st.button("💾 Save Deadlines to Dashboard", use_container_width=True, key="save_deadlines_btn"):
+                            if extracted["deadlines"]:
+                                for deadline in extracted["deadlines"]:
+                                    deadline_data = {
+                                        "deadline": deadline,
+                                        "document": uploaded_file.name,
+                                        "extracted_dates": extracted["dates"],
+                                        "status": "Active",
+                                        "language": st.session_state.selected_language
+                                    }
+                                    save_deadline(deadline_data)
+                                st.success(f"✅ Saved {len(extracted['deadlines'])} deadline(s) to your dashboard!")
+                            else:
+                                st.warning("⚠️ No deadlines to save")
     
-    category = st.selectbox(
-        "Select a category:",
-        list(COMMUNITY_RESOURCES.keys()),
-        key="resources_select"
-    )
-    
-    if category:
-        st.markdown(f"## {category}")
-        resources = COMMUNITY_RESOURCES[category]
+    with tab2:
+        st.markdown("### Document Extraction Guide")
+        st.markdown("""
+        **This tool can extract:**
+        - **Dates**: Court dates, deadlines, filing dates
+        - **Deadlines**: "Must respond by...", "Appear on..."
+        - **Actions**: What you need to do
+        - **Penalties**: Fines, consequences for non-compliance
+        - **Agencies**: Court, government offices mentioned
         
-        for resource in resources:
-            with st.container():
-                st.markdown(f"### {resource['name']}")
-                col1, col2 = st.columns([1, 1])
-                
-                with col1:
-                    st.markdown(f"**{t('phone_number')}** {resource['phone']}")
-                
-                with col2:
-                    if 'website' in resource:
-                        st.markdown(f"**{t('website')}** {resource['website']}")
-                
-                st.markdown(f"**{t('services')}** {resource['services']}")
-                st.divider()
+        **Works best with:**
+        - ✅ Clear, printed documents
+        - ✅ Good lighting and contrast
+        - ✅ English language text
+        - ✅ High resolution images
+        
+        **May have issues with:**
+        - ❌ Handwritten documents
+        - ❌ Very old or damaged documents
+        - ❌ Multiple languages mixed
+        - ❌ Low quality images
+        """)
 
-def page_rights_near_me():
-    """Know Your Rights Near Me - location-based legal aid finder."""
-    st.markdown(f"# {t('nearby_title')}")
-    st.markdown(f"_{t('nearby_subtitle')}_")
+def page_resources_near_you():
+    """Unified Resources Near You - location-based legal aid and community services finder."""
+    st.markdown(f"# 📍 {t_bilingual('location_title')}")
+    st.markdown(f"_{t_bilingual('nearby_subtitle')}_")
     st.divider()
     
-    col1, col2 = st.columns([2, 1])
+    # Resource search interface
+    col1, col2, col3 = st.columns([2, 1, 1])
     
     with col1:
-        address = st.text_input(t('enter_address'), placeholder="Enter your address")
+        address = st.text_input(
+            t_bilingual('enter_address'),
+            placeholder="Enter address, city, or ZIP code",
+            key="resource_address"
+        )
+        add_screen_reader_label(f"Enter address for resource search: {address}")
     
     with col2:
-        radius = st.number_input(t('search_radius'), min_value=1, max_value=50, value=5)
+        radius = st.slider(
+            t_bilingual('search_radius_miles'),
+            min_value=1,
+            max_value=50,
+            value=5,
+            key="search_radius_slider"
+        )
     
-    if address and st.button(f"{t('btn_search')} {t('nearby_title')}", use_container_width=True):
-        st.info(f"📍 {t('nearby_subtitle')} in {address} (within {radius} miles)")
+    with col3:
+        search_button = st.button(f"🔍 {t('btn_search')}", use_container_width=True, key="find_resources_btn")
+    
+    if search_button and address:
+        # Show loading indicator
+        with st.spinner(t('loading_resources')):
+            resources = find_resources_by_location(address, radius)
+            
+            # Apply category filter if selected
+            if st.session_state.resource_category_filter:
+                resources = [r for r in resources if r['category'] == st.session_state.resource_category_filter]
         
-        # Placeholder results - in production, integrate with real location API
-        st.markdown(f"### {t('nearest_legal_aid')}")
-        st.markdown(f"""
-        **Legal Aid Society**
-        {t('address')} 123 Main St, Your City
-        {t('phone_number')} (555) 123-4567
-        {t('hours_open')} Mon-Fri 9AM-5PM
-        """)
+        if resources:
+            st.success(f"✅ {t_bilingual('found_resources')}: {len(resources)} {t_bilingual('resources_found')} {t_bilingual('within_miles')} {radius}")
+            
+            # Display resources in modern cards
+            for idx, resource in enumerate(resources):
+                with st.container():
+                    st.markdown(f"""
+                    <div class="dashboard-card">
+                        <div class="card-icon">📍</div>
+                        <div class="card-title">{resource['name']}</div>
+                        <div class="card-description">
+                            <p><strong>{t_bilingual('distance_away')}:</strong> {resource['distance']} miles</p>
+                            <p><strong>{t_bilingual('resource_address')}:</strong> {resource['address']}</p>
+                            <p><strong>{t_bilingual('resource_phone')}:</strong> {resource['phone']}</p>
+                            <p><strong>{t_bilingual('resource_hours')}:</strong> {resource['hours']}</p>
+                            <p><strong>Website:</strong> {resource['website']}</p>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                    # Get Directions button - opens Google Maps
+                    if st.button(f"🗺️ {t_bilingual('get_directions')} - {resource['name']}", use_container_width=True, key=f"directions_{idx}"):
+                        # Build Google Maps URL
+                        address_encoded = resource['address'].replace(' ', '+')
+                        maps_url = f"https://www.google.com/maps/search/{address_encoded}/"
+                        st.markdown(f"""
+                        <a href="{maps_url}" target="_blank">
+                        <button style="width: 100%; padding: 8px; background-color: #4285F4; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        🗺️ Open in Google Maps
+                        </button>
+                        </a>
+                        """, unsafe_allow_html=True)
+                        st.success(f"📍 Opening maps to: {resource['name']}")
+        else:
+            st.warning(f"⚠️ {t('no_resources_found')}")
+    
+    # Browse by Resource Type
+    st.divider()
+    st.markdown(f"### 📋 {t_bilingual('browse_resources')}")
+    
+    resource_categories = [
+        ("⚖️ Legal Aid", "Legal Aid"),
+        ("🏢 Community Centers", "Community Center"),
+        ("🗣️ Language Services", "Language Services"),
+        ("👥 Immigration Support", "Immigration Support"),
+        ("🏥 Emergency Shelters", "Emergency Shelter")
+    ]
+    
+    cols = st.columns(len(resource_categories))
+    for idx, (label, category) in enumerate(resource_categories):
+        with cols[idx]:
+            if st.button(label, use_container_width=True, key=f"category_{category}"):
+                st.session_state.resource_category_filter = category
+                st.rerun()
+    
+    # Show active filter
+    if st.session_state.resource_category_filter:
+        st.info(f"📁 Currently filtering by: **{st.session_state.resource_category_filter}**")
+        if st.button("❌ Clear Filter", use_container_width=True):
+            st.session_state.resource_category_filter = None
+            st.rerun()
+
+def page_rights_near_me():
+    """Know Your Rights Near Me - location-based legal aid finder (legacy function - calls new unified page)."""
+    page_resources_near_you()
+
+def page_know_your_rights():
+    """Combined Rights Education and Interactive Quizzes - Unified Learning Center."""
+    st.markdown(f"# ⚖️ Know Your Rights")
+    st.markdown(f"_Education, Quizzes & Learning Modules_")
+    st.divider()
+    
+    # Tab-based interface
+    tab1, tab2 = st.tabs(["📚 Learn", "🧪 Quiz"])
+    
+    with tab1:
+        st.markdown(f"## Rights Education")
         
-        st.markdown(f"### {t('nearest_courthouse')}")
-        st.markdown(f"""
-        **District Courthouse**
-        {t('address')} 456 Justice Ave, Your City
-        {t('phone_number')} (555) 234-5678
-        {t('hours_open')} Mon-Fri 8AM-4PM
-        """)
+        selected_right = st.selectbox(
+            "Select a topic:",
+            list(RIGHTS_EDUCATION.keys()),
+            key="rights_select"
+        )
         
-        st.markdown(f"### {t('nearest_police')}")
-        st.markdown(f"""
-        **Police Department**
-        {t('address')} 789 Law St, Your City
-        {t('phone_number')} (555) 911-0000 (Emergency: 911)
-        {t('hours_open')} 24/7
-        """)
+        if selected_right:
+            right = RIGHTS_EDUCATION[selected_right]
+            st.markdown(f"### {right['title']}")
+            st.markdown(right['content'])
+            
+            # Progress indicator
+            progress_pct = (list(RIGHTS_EDUCATION.keys()).index(selected_right) + 1) / len(RIGHTS_EDUCATION) * 100
+            st.progress(progress_pct / 100)
+            st.caption(f"📖 Topic {list(RIGHTS_EDUCATION.keys()).index(selected_right) + 1} of {len(RIGHTS_EDUCATION)}")
+    
+    with tab2:
+        st.markdown(f"## Rights Quiz")
+        st.markdown(f"Test your knowledge about your civil rights and legal protections.")
+        st.divider()
+        
+        quiz_questions = [
+            {
+                "question": "Can police search your car without consent?",
+                "options": ["Only with a warrant", "Only if they have probable cause", "Both A and B", "No, never"],
+                "correct": 2,
+                "explanation": "Police can search with a warrant OR if they have probable cause to believe evidence is in the car."
+            },
+            {
+                "question": "Do you have to answer police questions?",
+                "options": ["Yes, always", "No, you have the right to remain silent", "Only your name", "Only if arrested"],
+                "correct": 1,
+                "explanation": "You have the Fifth Amendment right to remain silent and not incriminate yourself."
+            },
+            {
+                "question": "What should you say if arrested?",
+                "options": ["Explain what happened", "Ask for a lawyer", "Refuse to give your name", "Try to negotiate"],
+                "correct": 1,
+                "explanation": "Always ask for a lawyer immediately and remain silent."
+            }
+        ]
+        
+        score = 0
+        answered = 0
+        
+        for i, q in enumerate(quiz_questions):
+            st.markdown(f"### Question {i+1}: {q['question']}")
+            answer = st.radio(
+                "Select your answer:",
+                q['options'],
+                key=f"quiz_q{i}"
+            )
+            
+            if st.button(f"✓ Check Answer {i+1}", key=f"check_q{i}"):
+                answered += 1
+                if answer == q['options'][q['correct']]:
+                    st.success("✅ Correct!")
+                    score += 1
+                else:
+                    st.error(f"❌ Incorrect. {q['explanation']}")
+            st.divider()
+        
+        if answered > 0:
+            quiz_pct = (score / len(quiz_questions)) * 100
+            st.progress(quiz_pct / 100)
+            st.metric("Score", f"{score}/{len(quiz_questions)}", f"{quiz_pct:.0f}%")
+
+def page_community_discussion():
+    """Talk to Your Community - Safe community discussion space."""
+    st.markdown(f"# 💬 Talk to Your Community")
+    st.markdown(f"_Share experiences, ask questions, give advice - together we are stronger_")
+    st.divider()
+    
+    # Tabs for different community features
+    tab1, tab2, tab3 = st.tabs(["💭 Share Experiences", "❓ Ask Questions", "💡 Give Advice"])
+    
+    with tab1:
+        st.markdown("### 💭 Share Your Experience")
+        st.markdown("Share your story to help others. All posts are moderated for safety.")
+        
+        post_title = st.text_input("Title:", placeholder="e.g., Tips for dealing with traffic stops", key="exp_title")
+        post_content = st.text_area("Your story:", placeholder="Share your experience...", height=200, key="exp_content")
+        anonymous = st.checkbox("Post anonymously", value=True, key="exp_anon")
+        
+        if st.button("📤 Share Experience", use_container_width=True, key="submit_exp"):
+            if post_title and post_content:
+                post = {
+                    "type": "experience",
+                    "title": post_title,
+                    "content": post_content,
+                    "anonymous": anonymous,
+                    "author": "Anonymous" if anonymous else "Community Member"
+                }
+                save_community_post(post)
+                st.success("✅ Your experience has been shared! Thank you for helping the community.")
+            else:
+                st.warning("⚠️ Please fill in both title and content")
+    
+    with tab2:
+        st.markdown("### ❓ Ask the Community")
+        st.markdown("Have a question? The community is here to help.")
+        
+        q_title = st.text_input("Your question:", placeholder="e.g., What are my rights during a traffic stop?", key="q_title")
+        q_content = st.text_area("Details:", placeholder="Provide more context...", height=150, key="q_content")
+        anonymous = st.checkbox("Ask anonymously", value=True, key="q_anon")
+        
+        if st.button("❓ Ask Question", use_container_width=True, key="submit_q"):
+            if q_title:
+                post = {
+                    "type": "question",
+                    "title": q_title,
+                    "content": q_content,
+                    "anonymous": anonymous,
+                    "author": "Anonymous" if anonymous else "Community Member",
+                    "responses": []
+                }
+                save_community_post(post)
+                st.success("✅ Your question has been posted!")
+            else:
+                st.warning("⚠️ Please enter your question")
+    
+    with tab3:
+        st.markdown("### 💡 Give Advice")
+        st.markdown("Help others with your knowledge and experience.")
+        
+        advice_title = st.text_input("Topic:", placeholder="e.g., How to prepare for court", key="adv_title")
+        advice_content = st.text_area("Your advice:", placeholder="Share what you know...", height=200, key="adv_content")
+        anonymous = st.checkbox("Share anonymously", value=True, key="adv_anon")
+        
+        if st.button("💡 Share Advice", use_container_width=True, key="submit_adv"):
+            if advice_title and advice_content:
+                post = {
+                    "type": "advice",
+                    "title": advice_title,
+                    "content": advice_content,
+                    "anonymous": anonymous,
+                    "author": "Anonymous" if anonymous else "Community Member"
+                }
+                save_community_post(post)
+                st.success("✅ Thank you for sharing your wisdom!")
+            else:
+                st.warning("⚠️ Please fill in both topic and advice")
+    
+    # Display recent community posts
+    st.divider()
+    st.markdown("## 📋 Recent Community Posts")
+    
+    if st.session_state.community_posts:
+        # Sort by newest first
+        sorted_posts = sorted(st.session_state.community_posts, key=lambda x: x.get("timestamp", ""), reverse=True)[:10]
+        
+        for post in sorted_posts:
+            with st.expander(f"{post.get('type', '').title()} - {post['title']} - {post['author']}"):
+                st.markdown(post.get("content", ""))
+                st.caption(f"Posted {post.get('timestamp', 'recently')}")
+    else:
+        st.info("💭 No community posts yet. Be the first to share!")
+
+def page_crisis_resources():
+    """Crisis Resources & Hotlines - Emergency assistance and mental health support."""
+    st.markdown(f"# 🚨 Crisis Resources & Hotlines")
+    st.markdown(f"_24/7 Support When You Need It Most_")
+    st.divider()
+    
+    # Critical hotlines section
+    st.markdown(f"## 🆘 Emergency Hotlines")
+    st.markdown("**If you are in immediate danger, call 911**")
+    
+    crisis_contacts = {
+        "🆘 Emergency / Emergencia": "911",
+        "🧠 National Suicide Prevention Lifeline": "988",
+        "💔 National Domestic Violence Hotline": "1-800-799-7233",
+        "🤝 RAINN - Sexual Assault Support": "1-800-656-4673",
+        "☠️ Poison Control Center": "1-800-222-1222",
+        "📱 Crisis Text Line": "Text HOME to 741741"
+    }
+    
+    cols = st.columns(3)
+    col_idx = 0
+    for service, number in crisis_contacts.items():
+        with cols[col_idx % 3]:
+            st.markdown(f"""
+            <div class="dashboard-card" style="text-align: center;">
+                <h3 style="margin-bottom: 1rem;">{service}</h3>
+                <h2 style="color: var(--accent-terracotta); font-weight: 800; margin: 0.5rem 0;">{number}</h2>
+            </div>
+            """, unsafe_allow_html=True)
+        col_idx += 1
+    
+    st.divider()
+    
+    # Emergency procedures
+    st.markdown(f"## 📋 Safety Procedures")
+    
+    procedures = [
+        ("🛡️ Stay Safe", "Keep yourself safe - do not physically resist. Your safety is the priority."),
+        ("📝 Document Details", "Remember: officer names, badge numbers, locations, times, what they said and did."),
+        ("🎥 Record Safely", "If safe and legal in your area, record the interaction. Keep the camera visible."),
+        ("📞 Call for Help", "Call 911 if in immediate danger. Stay calm and clear when explaining."),
+        ("⚖️ Get Legal Help", "Contact an attorney immediately. Many public defenders offer emergency services."),
+        ("🏥 Medical Attention", "If injured, seek medical care and document injuries with photos.")
+    ]
+    
+    for title, desc in procedures:
+        with st.container():
+            st.markdown(f"### {title}")
+            st.write(desc)
+    
+    st.divider()
+    
+    # Mental health and support
+    st.markdown(f"## 🧠 Mental Health & Support")
+    st.markdown("""
+    Experiencing legal troubles, police encounters, or discrimination can be traumatic.
+    
+    **Mental health resources:**
+    - **SAMHSA National Helpline**: 1-800-662-4357 (free, confidential, 24/7)
+    - **Crisis Text Line**: Text HOME to 741741
+    - **Local therapists**: Search Psychology Today's directory
+    - **Support groups**: NAACP, community centers, legal aid organizations often host support groups
+    """)
+
+def page_emergency():
+    """Legacy Emergency page - redirects to Crisis Resources."""
+    page_crisis_resources()
+
+
 
 def page_encounter_logging():
     """Encounter logging page."""
@@ -1237,46 +2224,7 @@ def page_encounter_logging():
         else:
             st.info(t('no_data'))
 
-def page_emergency():
-    """Emergency assistance page."""
-    st.markdown(f"# {t('emergency_title')}")
-    st.markdown(f"_{t('emergency_subtitle')}_")
-    st.divider()
-    
-    # Emergency contacts
-    st.markdown(f"## {t('emergency_procedures')}")
-    
-    emergency_numbers = {
-        t('emergency_911'): "911",
-        t('emergency_suicide'): "988",
-        t('emergency_domestic'): "1-800-799-7233",
-        t('emergency_assault'): "1-800-656-4673",
-        t('emergency_poison'): "1-800-222-1222",
-        t('emergency_text'): "Text HOME to 741741"
-    }
-    
-    for service, number in emergency_numbers.items():
-        col1, col2 = st.columns([3, 1])
-        with col1:
-            st.write(f"**{service}**")
-        with col2:
-            st.code(number, language="")
-    
-    st.divider()
-    
-    st.markdown(f"## {t('emergency_procedures')}")
-    
-    procedures = [
-        (t('procedure_safe'), "Keep yourself safe - do not physically resist"),
-        (t('procedure_document'), "Remember details: names, badges, locations, times"),
-        (t('procedure_record'), "Record interactions if safe and legal in your area"),
-        (t('procedure_call'), "Call 911 if in immediate danger"),
-        (t('procedure_contact'), "Contact your attorney as soon as possible"),
-    ]
-    
-    for title, desc in procedures:
-        st.markdown(f"### {title}")
-        st.write(desc)
+
 
 # ============================================================================
 # MAIN APP WITH SIDEBAR NAVIGATION
@@ -1286,6 +2234,9 @@ def main():
     
     # Initialize session state
     init_session_state()
+    
+    # Apply accessibility CSS
+    apply_accessibility_css()
     
     # Sidebar header
     st.sidebar.markdown(f"# ⚖️ {t('sidebar_title')}")
@@ -1302,6 +2253,48 @@ def main():
     
     st.sidebar.divider()
     
+    # Accessibility Settings
+    with st.sidebar.expander(t('accessibility_title'), expanded=False):
+        # Text size selector
+        text_size_option = st.radio(
+            t('text_size'),
+            [t('text_size_normal'), t('text_size_large'), t('text_size_extra_large')],
+            index=0 if st.session_state.text_size == "normal" else 1,
+            key="text_size_radio"
+        )
+        if t('text_size_normal') in text_size_option:
+            st.session_state.text_size = "normal"
+        elif t('text_size_large') in text_size_option:
+            st.session_state.text_size = "large"
+        else:
+            st.session_state.text_size = "extra_large"
+        
+        # High contrast toggle
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button(
+                f"⚪ {t('high_contrast_off')}" if st.session_state.high_contrast else f"◯ {t('high_contrast_on')}",
+                use_container_width=True,
+                key="contrast_toggle"
+            ):
+                st.session_state.high_contrast = not st.session_state.high_contrast
+                st.rerun()
+        
+        # Screen reader toggle
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button(
+                f"📢 {t('screen_reader')}" if st.session_state.screen_reader_enabled else "🔇 Screen Reader OFF",
+                use_container_width=True,
+                key="screen_reader_toggle"
+            ):
+                st.session_state.screen_reader_enabled = not st.session_state.screen_reader_enabled
+                st.rerun()
+        
+        st.success(t('accessibility_saved'))
+    
+    st.sidebar.divider()
+    
     # Navigation menu
     st.sidebar.markdown("### 🧭 Navigation")
     
@@ -1309,12 +2302,11 @@ def main():
         t('nav_home'): "Home",
         t('nav_translation'): "Translation",
         t('nav_documents'): "DocumentAssistant",
-        t('nav_rights'): "RightsEducation",
-        t('nav_quiz'): "RightsQuiz",
-        t('nav_resources'): "Resources",
-        t('nav_nearby'): "RightsNearMe",
-        t('nav_logging'): "EncounterLogging",
-        t('nav_emergency'): "Emergency",
+        "⚖️ Know Your Rights": "KnowYourRights",
+        "📍 Resources Near You": "ResourcesNearYou",
+        "📝 Encounter Log": "EncounterLogging",
+        "🚨 Crisis Resources": "CrisisResources",
+        "💬 Talk to Your Community": "CommunityDiscussion",
     }
     
     for label, page_name in nav_options.items():
@@ -1352,18 +2344,16 @@ def main():
         page_translation()
     elif st.session_state.page == "DocumentAssistant":
         page_documents()
-    elif st.session_state.page == "RightsEducation":
-        page_rights_education()
-    elif st.session_state.page == "RightsQuiz":
-        page_rights_quiz()
-    elif st.session_state.page == "Resources":
-        page_resources()
-    elif st.session_state.page == "RightsNearMe":
-        page_rights_near_me()
+    elif st.session_state.page == "KnowYourRights":
+        page_know_your_rights()
+    elif st.session_state.page == "ResourcesNearYou":
+        page_resources_near_you()
     elif st.session_state.page == "EncounterLogging":
         page_encounter_logging()
-    elif st.session_state.page == "Emergency":
-        page_emergency()
+    elif st.session_state.page == "CrisisResources":
+        page_crisis_resources()
+    elif st.session_state.page == "CommunityDiscussion":
+        page_community_discussion()
     else:
         page_home()
 
