@@ -1,0 +1,129 @@
+# CivicShield Pro - Git Ignore File
+# Prevents committing sensitive files to repository
+
+# Environment & Secrets
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+
+# IDE & Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.project
+.pydevproject
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+
+# Streamlit
+.streamlit/secrets.toml
+.streamlit/cache/
+
+# Temporary Files
+*.tmp
+*.temp
+*.bak
+*.backup
+*.log
+*.log.*
+
+# OS
+.Thumbs.db
+desktop.ini
+
+# Generated Files
+audio.mp3
+emergency_notification.mp3
+emergency_warning.mp3
+advice_audio.mp3
+response_audio.mp3
+*.wav
+*.flac
+
+# Database (if added later)
+*.db
+*.sqlite
+*.sqlite3
+
+# Cache
+*.cache
+.cache/
+
+# Large Files
+*.zip
+*.tar.gz
+*.rar
+
+# Sensitive Data
+secrets.json
+credentials.json
+private_key.json
+api_keys.txt
+
+# Development only
+test_output/
+debug/
+temp/
+scratch/
+
+# Node (if any frontend added)
+node_modules/
+package-lock.json
+yarn.lock
+
+# Docker (if containerizing)
+.dockerignore
+docker-compose.override.yml
+
+# Keep these important files
+!requirements.txt
+!.streamlit/config.toml
+!README.md
+!SETUP_GUIDE.md
+!ARCHITECTURE.md
+!DEPENDENCIES.md
+!QUICK_REFERENCE.md
+!.gitignore
+!setup.py

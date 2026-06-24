@@ -2,7 +2,7 @@
 
 **Production-Ready Streamlit Application for Real-Time Legal Translation and Civil Rights Protection**
 
-![Version](https://img.shields.io/badge/version-2.0.0-blue)
+![Version](https://img.shields.io/badge/version-2.1.0-blue)
 ![Python](https://img.shields.io/badge/python-3.8%2B-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -40,6 +40,18 @@ CivicShield Pro is a comprehensive web application that provides real-time speec
 - View complete encounter history
 - Generate statistics on patterns
 - Persistent storage (JSON database)
+
+### 📄 Legal Document Assistant
+- Upload JPG, PNG, or PDF documents
+- Take photos with phone camera
+- Extract text using OCR (Optical Character Recognition)
+- Translate documents to 14 languages
+- Simplify legal language to plain language
+- Extract important dates and deadlines
+- Identify government agencies mentioned
+- List required actions
+- Generate downloadable summary reports
+- Text-to-speech audio playback
 
 ### 🏥 Community Resources Directory
 - Legal aid organizations (CRLA, Legal Aid Society, etc.)

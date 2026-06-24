@@ -43,6 +43,26 @@ streamlit-mic-recorder==0.0.8
 # Docs: https://github.com/stefanrmmr/streamlit-mic-recorder
 
 # ============================================================================
+# DOCUMENT PROCESSING & OCR
+# ============================================================================
+pytesseract==0.3.10
+# Purpose: Optical Character Recognition (OCR) for extracting text from images
+# Features: Extract text from JPG, PNG, and other image formats
+# Note: Requires Tesseract-OCR system library (see SETUP_GUIDE.md)
+# Docs: https://github.com/madmaze/pytesseract
+
+pdf2image==1.16.3
+# Purpose: Convert PDF documents to images for OCR processing
+# Features: Batch conversion, supports all PDF types
+# Note: Requires poppler system library (see SETUP_GUIDE.md)
+# Docs: https://github.com/Belval/pdf2image
+
+Pillow==10.1.0
+# Purpose: Python Image Library for image processing
+# Features: Image manipulation, format conversion, filtering
+# Docs: https://pillow.readthedocs.io/
+
+# ============================================================================
 # OPTIONAL: AUDIO PROCESSING LIBRARIES
 # ============================================================================
 # These are optional but recommended for advanced audio features

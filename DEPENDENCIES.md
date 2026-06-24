@@ -597,12 +597,521 @@ DOCUMENTATION:
 """
 
 # ============================================================================
+# OPTICAL CHARACTER RECOGNITION (OCR) DEPENDENCY
+# ============================================================================
+
+"""
+📦 PYTESSERACT (0.3.10)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+WHAT IT DOES:
+  Extracts text from images using Tesseract OCR engine. Converts images
+  (JPG, PNG) into readable text that can be translated and analyzed.
+
+WHY WE NEED IT:
+  Legal Document Assistant feature requires extracting text from uploaded
+  images and photos. pytesseract provides this functionality.
+
+HOW IT WORKS:
+  1. User uploads image or takes photo
+  2. pytesseract processes the image
+  3. Tesseract OCR engine recognizes text
+  4. Returns extracted text as string
+  5. Text can be translated and analyzed
+
+KEY FEATURES WE USE:
+  1. Image-to-Text Conversion
+     Code Example:
+     import pytesseract
+     from PIL import Image
+     
+     image = Image.open('document.jpg')
+     text = pytesseract.image_to_string(image)
+
+  2. Multiple Image Formats
+     - JPEG/JPG (photographs)
+     - PNG (screenshots)
+     - TIFF (professional scans)
+     - BMP, GIF (other formats)
+
+  3. High Accuracy
+     - 95%+ accuracy for clear printed text
+     - Good for legal documents, court notices
+     - Works with typical phone camera quality
+     - Better with higher resolution images
+
+  4. Language Support
+     - English (eng) primary language
+     - Multiple language packs available
+     - Can combine multiple languages if needed
+
+TEXT QUALITY FACTORS:
+  - Image resolution (higher = better, 300+ DPI ideal)
+  - Text size (larger = easier to read)
+  - Contrast (black text on white = easiest)
+  - Skew angle (straight = better)
+  - Blur/focus (sharp = better)
+
+INTEGRATION POINTS IN CIVICSHIELD:
+  - Legal Document Assistant page
+  - Image processing pipeline
+  - OCR extraction function (line ~795)
+  - Used with pdf2image for PDF processing
+
+SYSTEM REQUIREMENTS:
+  PyTesseract requires Tesseract-OCR system library:
+  
+  Windows:
+  - Download: https://github.com/UB-Mannheim/tesseract/wiki
+  - Install to default location or set path in code
+  - After install: pip install pytesseract
+  
+  Mac:
+  - brew install tesseract
+  - pip install pytesseract
+  
+  Linux (Ubuntu/Debian):
+  - sudo apt-get install tesseract-ocr
+  - pip install pytesseract
+
+PERFORMANCE:
+  - OCR processing: 1-5 seconds per page
+  - Memory usage: Depends on image size
+  - Larger images take longer to process
+  - Single-page documents fastest
+
+ERROR HANDLING:
+  try:
+      text = pytesseract.image_to_string(image)
+  except pytesseract.TesseractNotFoundError:
+      st.error("Tesseract OCR not installed. See SETUP_GUIDE.md")
+
+ACCURACY IMPROVEMENT:
+  1. Preprocess image before OCR
+     - Increase contrast
+     - Remove shadows
+     - Correct skew
+     - Resize if too small
+  
+  2. Use higher quality scans
+     - Phone camera with good lighting
+     - Professional scanner (300 DPI)
+     - Avoid shadows and glare
+  
+  3. Ensure text is legible
+     - Font size at least 8pt
+     - Clear, sharp focus
+     - Black text on white background
+
+COMMON ISSUES:
+  - "TesseractNotFoundError": Tesseract not installed
+  - Low accuracy: Image quality issues
+  - Very slow: Large image file
+  - Blank output: Image has no text
+
+ALTERNATIVES:
+  - Google Cloud Vision API (paid, higher accuracy)
+  - AWS Textract (paid, very high accuracy)
+  - Azure Computer Vision (paid)
+  - PaddleOCR (free, ML-based)
+
+WE CHOSE PYTESSERACT because:
+  ✓ Free and open-source
+  ✓ Good accuracy for legal documents
+  ✓ Simple to use
+  ✓ No API key required
+  ✓ Works offline (after Tesseract installed)
+  ✓ Lightweight and fast enough
+  ✓ Production-ready
+
+DOCUMENTATION:
+  https://github.com/madmaze/pytesseract
+  https://github.com/UB-Mannheim/tesseract/wiki
+  https://tesseract-ocr.github.io/
+"""
+
+# ============================================================================
+# PDF PROCESSING DEPENDENCY
+# ============================================================================
+
+"""
+📦 PDF2IMAGE (1.16.3)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+WHAT IT DOES:
+  Converts PDF documents into images. Necessary because pytesseract works
+  on images, not PDF files directly.
+
+WHY WE NEED IT:
+  Users may upload PDF legal documents. We must convert PDF pages to images
+  before OCR processing.
+
+HOW IT WORKS:
+  1. User uploads PDF file
+  2. pdf2image converts PDF pages to images
+  3. Each page becomes a separate image
+  4. pytesseract processes each image
+  5. Text extracted from all pages combined
+
+KEY FEATURES WE USE:
+  1. PDF-to-Image Conversion
+     Code Example:
+     from pdf2image import convert_from_bytes
+     
+     pdf_bytes = pdf_file.read()
+     images = convert_from_bytes(pdf_bytes)
+     first_page = images[0]  # First page as image
+
+  2. Batch Processing
+     - Converts all pages at once
+     - Returns list of PIL Image objects
+     - Can process individually
+     - Memory efficient for typical documents
+
+  3. Page Selection
+     - Convert first page (what we do)
+     - Can select specific pages if needed
+     - First page usually most important
+
+  4. Image Format Control
+     - Output as PIL Image objects
+     - Compatible with pytesseract
+     - Easy to process with PIL
+
+PDF SUPPORT:
+  - Standard PDFs (most common)
+  - Scanned documents (images embedded)
+  - Mixed content (text + images)
+  - Multi-page documents
+  - Text-based and image-based PDFs
+
+INTEGRATION POINTS IN CIVICSHIELD:
+  - Legal Document Assistant page
+  - PDF upload handling
+  - pdf2image conversion (line ~815)
+  - Works with pytesseract
+
+SYSTEM REQUIREMENTS:
+  pdf2image requires Poppler utilities:
+  
+  Windows:
+  - Download: https://blog.alivate.com.au/poppler-windows/
+  - Extract to Program Files
+  - Or install via Chocolatey: choco install poppler
+  - After install: pip install pdf2image
+  
+  Mac:
+  - brew install poppler
+  - pip install pdf2image
+  
+  Linux (Ubuntu/Debian):
+  - sudo apt-get install poppler-utils
+  - pip install pdf2image
+
+PERFORMANCE:
+  - PDF conversion: 1-2 seconds per page
+  - Memory usage: ~10-50MB per page
+  - Larger documents take longer
+  - Fast for typical 5-10 page documents
+
+HANDLING MULTI-PAGE DOCUMENTS:
+  Current implementation:
+  - Processes first page only
+  - Fast and simple
+  - Covers main document content
+  
+  Future enhancement:
+  - Could process all pages
+  - Combine text from all pages
+  - More comprehensive analysis
+
+ERROR HANDLING:
+  try:
+      images = convert_from_bytes(pdf_bytes)
+  except PDFPageCountError:
+      st.error("Invalid PDF file")
+  except FileNotFoundError:
+      st.error("Poppler not installed. See SETUP_GUIDE.md")
+
+LIMITATIONS:
+  - Requires Poppler system library
+  - Slow for very large PDFs
+  - Memory usage grows with page count
+  - Only extracts first page in current implementation
+
+COMMON ISSUES:
+  - "FileNotFoundError: poppler not found": Poppler not installed
+  - "PDFPageCountError": Corrupted or invalid PDF
+  - Very slow processing: Large PDF file
+  - Memory errors: File too large
+
+ALTERNATIVES:
+  - PyPDF2 (text extraction from PDFs directly)
+  - pdfplumber (specific text/table extraction)
+  - PyMuPDF (faster PDF processing)
+  - Google Cloud Vision (paid)
+
+WE CHOSE PDF2IMAGE because:
+  ✓ Free and open-source
+  ✓ Works with any PDF type
+  ✓ Integrates with pytesseract
+  ✓ Simple and reliable
+  ✓ Good performance
+  ✓ No API key required
+
+DOCUMENTATION:
+  https://github.com/Belval/pdf2image
+  https://pdf2image.readthedocs.io/
+"""
+
+# ============================================================================
+# IMAGE PROCESSING DEPENDENCY
+# ============================================================================
+
+"""
+📦 PILLOW (10.1.0)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+WHAT IT DOES:
+  Python Imaging Library (PIL). Processes, manipulates, and displays images.
+  Handles various image formats and transformations.
+
+WHY WE NEED IT:
+  Legal Document Assistant needs to process images from uploads and camera.
+  Pillow handles image format conversion and display.
+
+HOW IT WORKS:
+  1. User uploads image or Streamlit captures from camera
+  2. Pillow opens and processes image
+  3. Converts to required format if needed
+  4. Displays to user
+  5. Passes to pytesseract for OCR
+
+KEY FEATURES WE USE:
+  1. Image Format Support
+     Code Example:
+     from PIL import Image
+     
+     image = Image.open('document.jpg')
+     if image.mode != 'RGB':
+         image = image.convert('RGB')
+
+  2. Format Conversion
+     - JPEG to PNG
+     - PNG with transparency to RGB
+     - TIFF to standard formats
+     - Automatic conversion as needed
+
+  3. Image Properties
+     - Read image size, mode, format
+     - Resize if needed
+     - Crop sections
+     - Rotate/transform
+
+SUPPORTED FORMATS:
+  - JPEG/JPG (most common, compressed)
+  - PNG (lossless, can have transparency)
+  - TIFF (high quality, large files)
+  - BMP, GIF, WEBP, ICNS, and many more
+
+IMAGE MODES:
+  - RGB: Red-Green-Blue (standard color)
+  - RGBA: RGB + Alpha (transparency)
+  - L: Grayscale (black/white)
+  - 1: Binary (1-bit black/white)
+
+CONVERSION NEEDS:
+  pytesseract works best with RGB images. We convert:
+  
+  if image.mode != 'RGB':
+      image = image.convert('RGB')
+  
+  This handles:
+  - PNG with transparency (RGBA → RGB)
+  - Grayscale images (L → RGB)
+  - All other modes
+
+INTEGRATION POINTS IN CIVICSHIELD:
+  - Legal Document Assistant page
+  - Image opening and loading
+  - Format conversion before OCR
+  - Image display in Streamlit
+
+PERFORMANCE:
+  - Image loading: <100ms
+  - Format conversion: <50ms
+  - Minimal memory usage
+  - Very fast operations
+
+COMMON OPERATIONS:
+  # Open image
+  img = Image.open('file.jpg')
+  
+  # Convert mode
+  img_rgb = img.convert('RGB')
+  
+  # Get info
+  width, height = img.size
+  format = img.format
+  
+  # Resize
+  img_small = img.resize((600, 800))
+  
+  # Save
+  img.save('output.jpg', quality=95)
+
+STREAMLIT INTEGRATION:
+  # Display image
+  st.image(image, caption="Uploaded image")
+  
+  # Camera input returns PIL Image
+  camera_photo = st.camera_input("Take a photo")
+  if camera_photo:
+      image = Image.open(camera_photo)
+
+ERROR HANDLING:
+  try:
+      image = Image.open(file_path)
+  except IOError:
+      st.error("Invalid image file")
+  except Exception as e:
+      st.error(f"Image processing error: {e}")
+
+IMAGE QUALITY FOR OCR:
+  - Best: Sharp, high contrast, 300+ DPI
+  - Good: Clear photo, proper lighting
+  - Fair: Blurry, shadows, poor contrast
+  - Poor: Very dark, very light, unreadable
+
+COMMON ISSUES:
+  - "Cannot identify image file": Corrupted file
+  - "Mode not supported": Unusual color mode
+  - Low OCR accuracy: Poor image quality
+  - File too large: Process smaller images
+
+ALTERNATIVES:
+  - OpenCV (more advanced, image processing)
+  - scikit-image (scientific image processing)
+  - imageio (flexible image I/O)
+
+WE CHOSE PILLOW because:
+  ✓ Standard library for Python imaging
+  ✓ Lightweight and fast
+  ✓ Works with all common formats
+  ✓ Easy to use
+  ✓ Minimal dependencies
+  ✓ Production-tested
+
+DOCUMENTATION:
+  https://pillow.readthedocs.io/
+  https://python-pillow.org/
+"""
+
+# ============================================================================
 # DEPENDENCY INTERACTION DIAGRAM
 # ============================================================================
 
 """
-HOW DEPENDENCIES WORK TOGETHER
+HOW DEPENDENCIES WORK TOGETHER (INCLUDING OCR)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+USER INTERFACE LAYER
+┌─────────────────────────────────────────────────────────┐
+│  STREAMLIT                                              │
+│  ├─ Renders buttons, text inputs, sidebars             │
+│  ├─ Manages session state (language, page, etc)        │
+│  ├─ Displays alerts and metrics                        │
+│  ├─ Plays audio files                                  │
+│  └─ Handles file uploads & camera input                │
+└─────────────────────────────────────────────────────────┘
+
+DOCUMENT PROCESSING LAYER (NEW!)
+┌─────────────────────────────────────────────────────────┐
+│  FILE INPUT                                             │
+│  ├─ JPG/PNG via file upload                            │
+│  ├─ PDF via file upload                                │
+│  └─ Camera photos via st.camera_input                  │
+│                            ↓                            │
+│  PILLOW (Image Processing)                              │
+│  ├─ Open and load images                               │
+│  ├─ Convert formats as needed                          │
+│  └─ Prepare for OCR                                    │
+│                            ↓                            │
+│  PDF2IMAGE (if PDF uploaded)                            │
+│  └─ Convert PDF pages to images                        │
+│                            ↓                            │
+│  PYTESSERACT (OCR)                                      │
+│  └─ Extract text from images                           │
+└─────────────────────────────────────────────────────────┘
+
+AUDIO INPUT LAYER
+┌─────────────────────────────────────────────────────────┐
+│  STREAMLIT-MIC-RECORDER                                 │
+│  └─ Captures audio from user's microphone              │
+│                            ↓                            │
+│  SPEECHRECOGNITION                                      │
+│  └─ Transcribes audio to text (English)                │
+└─────────────────────────────────────────────────────────┘
+
+TRANSLATION LAYER
+┌─────────────────────────────────────────────────────────┐
+│  DEEP-TRANSLATOR                                        │
+│  ├─ Translates officer statement to user's language    │
+│  ├─ Translates legal advice to user's language         │
+│  ├─ Translates UI strings to user's language           │
+│  └─ Translates extracted document text                 │
+└─────────────────────────────────────────────────────────┘
+
+AUDIO OUTPUT LAYER
+┌─────────────────────────────────────────────────────────┐
+│  GTTS                                                   │
+│  ├─ Generates speech audio from translated advice      │
+│  ├─ Generates speech audio from responses              │
+│  ├─ Generates speech audio for emergency alerts        │
+│  └─ Generates audio for document explanations          │
+└─────────────────────────────────────────────────────────┘
+
+CONFIGURATION LAYER
+┌─────────────────────────────────────────────────────────┐
+│  PYTHON-DOTENV (Optional, for future extensions)       │
+│  └─ Manages environment variables and secrets          │
+└─────────────────────────────────────────────────────────┘
+
+DOCUMENT ASSISTANT WORKFLOW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. User uploads document or takes photo
+   → STREAMLIT handles file input or st.camera_input
+
+2. Image is processed
+   → PILLOW loads and converts format
+
+3. If PDF uploaded
+   → PDF2IMAGE converts pages to images
+
+4. OCR extraction
+   → PYTESSERACT extracts text from image
+
+5. Text analysis
+   → Extract dates, deadlines, agencies, actions
+
+6. Translation
+   → DEEP-TRANSLATOR converts to user's language
+
+7. Plain language simplification
+   → Regex-based legal term replacement
+
+8. Audio generation
+   → GTTS creates audio in user's language
+
+9. Report generation
+   → Combine all extracted data into summary
+
+10. Display to user
+    → STREAMLIT shows results, audio, download options
+
+All 9 dependencies work together for complete document understanding!
+"""
 
 USER INTERFACE LAYER
 ┌─────────────────────────────────────────────────────────┐
