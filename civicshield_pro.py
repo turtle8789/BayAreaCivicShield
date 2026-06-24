@@ -34,6 +34,7 @@ import re
 from PIL import Image
 import pytesseract
 from pdf2image import convert_from_bytes
+import qrcode
 
 # ============================================================================
 # PAGE CONFIGURATION & THEMING
@@ -387,6 +388,199 @@ hr {
     height: 1px;
     background: linear-gradient(90deg, transparent 0%, #D89CA4 50%, transparent 100%);
     margin: 2rem 0;
+}
+
+/* ============= MOBILE OPTIMIZATION ============= */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.75rem !important;
+    }
+    
+    h2 {
+        font-size: 1.25rem !important;
+    }
+    
+    .dashboard-card {
+        padding: 1.5rem 1rem !important;
+        margin: 1rem 0 !important;
+    }
+    
+    .card-icon {
+        font-size: 2.5rem !important;
+        margin-bottom: 0.75rem !important;
+    }
+    
+    .stButton > button {
+        padding: 0.5rem 1.5rem !important;
+        font-size: 0.9rem !important;
+    }
+    
+    .main {
+        padding: 1rem 0 !important;
+    }
+    
+    [data-testid="stSidebar"] {
+        width: 280px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.5rem !important;
+    }
+    
+    h2 {
+        font-size: 1.1rem !important;
+    }
+    
+    .dashboard-card {
+        padding: 1rem 0.75rem !important;
+        margin: 0.75rem 0 !important;
+    }
+    
+    .card-icon {
+        font-size: 2rem !important;
+    }
+    
+    .card-title {
+        font-size: 1.1rem !important;
+    }
+    
+    .card-description {
+        font-size: 0.85rem !important;
+    }
+    
+    .stButton > button {
+        padding: 0.4rem 1rem !important;
+        font-size: 0.8rem !important;
+    }
+    
+    p {
+        font-size: 0.95rem !important;
+    }
+    
+    [data-testid="stSidebar"] {
+        width: 100% !important;
+        position: fixed !important;
+        height: 100vh !important;
+    }
+}
+
+/* ============= LANDING PAGE STYLES ============= */
+.landing-hero {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: linear-gradient(135deg, var(--cream-bg) 0%, #F0E5DC 100%);
+    border-radius: 24px;
+    margin: 2rem 0;
+}
+
+.landing-hero h1 {
+    font-size: 3.5rem;
+    color: var(--text-dark);
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.landing-hero p {
+    font-size: 1.3rem;
+    color: var(--text-light);
+    max-width: 800px;
+    margin: 0 auto 2rem;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin: 3rem 0;
+}
+
+.qr-container {
+    text-align: center;
+    padding: 2rem;
+    background: white;
+    border-radius: 16px;
+    border: 2px solid rgba(201, 124, 93, 0.2);
+}
+
+/* ============= TUTORIAL STYLES ============= */
+.tutorial-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    text-align: center;
+}
+
+.tutorial-step {
+    background: linear-gradient(135deg, var(--card-bg) 0%, #FFFAF7 100%);
+    padding: 3rem 2rem;
+    border-radius: 24px;
+    border: 2px solid rgba(201, 124, 93, 0.1);
+    margin: 2rem 0;
+}
+
+.step-number {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--accent-terracotta) 0%, var(--accent-rose) 100%);
+    color: white;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    line-height: 60px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.step-description {
+    font-size: 1.2rem;
+    color: var(--text-light);
+    margin: 1rem 0;
+}
+
+/* ============= LOADING SCREEN ============= */
+.loading-overlay {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+}
+
+.spinner {
+    animation: spin 1s linear infinite;
+    font-size: 3rem;
+}
+
+.welcome-message {
+    text-align: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, rgba(201, 124, 93, 0.1) 0%, rgba(216, 156, 164, 0.1) 100%);
+    border-radius: 16px;
+    border-left: 4px solid var(--accent-terracotta);
+    margin: 2rem 0;
+}
+
+@media (max-width: 768px) {
+    .landing-hero {
+        padding: 2rem 1rem;
+    }
+    
+    .landing-hero h1 {
+        font-size: 2rem;
+    }
+    
+    .landing-hero p {
+        font-size: 1rem;
+    }
+    
+    .feature-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .tutorial-step {
+        padding: 2rem 1rem;
+    }
 }
 </style>
 """, unsafe_allow_html=True)
@@ -881,7 +1075,7 @@ for lang_name in LANGUAGE_MAP.keys():
 def init_session_state():
     """Initialize all session state variables on first run."""
     if "page" not in st.session_state:
-        st.session_state.page = "Home"
+        st.session_state.page = "Landing"  # Show landing page first
     if "selected_language" not in st.session_state:
         st.session_state.selected_language = "English"
     if "encounter_log" not in st.session_state:
@@ -906,6 +1100,16 @@ def init_session_state():
         st.session_state.community_posts = load_community_posts()
     if "resource_category_filter" not in st.session_state:
         st.session_state.resource_category_filter = None
+    
+    # Public deployment features
+    if "first_time_user" not in st.session_state:
+        st.session_state.first_time_user = True
+    if "demo_mode" not in st.session_state:
+        st.session_state.demo_mode = False
+    if "tutorial_step" not in st.session_state:
+        st.session_state.tutorial_step = 0
+    if "skip_landing" not in st.session_state:
+        st.session_state.skip_landing = False
 
 # ============================================================================
 # UTILITY FUNCTION - GET TRANSLATED STRING
@@ -1381,6 +1585,17 @@ COMMUNITY_RESOURCES = {
 
 def page_home():
     """Dashboard home page with feature cards and saved deadlines."""
+    
+    # Load demo data if demo mode is active
+    if st.session_state.demo_mode:
+        demo_data = get_demo_data()
+        st.session_state.saved_deadlines = demo_data["saved_deadlines"]
+        st.session_state.community_posts = demo_data["community_posts"]
+        st.session_state.encounter_log = demo_data["encounter_log"]
+        
+        # Show demo mode indicator
+        st.info("📺 **DEMO MODE ACTIVE** - This is sample data for demonstration purposes")
+    
     st.markdown(f"# 🏠 {t_bilingual('home_title')}")
     st.markdown(f"## {t_bilingual('home_subtitle')}")
     st.markdown("---")
@@ -1401,8 +1616,9 @@ def page_home():
                 """, unsafe_allow_html=True)
             with col2:
                 if st.button("❌", key=f"del_deadline_{deadline.get('id')}"):
-                    delete_deadline(deadline.get('id'))
-                    st.rerun()
+                    if not st.session_state.demo_mode:  # Don't delete in demo mode
+                        delete_deadline(deadline.get('id'))
+                        st.rerun()
         
         if st.button("📋 View All Deadlines →", use_container_width=True):
             st.session_state.page = "DocumentAssistant"
@@ -2227,6 +2443,307 @@ def page_encounter_logging():
 
 
 # ============================================================================
+# PUBLIC DEPLOYMENT FEATURES
+# ============================================================================
+
+def generate_qr_code(url: str, size: int = 10):
+    """Generate QR code from URL for sharing."""
+    try:
+        qr = qrcode.QRCode(version=1, box_size=size, border=2)
+        qr.add_data(url)
+        qr.make(fit=True)
+        img = qr.make_image(fill_color="black", back_color="white")
+        return img
+    except Exception as e:
+        st.error(f"Error generating QR code: {e}")
+        return None
+
+def get_demo_data():
+    """Get demo data for demo mode."""
+    return {
+        "saved_deadlines": [
+            {
+                "id": 1,
+                "deadline": "2026-08-15",
+                "document": "Court Order - Civil Rights Case",
+                "timestamp": "2026-06-24T10:30:00"
+            },
+            {
+                "id": 2,
+                "deadline": "2026-07-30",
+                "document": "Legal Notice - Appeal Filing",
+                "timestamp": "2026-06-20T14:00:00"
+            },
+            {
+                "id": 3,
+                "deadline": "2026-09-01",
+                "document": "Settlement Agreement",
+                "timestamp": "2026-06-19T09:15:00"
+            }
+        ],
+        "community_posts": [
+            {
+                "id": 1,
+                "title": "My First Traffic Stop Experience",
+                "type": "experience",
+                "content": "I learned to stay calm and ask for a lawyer immediately.",
+                "author": "Anonymous",
+                "timestamp": "2026-06-23T16:45:00"
+            },
+            {
+                "id": 2,
+                "title": "How to Request Body Camera Footage?",
+                "type": "question",
+                "content": "What's the best way to request police body camera footage for my case?",
+                "author": "Anonymous",
+                "timestamp": "2026-06-22T11:20:00"
+            },
+            {
+                "id": 3,
+                "title": "Always Know Your Rights",
+                "type": "advice",
+                "content": "Document everything, record if legal, and never sign anything without reading it first.",
+                "author": "Anonymous",
+                "timestamp": "2026-06-21T13:30:00"
+            }
+        ],
+        "encounter_log": [
+            {
+                "timestamp": "2026-06-20T15:00:00",
+                "type": "Traffic Stop",
+                "location": "Downtown Area",
+                "details": "Stopped for speeding, polite interaction",
+                "officer_badge": "12345",
+                "officer_agency": "Local Police"
+            }
+        ]
+    }
+
+def page_landing():
+    """Landing page for first-time visitors - judges see this first."""
+    # Hide sidebar for landing page
+    st.set_page_config(page_title="CivicShield Pro - Know Your Rights", layout="wide")
+    
+    st.markdown("""
+    <div class="landing-hero">
+        <h1>⚖️ CivicShield Pro</h1>
+        <h2>Know Your Rights. Protect Yourself. Get Help.</h2>
+        <p>A professional, multi-language platform empowering people to understand and assert their civil rights in real-time encounters.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    col1, col2 = st.columns([1, 1])
+    
+    with col1:
+        st.markdown("""
+        ### 🎯 Purpose
+        CivicShield Pro provides judges, advocates, and community members with:
+        
+        - **Real-time legal translation** in 14 languages
+        - **Instant rights information** tailored to your situation
+        - **Document analysis** with deadline extraction
+        - **Community support** and shared experiences
+        - **Crisis resources** available 24/7
+        """)
+    
+    with col2:
+        st.markdown("""
+        ### ⭐ Key Features
+        
+        - 🗣️ **Real-Time Translation** - Translate officer statements instantly
+        - 📄 **Legal Documents** - Extract key info from court documents
+        - ⚖️ **Know Your Rights** - Learn civil rights with interactive quiz
+        - 📍 **Resources Near You** - Find legal aid & services by location
+        - 📝 **Encounter Log** - Document police interactions
+        - 🚨 **Crisis Hotlines** - 24/7 emergency support
+        - 💬 **Community Forum** - Share and learn from others
+        """)
+    
+    st.divider()
+    
+    # Demo and Tutorial buttons
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        if st.button("🚀 Launch App", use_container_width=True):
+            st.session_state.skip_landing = True
+            st.session_state.first_time_user = True
+            st.session_state.page = "Tutorial"
+            st.rerun()
+    
+    with col2:
+        if st.button("📺 Start Demo", use_container_width=True):
+            st.session_state.demo_mode = True
+            st.session_state.skip_landing = True
+            st.session_state.page = "Home"
+            st.rerun()
+    
+    with col3:
+        if st.button("❓ Quick Tour", use_container_width=True):
+            st.session_state.skip_landing = True
+            st.session_state.tutorial_step = 0
+            st.session_state.page = "Tutorial"
+            st.rerun()
+    
+    st.divider()
+    
+    # QR Code for easy sharing
+    st.markdown("### 📱 Share with Others")
+    col1, col2 = st.columns([2, 1])
+    
+    with col1:
+        st.markdown("""
+        **Share CivicShield with judges, advocates, and community members:**
+        
+        1. Scan the QR code to access the app
+        2. No installation needed - works in any browser
+        3. Available in 14 languages
+        4. Works on desktop, tablet, and mobile
+        """)
+    
+    with col2:
+        # Generate QR code for app URL (in production, use actual deployment URL)
+        try:
+            app_url = "https://civicshield-pro.streamlit.app"  # Update with actual deployment URL
+            qr_img = generate_qr_code(app_url)
+            if qr_img:
+                st.image(qr_img, use_column_width=True)
+        except:
+            st.info("QR code generation in progress...")
+    
+    st.divider()
+    
+    # Target users
+    st.markdown("""
+    ### 👥 Who Should Use CivicShield?
+    
+    **For Judges & Legal Professionals:**
+    - Understand community perspective on civil rights protection
+    - Assess whether defendants understand their rights
+    - Reference real-time translation capabilities in decisions
+    
+    **For Advocates & Legal Aid:**
+    - Provide clients with multi-language legal information
+    - Help clients document encounters
+    - Connect community members with resources
+    
+    **For Educators:**
+    - Teach students about civil rights
+    - Demonstrate real-world legal scenarios
+    - Interactive learning with quizzes
+    
+    **For Community Members:**
+    - Know what to do in a police encounter
+    - Access emergency resources instantly
+    - Connect with and learn from community experiences
+    """)
+    
+    st.divider()
+    
+    # Footer with disclaimer
+    st.warning("""
+    **⚠️ Legal Disclaimer:**
+    
+    CivicShield Pro provides educational information about civil rights, not legal advice. 
+    While we strive for accuracy, laws vary by jurisdiction and change frequently. 
+    Always consult with a qualified attorney for your specific situation.
+    """)
+
+def page_tutorial():
+    """First-time user tutorial with interactive walkthrough."""
+    st.markdown("""
+    <div class="tutorial-container">
+        <h1>👋 Welcome to CivicShield Pro!</h1>
+        <p>Let's take a quick tour to help you get started.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Tutorial steps
+    steps = [
+        {
+            "title": "🏠 Home Dashboard",
+            "description": "Your central hub to access all CivicShield features. Each card represents a powerful tool for understanding and protecting your rights.",
+            "features": ["Navigate to any feature", "View saved deadlines", "Access crisis resources"]
+        },
+        {
+            "title": "🗣️ Real-Time Translation",
+            "description": "Instantly translate officer statements into 14 languages. Record conversations and get immediate translations to ensure you understand your rights.",
+            "features": ["Speech-to-text in any language", "Real-time translation", "Audio playback in your language"]
+        },
+        {
+            "title": "📄 Legal Documents",
+            "description": "Upload court documents, legal notices, or contracts. CivicShield extracts key information and identifies important deadlines.",
+            "features": ["Extract deadlines automatically", "Identify penalties", "Get translations"]
+        },
+        {
+            "title": "⚖️ Know Your Rights",
+            "description": "Learn about civil rights with educational content and test your knowledge with interactive quizzes. Available in multiple languages.",
+            "features": ["Learn civil rights", "Take interactive quizzes", "Track progress"]
+        },
+        {
+            "title": "📍 Resources Near You",
+            "description": "Find legal aid organizations, community centers, and emergency services near your location. Get directions with one click.",
+            "features": ["Search by location", "Browse by category", "Get directions instantly"]
+        },
+        {
+            "title": "💬 Community Forum",
+            "description": "Connect with others, share experiences, ask questions, and get advice from community members. Fully anonymous if you choose.",
+            "features": ["Share experiences anonymously", "Ask legal questions", "Give advice"]
+        }
+    ]
+    
+    # Display current step
+    step_idx = st.session_state.tutorial_step
+    if step_idx < len(steps):
+        step = steps[step_idx]
+        
+        st.markdown(f"""
+        <div class="tutorial-step">
+            <div class="step-number">{step_idx + 1}</div>
+            <h2>{step['title']}</h2>
+            <div class="step-description">{step['description']}</div>
+            <h4>✨ Key Features:</h4>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        for feature in step["features"]:
+            st.markdown(f"- {feature}")
+        
+        st.divider()
+        
+        # Navigation buttons
+        col1, col2, col3 = st.columns([1, 1, 1])
+        
+        with col1:
+            if step_idx > 0:
+                if st.button("⬅️ Previous", use_container_width=True):
+                    st.session_state.tutorial_step -= 1
+                    st.rerun()
+        
+        with col2:
+            if st.button("⏭️ Skip Tour", use_container_width=True):
+                st.session_state.tutorial_step = 0
+                st.session_state.page = "Home"
+                st.rerun()
+        
+        with col3:
+            if step_idx < len(steps) - 1:
+                if st.button("Next ➡️", use_container_width=True):
+                    st.session_state.tutorial_step += 1
+                    st.rerun()
+            else:
+                if st.button("🎉 Start Using!", use_container_width=True):
+                    st.session_state.tutorial_step = 0
+                    st.session_state.first_time_user = False
+                    st.session_state.page = "Home"
+                    st.rerun()
+    else:
+        st.success("✅ Tour Complete! You're ready to use CivicShield.")
+        if st.button("🏠 Go to Home", use_container_width=True):
+            st.session_state.page = "Home"
+            st.rerun()
+
+# ============================================================================
 # MAIN APP WITH SIDEBAR NAVIGATION
 # ============================================================================
 def main():
@@ -2235,7 +2752,17 @@ def main():
     # Initialize session state
     init_session_state()
     
-    # Apply accessibility CSS
+    # Show landing page for first-time users or when landing page is requested
+    if (st.session_state.first_time_user and not st.session_state.skip_landing) or st.session_state.page == "Landing":
+        page_landing()
+        return
+    
+    # Show tutorial page if requested
+    if st.session_state.page == "Tutorial":
+        page_tutorial()
+        return
+    
+    # Apply accessibility CSS for main app
     apply_accessibility_css()
     
     # Sidebar header
@@ -2250,6 +2777,28 @@ def main():
         index=list(LANGUAGE_MAP.keys()).index(st.session_state.selected_language),
         key="language_selector"
     )
+    
+    st.sidebar.divider()
+    
+    # Demo Mode toggle
+    st.sidebar.markdown("### 📺 Demo & Testing")
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button(
+            "🎬 Demo ON" if st.session_state.demo_mode else "🎬 Demo OFF",
+            use_container_width=True,
+            key="demo_toggle"
+        ):
+            st.session_state.demo_mode = not st.session_state.demo_mode
+            st.rerun()
+    with col2:
+        if st.button("🎓 Tour", use_container_width=True, key="tour_button"):
+            st.session_state.tutorial_step = 0
+            st.session_state.page = "Tutorial"
+            st.rerun()
+    
+    if st.session_state.demo_mode:
+        st.sidebar.success("✅ Demo Mode Active - Sample data is displayed")
     
     st.sidebar.divider()
     
@@ -2336,6 +2885,14 @@ def main():
     
     {t('sidebar_disclaimer_text')}
     """)
+    
+    st.sidebar.divider()
+    
+    # Landing page quick link
+    if st.sidebar.button("🏠 Show Landing Page", use_container_width=True):
+        st.session_state.page = "Landing"
+        st.session_state.skip_landing = False
+        st.rerun()
     
     # Page routing
     if st.session_state.page == "Home":

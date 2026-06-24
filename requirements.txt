@@ -62,6 +62,11 @@ Pillow==10.1.0
 # Features: Image manipulation, format conversion, filtering
 # Docs: https://pillow.readthedocs.io/
 
+qrcode==7.4.2
+# Purpose: QR code generator for shareable links
+# Features: Generate QR codes as images, customizable designs
+# Docs: https://github.com/lincolnloop/python-qrcode
+
 # ============================================================================
 # OPTIONAL: AUDIO PROCESSING LIBRARIES
 # ============================================================================

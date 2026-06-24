@@ -1,0 +1,36 @@
+# Streamlit Configuration File
+# This file configures Streamlit app behavior
+# More options at: https://docs.streamlit.io/develop/api-reference/configuration
+
+[client]
+# Timeout for user interactions (seconds)
+toolbarMode = "viewer"
+showErrorDetails = true
+
+[server]
+# Server configuration
+port = 8501
+headless = true
+runOnSave = true
+maxUploadSize = 200
+
+[logger]
+# Logging level
+level = "info"
+
+[browser]
+# Browser configuration
+gatherUsageStats = false
+serverAddress = "localhost"
+
+[theme]
+# Custom theme colors
+primaryColor = "#d62828"      # Red for alerts
+backgroundColor = "#f8f9fa"   # Light gray background
+secondaryBackgroundColor = "#ffffff"  # White for cards
+textColor = "#1e3a5f"         # Dark blue text
+font = "sans serif"
+
+[deprecation]
+# Suppress deprecation warnings
+showPyplotGlobalUse = false
