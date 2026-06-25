@@ -1395,20 +1395,16 @@ def t(key: str) -> str:
 
 def t(key: str) -> str:
     """
-    Get bilingual text: Selected Language / English
-    Example: Traduccion / Translation
-    Usage: st.markdown(t('translation_title'))
+    Get translated text in selected language.
+    Example: st.markdown(t('translation_title'))
     """
     lang = st.session_state.selected_language
-    if lang == "English":
-        return t(key)
     
-    selected_text = t(key)
-    english_text = UI_STRINGS["English"].get(key, key)
-    
-    if selected_text != english_text:
-        return f"{selected_text} / {english_text}"
-    return selected_text
+    # Get translation from UI_STRINGS, fallback to English if language not available
+    if lang in UI_STRINGS:
+        return UI_STRINGS[lang].get(key, key)
+    else:
+        return UI_STRINGS["English"].get(key, key)
 
 # ============================================================================
 # ACCESSIBILITY FUNCTIONS
