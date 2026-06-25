@@ -4,7 +4,7 @@
 # ============================================================================
 # CORE WEB FRAMEWORK
 # ============================================================================
-streamlit==1.28.1
+streamlit
 # Purpose: Web application framework, handles UI rendering, session management
 # Features: Fast multi-page apps, real-time updates, interactive components
 # Docs: https://docs.streamlit.io
@@ -46,7 +46,7 @@ streamlit-mic-recorder==0.0.8
 # pytesseract (REMOVED - requires Tesseract system binary)
 # pdf2image (REMOVED - requires poppler system binary)
 
-Pillow==10.1.0
+Pillow
 # Purpose: Python Image Library for image processing
 # Features: Image manipulation, format conversion, filtering
 # Docs: https://pillow.readthedocs.io/
