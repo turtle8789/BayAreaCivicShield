@@ -1998,6 +1998,65 @@ def page_home():
                 st.session_state.page = "CommunityDiscussion"
                 st.rerun()
 
+
+# ============================================================================
+# LEGAL ADVICE GENERATOR
+# ============================================================================
+def get_legal_advice_for_statement(officer_statement: str) -> str:
+    """Generate relevant legal advice based on officer statement keywords."""
+    statement_lower = officer_statement.lower()
+    
+    # Keywords that trigger specific rights
+    if any(word in statement_lower for word in ['search', 'car', 'vehicle', 'bag', 'pockets']):
+        return (
+            "🛡️ FOURTH AMENDMENT - Search & Seizure Rights:\n\n"
+            "• You have the right to refuse a search of your vehicle, home, or belongings\n"
+            "• Police need a warrant (signed by a judge) or your consent to search\n"
+            "• Consent to a search must be clear and voluntary\n"
+            "• If you refuse, clearly say: 'I do not consent to a search'\n"
+            "• Keep your hands visible and do not interfere\n\n"
+            "⚖️ Your actions:\n• Say NO clearly and calmly\n• Do not physically resist\n• Ask: 'Am I free to go?'\n• Ask for an attorney immediately"
+        )
+    elif any(word in statement_lower for word in ['arrest', 'custody', 'going downtown', 'taking you in']):
+        return (
+            "⚖️ SIXTH AMENDMENT - Right to Attorney:\n\n"
+            "• You have an absolute right to an attorney\n"
+            "• If you cannot afford one, one will be provided\n"
+            "• Tell police: 'I want to speak to a lawyer'\n"
+            "• Once you ask for a lawyer, police must stop questioning\n\n"
+            "🛡️ During arrest:\n• Do not answer questions\n• Do not sign anything without your lawyer\n• Let your lawyer speak for you\n• Document everything"
+        )
+    elif any(word in statement_lower for word in ['question', 'answer', 'say', 'talk', 'speak', 'tell me']):
+        return (
+            "🤐 FIFTH AMENDMENT - Right to Remain Silent:\n\n"
+            "• You do NOT have to answer police questions\n"
+            "• Anything you say can be used against you in court\n"
+            "• You can refuse to answer without getting in trouble\n"
+            "• Say politely: 'I prefer not to answer questions'\n\n"
+            "⚖️ What to do:\n• Stay calm and respectful\n• Clearly state your refusal\n• Ask: 'Am I free to go?'\n• Ask for an attorney\n• Do not run away"
+        )
+    elif any(word in statement_lower for word in ['stop', 'pulled', 'traffic', 'driving', 'license', 'registration']):
+        return (
+            "🚗 TRAFFIC STOP RIGHTS:\n\n"
+            "• Keep your hands visible\n• Turn off engine, turn on lights\n• Stay in vehicle unless told to exit\n• Give license, registration, insurance ONLY\n• Refuse consent to search\n• Right to remain silent\n• Can refuse breathalyzer or sobriety test\n\n"
+            "⚖️ Things to say:\n• 'I do not consent to a search'\n• 'I want an attorney'\n• 'Am I free to go?'\n• Stay calm and polite"
+        )
+    else:
+        return (
+            "📚 GENERAL RIGHTS IN POLICE ENCOUNTERS:\n\n"
+            "✓ Right to remain silent\n"
+            "✓ Right to an attorney\n"
+            "✓ Can refuse searches\n"
+            "✓ Can refuse to answer questions\n"
+            "✓ Right to know why you're detained\n\n"
+            "⚖️ What to do:\n"
+            "1. Stay calm and respectful\n"
+            "2. Keep hands visible\n"
+            "3. Say: 'I want to speak to a lawyer'\n"
+            "4. Refuse searches politely\n"
+            "5. Document names, badge numbers, times"
+        )
+
 def page_translation():
     """Real-time translation page."""
     st.markdown("""
@@ -2124,21 +2183,25 @@ def page_translation():
         if english_text:
             target_lang = LANGUAGE_MAP[st.session_state.selected_language]["code"]
             
+            # Generate legal advice based on officer statement
+            legal_advice = get_legal_advice_for_statement(english_text)
+            
             if st.session_state.selected_language != "English":
                 try:
                     translator = get_translator("en", target_lang)
                     if translator:
-                        translated = translator.translate(english_text)
+                        # Translate the legal advice
+                        translated_advice = translator.translate(legal_advice)
                         st.text_area(
-                            f"{t('card_translation_title')}:",
-                            value=translated,
-                            height=200,
+                            f"{t('your_rights')}:",
+                            value=translated_advice,
+                            height=250,
                             disabled=True,
                             key="translated_output"
                         )
 
                         try:
-                            tts = gTTS(text=translated, lang=target_lang)
+                            tts = gTTS(text=translated_advice, lang=target_lang)
                             audio_buffer = io.BytesIO()
                             tts.write_to_fp(audio_buffer)
                             audio_buffer.seek(0)
@@ -2148,7 +2211,22 @@ def page_translation():
                 except:
                     st.error(t('error'))
             else:
-                st.info(f"{st.session_state.selected_language} - No translation needed")
+                st.text_area(
+                    f"{t('your_rights')}:",
+                    value=legal_advice,
+                    height=250,
+                    disabled=True,
+                    key="legal_advice_english"
+                )
+                
+                try:
+                    tts = gTTS(text=legal_advice, lang="en")
+                    audio_buffer = io.BytesIO()
+                    tts.write_to_fp(audio_buffer)
+                    audio_buffer.seek(0)
+                    st.audio(audio_buffer.read(), format="audio/mp3")
+                except Exception:
+                    st.warning(t('audio_failed'))
 
 def page_documents():
     """Legal document assistant page with OCR and extraction."""
@@ -3036,11 +3114,17 @@ def main():
     st.sidebar.markdown("---")
     
     # Language selector in sidebar
-    st.session_state.selected_language = st.sidebar.selectbox(
+    def on_language_change():
+        """Trigger rerun when language is changed."""
+        st.session_state.selected_language = st.session_state.language_selector
+        st.rerun()
+    
+    st.sidebar.selectbox(
         t('select_language'),
         list(LANGUAGE_MAP.keys()),
         index=list(LANGUAGE_MAP.keys()).index(st.session_state.selected_language),
-        key="language_selector"
+        key="language_selector",
+        on_change=on_language_change
     )
     
     st.sidebar.divider()
