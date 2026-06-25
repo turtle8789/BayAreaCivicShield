@@ -606,7 +606,7 @@ LANGUAGE_MAP = {
     "Cantonese / 粵語": {"code": "zh-TW", "native": "Cantonese"},
     "Vietnamese / Tiếng Việt": {"code": "vi", "native": "Vietnamese"},
     "Mandarin / 普通話": {"code": "zh-CN", "native": "Mandarin"},
-    "Tagalog": {"code": "tl", "native": "Tagalog"},
+    "Tagalog / Filipino": {"code": "tl", "native": "Tagalog"},
     "Hindi / हिन्दी": {"code": "hi", "native": "Hindi"},
     "Korean / 한국어": {"code": "ko", "native": "Korean"},
     "Japanese / 日本語": {"code": "ja", "native": "Japanese"},
@@ -3318,6 +3318,25 @@ UI_STRINGS = {
         "tutorial_step6_feat3": "Advice sharing",
 
         "documents_intro_md": "Mag‑upload ng legal na dokumento (larawan o PDF) upang i‑extract ang:\n- Mga petsa at deadline\n- Mga kinakailangang aksyon\n- Mga parusa at babala\n- Mga ahensiya ng gobyerno\n- Buod ng dokumento",
+        "extract_deadlines_found": "📋 Mga importanteng deadline na nahanap",
+        "extract_penalties_found": "⚠️ Mga parusa na nahanap",
+        "extract_requirements_found": "✓ Mga kinakailangan na nahanap",
+
+        "search_radius_km": "Search radius (km):",
+
+        "resource_category": "Kategorya ng serbisyo:",
+        "resource_distance": "Distansya:",
+        "resource_map_link": "🗺️ Mapa",
+        "resource_description": "Deskripsyon:",
+        "resource_notes": "Mga Tala:",
+        "resource_tags": "Mga Tag:",
+        "resource_id": "Resource ID:",
+        "resource_source": "Pinagmulan:",
+        "resource_updated": "Huling update:",
+        "resource_error": "Nagkaroon ng error sa pagkuha ng serbisyo",
+        "resource_loading": "Naglo-load ng impormasyon ng serbisyo...",
+        "resource_retry": "Subukang muli",
+        "resource_empty": "Walang detalye para sa serbisyong ito",
 
     },
     "Hindi / हिन्दी": {
