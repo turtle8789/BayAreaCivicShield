@@ -32,9 +32,20 @@ from datetime import datetime
 import io
 import re
 from PIL import Image
-import pytesseract
-from pdf2image import convert_from_bytes
 import qrcode
+
+# Optional imports with graceful fallback
+try:
+    import pytesseract
+    TESSERACT_AVAILABLE = True
+except ImportError:
+    TESSERACT_AVAILABLE = False
+
+try:
+    from pdf2image import convert_from_bytes
+    PDF_AVAILABLE = True
+except ImportError:
+    PDF_AVAILABLE = False
 
 # ============================================================================
 # PAGE CONFIGURATION & THEMING
