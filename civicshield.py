@@ -39,6 +39,9 @@ lang_name = language_map[selected_display]["native"]
 @st.cache_resource(show_spinner=False)
 def get_cached_ui_text(target_lang_code, lang_name):
     ui_strings = {
+        "select_language": "Select Your Language:",
+        "speech_recognized": "Speech Recognized",
+        "mic_unclear": "Could not understand the audio clearly. Please try speaking closer to the mic or type below.",
         "title": "CivicShield Bay Area",
         "caption": "Real-time legal translation and civil rights protection.",
         "info": "Community Impact: Forty-two percent of San Jose residents are foreign-born, and 20% face English language barriers. CivicShield provides real-time equity during critical encounters.",
@@ -54,10 +57,19 @@ def get_cached_ui_text(target_lang_code, lang_name):
     }
     
     if lang_name == "English":
+        # ensure select language label exists in localized ui
+        ui_strings.setdefault("select_language", "Select Your Language:")
+        ui_strings.setdefault("speech_recognized", "Speech Recognized")
+        ui_strings.setdefault("mic_unclear", "Could not understand the audio clearly. Please try speaking closer to the mic or type below.")
+        ui_strings.setdefault("emergency_playing", "App Playing Audio to Officer: 'Officer, I am using a translation app to protect my rights. Please speak into the device.'")
         return ui_strings
         
     if lang_name == "Spanish":
         return {
+            "select_language": "Selecciona Idioma:",
+            "emergency_playing": "App reproduciendo audio al oficial: 'Oficial, estoy usando una aplicación de traducción para proteger mis derechos. Por favor, hable en el dispositivo.'",
+            "speech_recognized": "Discurso reconocido",
+            "mic_unclear": "No se pudo entender el audio claramente. Por favor, intente hablar más cerca del micrófono o escriba a continuación.",
             "title": "CivicShield Área de la Bahía",
             "caption": "Traducción legal en tiempo real y protección de derechos civiles.",
             "info": "Impacto comunitario: El 42% de los residentes de San José son nacidos en el extranjero y el 20% enfrenta barreras idiomáticas en inglés. CivicShield proporciona equidad en tiempo real.",
@@ -96,7 +108,7 @@ if st.button(ui["emergency_btn"], type="primary", use_container_width=True):
     audio_text = "Officer, I am using a translation app to protect my rights. Please speak into the device."
     tts = gTTS(text=audio_text, lang='en', slow=False)
     tts.save("emergency_warning.mp3")
-    st.error("App Playing Audio to Officer: 'Officer, I am using a translation app to protect my rights. Please speak into the device.'")
+    st.error(ui.get("emergency_playing", "App Playing Audio to Officer"))
     
     # TECHNICAL FIX: Forced byte reading mode for stable initialization
     with open("emergency_warning.mp3", "rb") as f:
@@ -122,9 +134,9 @@ if audio_record:
         with sr.AudioFile(io.BytesIO(audio_bytes)) as source:
             audio_data = recognizer.record(source)
             officer_text = recognizer.recognize_google(audio_data, language="en-US")
-            st.success(f"Speech Recognized: \"{officer_text}\"")
+            st.success(f"{ui.get('speech_recognized')}: \"{officer_text}\"")
     except Exception as e:
-        st.error("Could not understand the audio clearly. Please try speaking closer to the mic or type below.")
+        st.error(ui.get('mic_unclear'))
 
 manual_input = st.text_input(ui["manual_label"], placeholder="e.g., Step out of the vehicle and let me search your car.")
 final_input = manual_input if manual_input else officer_text
