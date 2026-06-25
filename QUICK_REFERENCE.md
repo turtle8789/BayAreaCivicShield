@@ -11,7 +11,7 @@
 python -m venv venv
 venv\Scripts\activate
 pip install -r requirements.txt
-streamlit run civicshield_pro.py
+streamlit run civicshield_pro_app.py
 ```
 
 ### Mac/Linux Terminal
@@ -19,7 +19,7 @@ streamlit run civicshield_pro.py
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
-streamlit run civicshield_pro.py
+streamlit run civicshield_pro_app.py
 ```
 
 ### App Opens At
@@ -93,9 +93,9 @@ English • Spanish • Vietnamese • Mandarin • Cantonese • Tagalog • Hi
 
 | Action | Command |
 |--------|---------|
-| Start app | `streamlit run civicshield_pro.py` |
+| Start app | `streamlit run civicshield_pro_app.py` |
 | Stop app | `Ctrl + C` in terminal |
-| Change port | `streamlit run civicshield_pro.py --server.port 8000` |
+| Change port | `streamlit run civicshield_pro_app.py --server.port 8000` |
 | Activate venv (Windows) | `venv\Scripts\activate` |
 | Activate venv (Mac/Linux) | `source venv/bin/activate` |
 | Install packages | `pip install -r requirements.txt` |
@@ -130,7 +130,7 @@ English • Spanish • Vietnamese • Mandarin • Cantonese • Tagalog • Hi
 
 | File | What It Is | When to Use |
 |------|-----------|------------|
-| `civicshield_pro.py` | Main application | Run this to start app |
+| `civicshield_pro_app.py` | Main application | Run this to start app |
 | `requirements.txt` | Dependencies | Install with: `pip install -r requirements.txt` |
 | `README.md` | Overview | Read first for features |
 | `SETUP_GUIDE.md` | Installation help | If stuck on setup |
@@ -170,7 +170,7 @@ English • Spanish • Vietnamese • Mandarin • Cantonese • Tagalog • Hi
 
 ### Local Testing
 ```bash
-streamlit run civicshield_pro.py
+streamlit run civicshield_pro_app.py
 # Open http://localhost:8501
 ```
 
@@ -187,7 +187,7 @@ streamlit run civicshield_pro.py
 ### Intermediate
 1. Understand ARCHITECTURE.md
 2. Review DEPENDENCIES.md
-3. Read civicshield_pro.py code
+3. Read civicshield_pro_app.py code
 4. Try customizing (add resources)
 
 ### Advanced
@@ -210,7 +210,7 @@ streamlit run civicshield_pro.py
 → See DEPENDENCIES.md
 
 **Code Questions?**  
-→ Read civicshield_pro.py comments
+→ Read civicshield_pro_app.py comments
 
 **Can't Find Answer?**  
 → Check README.md > Support & Resources
@@ -261,7 +261,7 @@ streamlit run civicshield_pro.py
 
 | File | Lines | Size |
 |------|-------|------|
-| civicshield_pro.py | 2000+ | ~65KB |
+| civicshield_pro_app.py | 2000+ | ~65KB |
 | SETUP_GUIDE.md | 500+ | ~25KB |
 | ARCHITECTURE.md | 700+ | ~30KB |
 | DEPENDENCIES.md | 800+ | ~35KB |
@@ -285,7 +285,7 @@ streamlit run civicshield_pro.py
 ### To Start Immediately:
 ```bash
 pip install -r requirements.txt
-streamlit run civicshield_pro.py
+streamlit run civicshield_pro_app.py
 ```
 
 ### For Help:
@@ -309,7 +309,7 @@ If you deployed online:
 ## 🛠️ Common Customizations
 
 ### Add Local Resources
-Edit civicshield_pro.py, find COMMUNITY_RESOURCES, add your organizations
+Edit civicshield_pro_app.py, find COMMUNITY_RESOURCES, add your organizations
 
 ### Change Colors
 Edit CSS section (~line 85), change hex colors

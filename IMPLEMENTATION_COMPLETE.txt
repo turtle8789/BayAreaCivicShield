@@ -84,7 +84,7 @@ A COMPLETE LEGAL DOCUMENT ASSISTANT PAGE with the following capabilities:
 MODIFIED FILES:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-✅ civicshield_pro.py (~600 lines added)
+✅ civicshield_pro_app.py (~600 lines added)
    Lines Added:
    - Import statements (3 new packages)
    - extract_dates_from_text() function
@@ -272,7 +272,7 @@ Step 2: Install system libraries (REQUIRED!)
   See platform-specific instructions below
 
 Step 3: Run application
-  streamlit run civicshield_pro.py
+  streamlit run civicshield_pro_app.py
 
 Step 4: Test the feature
   Click "📄 Legal Documents" in sidebar
@@ -548,7 +548,7 @@ Everything is complete and ready to use!
 NEXT STEPS:
 1. Install system libraries (Tesseract, Poppler)
 2. Run: pip install -r requirements.txt
-3. Run: streamlit run civicshield_pro.py
+3. Run: streamlit run civicshield_pro_app.py
 4. Click "📄 Legal Documents" in sidebar
 5. Upload or take a photo of a document
 6. Experience the new feature!

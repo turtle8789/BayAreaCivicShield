@@ -8,7 +8,7 @@ You now have a **production-ready Streamlit application** with comprehensive doc
 
 ## 📋 Files Created/Modified
 
-### 1. **civicshield_pro.py** (2000+ lines)
+### 1. **civicshield_pro_app.py** (2000+ lines)
 **The Main Application**
 
 Core application with all features:
@@ -332,7 +332,7 @@ Quick Start
 Technical Details
     ├── ARCHITECTURE.md (system design)
     ├── DEPENDENCIES.md (each package explained)
-    └── civicshield_pro.py (fully commented code)
+    └── civicshield_pro_app.py (fully commented code)
 
 Getting Started
     ├── requirements.txt (install dependencies)
@@ -351,7 +351,7 @@ Getting Started
 ### For Developers
 - ARCHITECTURE.md - System design
 - DEPENDENCIES.md - Detailed breakdown
-- civicshield_pro.py - Annotated source code
+- civicshield_pro_app.py - Annotated source code
 - Code comments - Implementation details
 
 ### For Deployers
@@ -437,7 +437,7 @@ Getting Started
 1. ✅ Read **README.md** (overview)
 2. ✅ Follow **SETUP_GUIDE.md** (installation)
 3. ✅ Run `python setup.py` (auto-install) or `pip install -r requirements.txt`
-4. ✅ Launch with `streamlit run civicshield_pro.py`
+4. ✅ Launch with `streamlit run civicshield_pro_app.py`
 
 ### Soon (Testing Phase)
 1. Test all 5 pages
@@ -485,7 +485,7 @@ Getting Started
 | Installation | SETUP_GUIDE.md | Installation |
 | Understanding features | ARCHITECTURE.md | Features & Implementation |
 | Dependency help | DEPENDENCIES.md | Each dependency section |
-| Code questions | civicshield_pro.py | Inline comments |
+| Code questions | civicshield_pro_app.py | Inline comments |
 | Usage guide | README.md | Usage Guide |
 | Troubleshooting | SETUP_GUIDE.md | Troubleshooting |
 | Deployment | SETUP_GUIDE.md | Production Deployment |
@@ -514,7 +514,7 @@ Getting Started
 
 | Metric | Count |
 |--------|-------|
-| Main app file (civicshield_pro.py) | 2000+ lines |
+| Main app file (civicshield_pro_app.py) | 2000+ lines |
 | Documentation | 2000+ lines |
 | Dependencies | 6 core |
 | Languages supported | 14 |
@@ -561,7 +561,7 @@ Everything is ready. Your CivicShield Pro application is:
 ### To Get Started Now:
 ```bash
 pip install -r requirements.txt
-streamlit run civicshield_pro.py
+streamlit run civicshield_pro_app.py
 ```
 
 That's it! Your app will open at http://localhost:8501

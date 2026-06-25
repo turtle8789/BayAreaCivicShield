@@ -21,7 +21,7 @@
 pip install -r requirements.txt
 
 # Run locally
-streamlit run civicshield_pro.py
+streamlit run civicshield_pro_app.py
 
 # Deploy to Streamlit Cloud
 git push origin main
@@ -167,7 +167,7 @@ Encounter Log:
    - Click "New app"
    - Select repository: `turtle8789/BayAreaCivicShield`
    - Branch: `main`
-   - File path: `civicshield_pro.py`
+   - File path: `civicshield_pro_app.py`
 
 3. **Configure**
    - Set secrets (if any)
@@ -176,7 +176,7 @@ Encounter Log:
 
 4. **Update QR Code**
    - Copy deployment URL from Streamlit Cloud
-   - Update in `civicshield_pro.py` line ~2550:
+   - Update in `civicshield_pro_app.py` line ~2550:
      ```python
      app_url = "https://your-app-name.streamlit.app"
      ```
@@ -194,7 +194,7 @@ Encounter Log:
 pip install -r requirements.txt
 
 # Run app
-streamlit run civicshield_pro.py
+streamlit run civicshield_pro_app.py
 
 # Open browser to http://localhost:8501
 ```
@@ -208,11 +208,11 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY civicshield_pro.py .
+COPY civicshield_pro_app.py .
 
 EXPOSE 8501
 
-CMD ["streamlit", "run", "civicshield_pro.py"]
+CMD ["streamlit", "run", "civicshield_pro_app.py"]
 ```
 
 Deploy:
@@ -357,7 +357,7 @@ No installation needed. Works in any browser.
 # Make sure qrcode is installed
 pip install qrcode[pil]==7.4.2
 
-# Verify import in civicshield_pro.py
+# Verify import in civicshield_pro_app.py
 import qrcode
 ```
 

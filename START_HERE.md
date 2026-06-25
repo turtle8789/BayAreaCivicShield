@@ -10,7 +10,7 @@ Your complete, production-ready Streamlit application with comprehensive documen
 
 ### Core Application (1 file)
 ```
-civicshield_pro.py                 (2000+ lines)
+civicshield_pro_app.py                 (2000+ lines)
 ├─ Complete working Streamlit app
 ├─ All 5 features fully implemented
 ├─ 14-language support
@@ -199,7 +199,7 @@ pip install -r requirements.txt
 
 ### Step 2: Run the App (1 second)
 ```bash
-streamlit run civicshield_pro.py
+streamlit run civicshield_pro_app.py
 ```
 
 ### Step 3: Use It!
@@ -222,7 +222,7 @@ streamlit run civicshield_pro.py
 ### For Developers
 1. Architecture → **ARCHITECTURE.md** (15 min read)
 2. Dependencies → **DEPENDENCIES.md** (20 min read)
-3. Code → **civicshield_pro.py** (understand structure)
+3. Code → **civicshield_pro_app.py** (understand structure)
 4. Customize as needed
 
 ### For Deployment
@@ -276,7 +276,7 @@ streamlit run civicshield_pro.py
 3. **SETUP_GUIDE.md** - Installation (15 min)
 4. **ARCHITECTURE.md** - Technical (20 min)
 5. **DEPENDENCIES.md** - Deep dive (25 min)
-6. **civicshield_pro.py** - Source code (read as needed)
+6. **civicshield_pro_app.py** - Source code (read as needed)
 
 ### Time Investment
 - **Total Reading:** 60-90 minutes
@@ -291,7 +291,7 @@ streamlit run civicshield_pro.py
 ### Easy Customizations (No Code)
 - [ ] Change app name (edit SETUP_GUIDE.md title)
 - [ ] Add local resources (add to COMMUNITY_RESOURCES)
-- [ ] Adjust colors (edit CSS in civicshield_pro.py)
+- [ ] Adjust colors (edit CSS in civicshield_pro_app.py)
 - [ ] Modify rights education (edit RIGHTS_EDUCATION dict)
 
 ### Medium Customizations (Small Code Changes)
@@ -368,7 +368,7 @@ Time: 30 minutes | Cost: Variable
 → See **DEPENDENCIES.md** > [Package Name]
 
 ### For Code Questions
-→ See **civicshield_pro.py** > Inline Comments
+→ See **civicshield_pro_app.py** > Inline Comments
 
 ### For Deployment Issues
 → See **SETUP_GUIDE.md** > Production Deployment
@@ -387,7 +387,7 @@ Time: 30 minutes | Cost: Variable
 
 ### Soon (Next 30 Minutes)
 1. ✅ Follow **SETUP_GUIDE.md** to install
-2. ✅ Run `streamlit run civicshield_pro.py`
+2. ✅ Run `streamlit run civicshield_pro_app.py`
 3. ✅ Test all 5 pages/features
 4. ✅ Try different languages
 
@@ -447,7 +447,7 @@ Time: 30 minutes | Cost: Variable
 **Day 3+ (Going Deeper):** As needed
 - ARCHITECTURE.md - understand design
 - DEPENDENCIES.md - understand packages
-- civicshield_pro.py - understand code
+- civicshield_pro_app.py - understand code
 - Customize and deploy
 
 ---
@@ -483,7 +483,7 @@ Documentation Time:     30-60 minutes
 **Once all checked, run:**
 ```bash
 pip install -r requirements.txt
-streamlit run civicshield_pro.py
+streamlit run civicshield_pro_app.py
 ```
 
 ---
@@ -497,7 +497,7 @@ Everything is ready to go. Your production-ready CivicShield Pro application is 
 ### Get Started Now:
 ```bash
 pip install -r requirements.txt
-streamlit run civicshield_pro.py
+streamlit run civicshield_pro_app.py
 ```
 
 ### Browser Opens At:
@@ -526,7 +526,7 @@ Questions? Check the documentation — we've covered everything!
 ```
 CivicShield Pro/
 │
-├── civicshield_pro.py              Main application (2000+ lines)
+├── civicshield_pro_app.py              Main application (2000+ lines)
 ├── requirements.txt                 Dependencies (6 packages)
 ├── setup.py                         Auto-setup script
 │

@@ -32,7 +32,7 @@ Use this checklist before deploying to production.
 - [ ] ARCHITECTURE.md accurate
 - [ ] DEPENDENCIES.md explains each package
 - [ ] QUICK_REFERENCE.md has key info
-- [ ] Code comments present in civicshield_pro.py
+- [ ] Code comments present in civicshield_pro_app.py
 - [ ] Inline docstrings for functions
 - [ ] Error messages are helpful
 
@@ -98,7 +98,7 @@ Use this checklist before deploying to production.
 - [ ] Repository created on GitHub
 - [ ] Code pushed to main branch
 - [ ] requirements.txt at root level
-- [ ] civicshield_pro.py at root level
+- [ ] civicshield_pro_app.py at root level
 - [ ] .gitignore prevents secrets
 - [ ] README.md in repository
 - [ ] Initial commit has all files
@@ -107,7 +107,7 @@ Use this checklist before deploying to production.
 - [ ] Account created at share.streamlit.io
 - [ ] GitHub account connected
 - [ ] Repository selected
-- [ ] civicshield_pro.py selected as main file
+- [ ] civicshield_pro_app.py selected as main file
 - [ ] Secrets configured (if any)
 - [ ] Environment variables set
 - [ ] Deploy button clicked

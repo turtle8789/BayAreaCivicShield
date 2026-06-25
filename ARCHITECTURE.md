@@ -531,7 +531,7 @@ Level 4 (Content)
 
 ### Main Files
 ```
-civicshield_pro.py (Main application)
+civicshield_pro_app.py (Main application)
 ├─ Configuration & Theming (lines 1-100)
 ├─ Language Configuration (lines 100-150)
 ├─ Session State Management (lines 150-200)
@@ -563,7 +563,7 @@ get_ui_strings()              # Cache UI strings
 
 ## 📖 Documentation Files
 
-1. **civicshield_pro.py** - Main application code (2000+ lines, fully documented)
+1. **civicshield_pro_app.py** - Main application code (2000+ lines, fully documented)
 2. **requirements.txt** - All dependencies with version pins
 3. **SETUP_GUIDE.md** - Complete installation and deployment guide
 4. **ARCHITECTURE.md** - This file

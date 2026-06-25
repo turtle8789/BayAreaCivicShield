@@ -26,7 +26,7 @@ venv\Scripts\activate
 pip install -r requirements.txt
 
 # 4. Run the app
-streamlit run civicshield_pro.py
+streamlit run civicshield_pro_app.py
 
 # Browser will open at http://localhost:8501
 ```
@@ -42,7 +42,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 
 # 3. Run the app
-streamlit run civicshield_pro.py
+streamlit run civicshield_pro_app.py
 ```
 
 ---
@@ -158,7 +158,7 @@ pip list
 # Mac/Linux: source venv/bin/activate
 
 # Run the app
-streamlit run civicshield_pro.py
+streamlit run civicshield_pro_app.py
 ```
 
 ### What to Expect
@@ -354,14 +354,14 @@ Optional: Only needed if you add custom API keys later
 ### Change the Port
 ```bash
 # Default is 8501, but you can change it:
-streamlit run civicshield_pro.py --server.port 8000
+streamlit run civicshield_pro_app.py --server.port 8000
 ```
 
 ### Disable Camera/Microphone Requirement
 ```bash
 # Some browsers require HTTPs for microphone access
 # For local testing, use:
-streamlit run civicshield_pro.py --logger.level=debug
+streamlit run civicshield_pro_app.py --logger.level=debug
 ```
 
 ### Add Custom CSS
@@ -483,7 +483,7 @@ pip install SpeechRecognition
 
 ```bash
 # 1. Create Procfile
-echo "web: streamlit run civicshield_pro.py --server.port=\$PORT" > Procfile
+echo "web: streamlit run civicshield_pro_app.py --server.port=\$PORT" > Procfile
 
 # 2. Create .streamlit/config.toml
 mkdir .streamlit
@@ -506,13 +506,13 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 COPY . .
-CMD ["streamlit", "run", "civicshield_pro.py"]
+CMD ["streamlit", "run", "civicshield_pro_app.py"]
 ```
 
 ### Performance Optimization for Production
 
 ```python
-# In civicshield_pro.py, these are already implemented:
+# In civicshield_pro_app.py, these are already implemented:
 
 # 1. Caching for translators
 @st.cache_resource
@@ -575,7 +575,7 @@ st.session_state.selected_language
 ## 🎯 Next Steps
 
 1. ✅ Install dependencies from requirements.txt
-2. ✅ Run the app with `streamlit run civicshield_pro.py`
+2. ✅ Run the app with `streamlit run civicshield_pro_app.py`
 3. ✅ Test all features (translation, audio, logging)
 4. ✅ Customize resources for your region
 5. ✅ Deploy to production (Streamlit Cloud recommended)

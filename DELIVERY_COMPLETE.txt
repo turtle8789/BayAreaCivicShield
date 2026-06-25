@@ -9,7 +9,7 @@ STATUS: ✅ PRODUCTION READY - ALL FILES CREATED & READY TO USE
 ================================================================================
 
 MAIN APPLICATION (1 FILE)
-  ✅ civicshield_pro.py              (2000+ lines)
+  ✅ civicshield_pro_app.py              (2000+ lines)
      └─ Complete, fully-functional Streamlit application
         • All 5 features implemented
         • 14-language support
@@ -49,7 +49,7 @@ STEP 1: Install Dependencies (3 minutes)
     $ pip install -r requirements.txt
 
 STEP 2: Run the Application (1 second)
-  $ streamlit run civicshield_pro.py
+  $ streamlit run civicshield_pro_app.py
 
 STEP 3: Browser Opens
   App automatically opens at http://localhost:8501
@@ -136,7 +136,7 @@ START HERE:
   2. Read: README.md               (5 minutes)
   3. Read: QUICK_REFERENCE.md      (2 minutes)
   4. Run:  pip install -r requirements.txt
-  5. Run:  streamlit run civicshield_pro.py
+  5. Run:  streamlit run civicshield_pro_app.py
 
 FOR INSTALLATION HELP:
   → See: SETUP_GUIDE.md
@@ -256,7 +256,7 @@ Day 2 (30 minutes):
 Day 3+ (as needed):
   1. ARCHITECTURE.md             (technical understanding)
   2. DEPENDENCIES.md             (deep package knowledge)
-  3. civicshield_pro.py          (source code review)
+  3. civicshield_pro_app.py          (source code review)
   4. Customize or deploy
 
 TOTAL: 60-90 minutes to read everything
@@ -314,7 +314,7 @@ RIGHT NOW (Do This):
      pip install -r requirements.txt
   
   4. Run the app:
-     streamlit run civicshield_pro.py
+     streamlit run civicshield_pro_app.py
   
   5. App opens in browser at http://localhost:8501
 
@@ -366,7 +366,7 @@ Q: How long does installation take?
 A: 5 minutes with pip install
 
 Q: Can I run it immediately?
-A: Yes! After installation, streamlit run civicshield_pro.py
+A: Yes! After installation, streamlit run civicshield_pro_app.py
 
 Q: Which languages are supported?
 A: 14 languages with full audio and translation support
@@ -434,7 +434,7 @@ Your Project/
 ├── README.md                         ← Read this next
 ├── QUICK_REFERENCE.md               ← Quick tips
 │
-├── civicshield_pro.py               ← THE APPLICATION
+├── civicshield_pro_app.py               ← THE APPLICATION
 │
 ├── SETUP_GUIDE.md                   ← Installation help
 ├── ARCHITECTURE.md                  ← Technical details
@@ -458,7 +458,7 @@ Everything is complete and ready.
 
                             QUICK START:
                     1. pip install -r requirements.txt
-                    2. streamlit run civicshield_pro.py
+                    2. streamlit run civicshield_pro_app.py
                     3. Browser opens - enjoy!
 
                           That's all you need!

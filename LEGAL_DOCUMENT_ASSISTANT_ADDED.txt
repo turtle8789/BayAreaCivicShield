@@ -149,7 +149,7 @@ Verify:
 STEP 3: Start the App
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-    streamlit run civicshield_pro.py
+    streamlit run civicshield_pro_app.py
 
 New "📄 Legal Documents" page appears in sidebar!
 
@@ -201,7 +201,7 @@ READ: Start with LEGAL_DOCUMENT_ASSISTANT.md
                       📋 FILES MODIFIED
 ================================================================================
 
-1. civicshield_pro.py
+1. civicshield_pro_app.py
    • Added imports for OCR, PDF, image processing
    • Added 5 extraction functions (dates, deadlines, agencies, actions)
    • Added simplify_legal_text() function
@@ -285,7 +285,7 @@ Everything is set up and working!
 NEXT STEPS:
 1. Install system libraries (Tesseract, Poppler)
 2. Run: pip install -r requirements.txt
-3. Run: streamlit run civicshield_pro.py
+3. Run: streamlit run civicshield_pro_app.py
 4. Click "📄 Legal Documents" to test
 5. Upload a test document or take a photo
 6. Try the extraction features!
@@ -357,7 +357,7 @@ New: Legal Document Assistant with OCR
 To get started:
 1. Install system libraries
 2. pip install -r requirements.txt
-3. streamlit run civicshield_pro.py
+3. streamlit run civicshield_pro_app.py
 4. Navigate to "📄 Legal Documents"
 5. Upload a document to test!
 

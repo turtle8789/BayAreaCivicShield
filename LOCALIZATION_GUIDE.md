@@ -566,7 +566,7 @@ pip install -r requirements.txt
 
 ### Launch
 ```bash
-streamlit run civicshield_pro.py
+streamlit run civicshield_pro_app.py
 ```
 
 ### Access

@@ -111,7 +111,7 @@ venv\Scripts\activate  # Windows
 pip install -r requirements.txt
 
 # 4. Run the app
-streamlit run civicshield_pro.py
+streamlit run civicshield_pro_app.py
 ```
 
 App opens at: **http://localhost:8501**
@@ -147,7 +147,7 @@ python setup.py
 
 ```
 civicshield-pro/
-├── civicshield_pro.py          # Main application (2000+ lines)
+├── civicshield_pro_app.py          # Main application (2000+ lines)
 ├── requirements.txt             # Python dependencies
 ├── setup.py                     # Auto-setup script
 ├── README.md                    # This file
@@ -175,7 +175,7 @@ civicshield-pro/
 
 ### Technical Details
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** - System design, features, and performance metrics
-- **[civicshield_pro.py](civicshield_pro.py)** - Fully documented source code (2000+ lines)
+- **[civicshield_pro_app.py](civicshield_pro_app.py)** - Fully documented source code (2000+ lines)
 
 ### Features
 1. **Real-Time Translation** - Speech-to-text → translation → advice generation
@@ -240,12 +240,12 @@ Sidebar → 📍 Select Language → Choose from dropdown
 
 ### Change Port
 ```bash
-streamlit run civicshield_pro.py --server.port 8000
+streamlit run civicshield_pro_app.py --server.port 8000
 ```
 
 ### Debug Mode
 ```bash
-streamlit run civicshield_pro.py --logger.level=debug
+streamlit run civicshield_pro_app.py --logger.level=debug
 ```
 
 ### Full Configuration
@@ -297,7 +297,7 @@ git push origin main
 ### Heroku
 ```bash
 # 1. Create Procfile
-echo "web: streamlit run civicshield_pro.py --server.port=\$PORT" > Procfile
+echo "web: streamlit run civicshield_pro_app.py --server.port=\$PORT" > Procfile
 
 # 2. Deploy
 heroku create your-app-name
@@ -311,7 +311,7 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 COPY . .
-CMD ["streamlit", "run", "civicshield_pro.py"]
+CMD ["streamlit", "run", "civicshield_pro_app.py"]
 ```
 
 **Full deployment guide:** [SETUP_GUIDE.md#-production-deployment](SETUP_GUIDE.md#-production-deployment)
@@ -371,7 +371,7 @@ CMD ["streamlit", "run", "civicshield_pro.py"]
 ### Getting Help
 - **Installation Issues:** See [SETUP_GUIDE.md](SETUP_GUIDE.md)
 - **Feature Questions:** Check [ARCHITECTURE.md](ARCHITECTURE.md)
-- **Code Questions:** Review inline comments in [civicshield_pro.py](civicshield_pro.py)
+- **Code Questions:** Review inline comments in [civicshield_pro_app.py](civicshield_pro_app.py)
 - **Dependency Issues:** See [DEPENDENCIES.md](DEPENDENCIES.md)
 
 ### Community Resources (In-App)
@@ -505,7 +505,7 @@ Built with:
 For questions or support:
 - **Documentation:** See README.md, SETUP_GUIDE.md, ARCHITECTURE.md
 - **Dependency Help:** See DEPENDENCIES.md
-- **Code:** Review inline comments in civicshield_pro.py
+- **Code:** Review inline comments in civicshield_pro_app.py
 
 ---
 
@@ -530,7 +530,7 @@ For questions or support:
 - **Setup Guide:** [SETUP_GUIDE.md](SETUP_GUIDE.md)
 - **Architecture:** [ARCHITECTURE.md](ARCHITECTURE.md)
 - **Dependencies:** [DEPENDENCIES.md](DEPENDENCIES.md)
-- **Source Code:** [civicshield_pro.py](civicshield_pro.py)
+- **Source Code:** [civicshield_pro_app.py](civicshield_pro_app.py)
 - **Requirements:** [requirements.txt](requirements.txt)
 
 ---

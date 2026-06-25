@@ -112,10 +112,10 @@ def show_next_steps():
     
     if sys.platform == "win32":
         activate_cmd = "venv\\Scripts\\activate"
-        run_cmd = "streamlit run civicshield_pro.py"
+        run_cmd = "streamlit run civicshield_pro_app.py"
     else:
         activate_cmd = "source venv/bin/activate"
-        run_cmd = "streamlit run civicshield_pro.py"
+        run_cmd = "streamlit run civicshield_pro_app.py"
     
     print(f"""
 1. Activate virtual environment:

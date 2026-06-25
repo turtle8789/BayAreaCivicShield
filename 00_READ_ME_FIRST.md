@@ -10,7 +10,7 @@
 
 ### 1. **MAIN APPLICATION** ⭐
 ```
-civicshield_pro.py (2000+ lines)
+civicshield_pro_app.py (2000+ lines)
 - Complete, production-ready application
 - All 5 features fully implemented
 - 14-language support
@@ -53,7 +53,7 @@ python setup.py
 
 ### Step 2: Run the App
 ```bash
-streamlit run civicshield_pro.py
+streamlit run civicshield_pro_app.py
 ```
 
 ### Step 3: Open in Browser
@@ -112,7 +112,7 @@ Browser automatically opens at **http://localhost:8501**
 ```
 Your Project/
 ├── MAIN APPLICATION
-│   └── civicshield_pro.py                   (2000+ lines)
+│   └── civicshield_pro_app.py                   (2000+ lines)
 │
 ├── DOCUMENTATION (2000+ lines total)
 │   ├── START_HERE.md                        ← You are here
@@ -150,12 +150,12 @@ Your Project/
 ### For Installation Help (15 minutes)
 1. **SETUP_GUIDE.md** - Step-by-step guide
 2. Use **setup.py** for auto-installation
-3. Run **civicshield_pro.py**
+3. Run **civicshield_pro_app.py**
 
 ### For Understanding Design (45 minutes)
 1. **ARCHITECTURE.md** - System design
 2. **DEPENDENCIES.md** - Each package explained
-3. **civicshield_pro.py** - Read source code
+3. **civicshield_pro_app.py** - Read source code
 
 ### For Deployment (30 minutes)
 1. **PRODUCTION_CHECKLIST.md** - Verification
@@ -252,7 +252,7 @@ Korean, Japanese, Portuguese, Arabic, Telugu, Tamil, Punjabi
    ```
 3. Start the app:
    ```bash
-   streamlit run civicshield_pro.py
+   streamlit run civicshield_pro_app.py
    ```
 4. Test all features in your browser
 
@@ -412,7 +412,7 @@ Before you start, make sure you have:
 **Once all checked:**
 ```bash
 pip install -r requirements.txt
-streamlit run civicshield_pro.py
+streamlit run civicshield_pro_app.py
 ```
 
 ---
@@ -470,7 +470,7 @@ Need quick answer | Quick reference | QUICK_REFERENCE.md
 pip install -r requirements.txt
 
 # 2. Run (1 second)
-streamlit run civicshield_pro.py
+streamlit run civicshield_pro_app.py
 
 # 3. Enjoy! (browser opens automatically)
 ```
@@ -498,7 +498,7 @@ Your app opens at **http://localhost:8501** with all features ready to use.
 **Read Next** → README.md (project overview)  
 **Quick Tips** → QUICK_REFERENCE.md (commands)  
 **Installation** → SETUP_GUIDE.md (step-by-step)  
-**The App** → civicshield_pro.py (the code)  
+**The App** → civicshield_pro_app.py (the code)  
 **Deploy** → PRODUCTION_CHECKLIST.md (when ready)  
 
 ---
@@ -515,7 +515,7 @@ A: Translator/speech features need internet. Text input works offline.
 A: All 14 languages fully supported with audio
 
 **Q: How do I customize it?**  
-A: Edit civicshield_pro.py or add resources to COMMUNITY_RESOURCES dict
+A: Edit civicshield_pro_app.py or add resources to COMMUNITY_RESOURCES dict
 
 **Q: Is it secure?**  
 A: Yes. No secrets hardcoded. Data stored locally. Best practices followed.
@@ -559,7 +559,7 @@ Everything is ready. Your production-ready Streamlit application is complete and
 ### Get Started Now:
 ```bash
 pip install -r requirements.txt
-streamlit run civicshield_pro.py
+streamlit run civicshield_pro_app.py
 ```
 
 ### Browser Opens At:

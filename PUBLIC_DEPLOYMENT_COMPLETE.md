@@ -279,7 +279,7 @@ When a judge opens the link, they immediately see:
 ## 📊 Implementation Summary
 
 ### Code Changes
-- **civicshield_pro.py:** +1000 lines added
+- **civicshield_pro_app.py:** +1000 lines added
   - Landing page function (300+ lines)
   - Tutorial page function (200+ lines)
   - QR code generator function (20 lines)
@@ -444,7 +444,7 @@ When a judge opens the link, they immediately see:
 ## 📝 Files Modified
 
 ### Core Application
-- `civicshield_pro.py` - Main application (1000+ lines added)
+- `civicshield_pro_app.py` - Main application (1000+ lines added)
 
 ### Configuration
 - `requirements.txt` - Added qrcode library
@@ -478,7 +478,7 @@ When a judge opens the link, they immediately see:
 ## 📞 Support Resources
 
 - **Deployment Guide:** See `DEPLOYMENT_GUIDE.md`
-- **Main App:** `civicshield_pro.py`
+- **Main App:** `civicshield_pro_app.py`
 - **Requirements:** `requirements.txt`
 - **GitHub:** https://github.com/turtle8789/BayAreaCivicShield
 
