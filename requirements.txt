@@ -20,13 +20,10 @@ deep-translator==1.11.4
 # ============================================================================
 # AUDIO & SPEECH PROCESSING
 # ============================================================================
-google-cloud-text-to-speech==2.14.1
-# Purpose: High-quality text-to-speech synthesis
-# Alternative: Using gtts package instead (below) for easier setup
-
 gTTS==2.4.0
 # Purpose: Google Text-to-Speech for audio generation
 # Features: Free, no API key, supports all 14 target languages
+# Lightweight and Streamlit-Cloud compatible
 # Docs: https://github.com/pndurette/gTTS
 
 SpeechRecognition==3.10.0
