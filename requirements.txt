@@ -42,17 +42,9 @@ streamlit-mic-recorder==0.0.8
 # ============================================================================
 # DOCUMENT PROCESSING & OCR
 # ============================================================================
-pytesseract==0.3.10
-# Purpose: Optical Character Recognition (OCR) for extracting text from images
-# Features: Extract text from JPG, PNG, and other image formats
-# Note: Requires Tesseract-OCR system library (see SETUP_GUIDE.md)
-# Docs: https://github.com/madmaze/pytesseract
-
-pdf2image==1.16.3
-# Purpose: Convert PDF documents to images for OCR processing
-# Features: Batch conversion, supports all PDF types
-# Note: Requires poppler system library (see SETUP_GUIDE.md)
-# Docs: https://github.com/Belval/pdf2image
+# Note: Document processing uses mock data for Streamlit Cloud compatibility
+# pytesseract (REMOVED - requires Tesseract system binary)
+# pdf2image (REMOVED - requires poppler system binary)
 
 Pillow==10.1.0
 # Purpose: Python Image Library for image processing
@@ -63,14 +55,6 @@ qrcode==7.4.2
 # Purpose: QR code generator for shareable links
 # Features: Generate QR codes as images, customizable designs
 # Docs: https://github.com/lincolnloop/python-qrcode
-
-# ============================================================================
-# OPTIONAL: AUDIO PROCESSING LIBRARIES
-# ============================================================================
-# These are optional but recommended for advanced audio features
-pydub==0.25.1
-# Purpose: Audio processing and conversion
-# Features: Format conversion, audio manipulation
 
 # ============================================================================
 # DEPLOYMENT & PRODUCTION
