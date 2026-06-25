@@ -1994,11 +1994,9 @@ UI_STRINGS = {
         "tutorial_step6_feat3": "提供建議",
 
         "documents_intro_md": "上傳法律文件（圖片或 PDF）以提取關鍵資訊：\n- 重要日期與截止日期\n- 所需行動\n- 罰則與警告\n- 政府機構\n- 文件摘要",
-
-
-
+    
     },
-
+    
     "Mandarin / 普通話": {
         "sidebar_title": "CivicShield",
         "sidebar_tagline": "了解你的权利",
@@ -5972,12 +5970,14 @@ UI_STRINGS = {
         "tutorial_step6_feat3": "ஆலோசனை பகிர்வு",
 
         "documents_intro_md": "சட்ட ஆவணத்தை (PDF அல்லது படம்) பதிவேற்றி பெறலாம்:\n- தேதிகள் மற்றும் கடைசி தேதிகள்\n- தேவையான நடவடிக்கைகள்\n- அபராதங்கள்\n- அரசு அமைப்புகள்\n- ஆவண சுருக்கம்",
-
-
     },
+    "Telugu / తెలుగు": {
+    },
+    "Punjabi / ਪੰਜਾਬੀ": {
+    }
 
 
-},
+}
 
 # Ensure all 14 languages exist and include all keys.
 for lang_name in LANGUAGE_MAP.keys():
@@ -5987,7 +5987,7 @@ for lang_name in LANGUAGE_MAP.keys():
         UI_STRINGS[lang_name].setdefault(key, value)
 
 # ============================================================================
-# SESSION STATE INITIALIZATION
+# SESSION STATE INITIALIZATION                                                                                                         
 # ============================================================================
 def init_session_state():
     """Initialize all session state variables on first run."""
