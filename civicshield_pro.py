@@ -1397,14 +1397,27 @@ def t(key: str) -> str:
     """
     Get translated text in selected language.
     Example: st.markdown(t('translation_title'))
+    Safe fallback to English if language not available or session not initialized.
     """
-    lang = st.session_state.selected_language
+    try:
+        # Try to get selected language from session state
+        lang = st.session_state.get("selected_language", "English")
+    except:
+        # If session state is not available, use English
+        lang = "English"
     
-    # Get translation from UI_STRINGS, fallback to English if language not available
-    if lang in UI_STRINGS:
-        return UI_STRINGS[lang].get(key, key)
-    else:
-        return UI_STRINGS["English"].get(key, key)
+    # Ensure language is valid
+    if lang not in UI_STRINGS:
+        lang = "English"
+    
+    # Get translation from UI_STRINGS
+    translation = UI_STRINGS.get(lang, {}).get(key)
+    
+    # Fallback to English if translation not found
+    if translation is None:
+        translation = UI_STRINGS.get("English", {}).get(key, key)
+    
+    return translation
 
 # ============================================================================
 # ACCESSIBILITY FUNCTIONS
@@ -3109,19 +3122,38 @@ def main():
     st.sidebar.markdown(f"*{t('sidebar_tagline')}*")
     st.sidebar.markdown("---")
     
-    # Language selector in sidebar
+    # Language selector in sidebar - with safe error handling
     def on_language_change():
         """Trigger rerun when language is changed."""
-        st.session_state.selected_language = st.session_state.language_selector
-        st.rerun()
+        try:
+            new_lang = st.session_state.language_selector
+            if new_lang in LANGUAGE_MAP:
+                st.session_state.selected_language = new_lang
+                st.rerun()
+        except Exception as e:
+            st.error(f"Language change error: {e}")
     
-    st.sidebar.selectbox(
-        t('select_language'),
-        list(LANGUAGE_MAP.keys()),
-        index=list(LANGUAGE_MAP.keys()).index(st.session_state.selected_language),
-        key="language_selector",
-        on_change=on_language_change
-    )
+    try:
+        lang_list = list(LANGUAGE_MAP.keys())
+        current_lang = st.session_state.selected_language
+        
+        # Ensure current language is in the list
+        if current_lang not in lang_list:
+            current_lang = "English"
+            st.session_state.selected_language = "English"
+        
+        current_index = lang_list.index(current_lang)
+        
+        st.sidebar.selectbox(
+            t('select_language'),
+            lang_list,
+            index=current_index,
+            key="language_selector",
+            on_change=on_language_change
+        )
+    except Exception as e:
+        st.sidebar.error(f"❌ Language selector error: {e}")
+        st.session_state.selected_language = "English"
     
     st.sidebar.divider()
     
