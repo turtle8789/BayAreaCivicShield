@@ -606,7 +606,7 @@ LANGUAGE_MAP = {
     "Cantonese / 粵語": {"code": "zh-TW", "native": "Cantonese"},
     "Vietnamese / Tiếng Việt": {"code": "vi", "native": "Vietnamese"},
     "Mandarin / 普通話": {"code": "zh-CN", "native": "Mandarin"},
-    "Tagalog": {"code": "tl", "native": "Tagalog"},
+    "Tagalog / Filipino": {"code": "tl", "native": "Tagalog"},
     "Hindi / हिन्दी": {"code": "hi", "native": "Hindi"},
     "Korean / 한국어": {"code": "ko", "native": "Korean"},
     "Japanese / 日本語": {"code": "ja", "native": "Japanese"},
