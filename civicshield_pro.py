@@ -825,6 +825,133 @@ UI_STRINGS = {
         "resource_website": "Website: ",
         "loading_resources": "Finding resources near you...",
         
+        # Dashboard & Document Assistant
+        "saved_deadlines": "⏰ Your Saved Deadlines",
+        "upload_legal_doc": "Upload a Legal Document",
+        "important_dates": "📅 Important Dates",
+        "required_actions": "✓ Required Actions",
+        "critical_deadlines": "⏰ Critical Deadlines",
+        "penalties_warnings": "⚠️ Penalties & Warnings",
+        "extraction_guide": "Document Extraction Guide",
+        "demo_mode_active": "📺 **DEMO MODE ACTIVE** - This is sample data for demonstration purposes",
+        "have_deadlines": "📋 You have important deadlines to manage!",
+        "view_all_deadlines": "📋 View All Deadlines →",
+        "from_document": "From:",
+        "file_type": "File Type",
+        "file_size": "File Size",
+        "status_ready": "Ready for extraction",
+        "extract_information": "🔍 Extract Information",
+        "extracting_info": "Extracting information from document...",
+        "no_dates_found": "No dates found",
+        "no_deadlines_found": "No deadlines found",
+        "no_penalties_found": "No penalties found",
+        "download_summary": "📥 Download Summary",
+        "download_as_txt": "Download as TXT",
+        "save_deadlines_to_dashboard": "💾 Save Deadlines to Dashboard",
+        
+        # Rights & Quiz
+        "know_your_rights_long": "⚖️ Know Your Rights",
+        "education_quizzes": "Education, Quizzes & Learning Modules",
+        "learn_tab": "📚 Learn",
+        "quiz_tab": "🧪 Quiz",
+        "rights_education": "Rights Education",
+        "select_topic": "Select a topic:",
+        "test_knowledge": "Test your knowledge about your civil rights and legal protections.",
+        "rights_quiz": "Rights Quiz",
+        "can_police_search": "Can police search your car without consent?",
+        "only_with_warrant": "Only with a warrant",
+        "only_prob_cause": "Only if they have probable cause",
+        "both_a_and_b": "Both A and B",
+        "never_without": "No, never",
+        "police_can_search": "Police can search with a warrant OR if they have probable cause to believe evidence is in the car.",
+        "answer_police_q": "Do you have to answer police questions?",
+        "yes_always": "Yes, always",
+        "right_remain_silent": "No, you have the right to remain silent",
+        "only_your_name": "Only your name",
+        "only_if_arrested": "Only if arrested",
+        "fifth_amendment": "You have the Fifth Amendment right to remain silent and not incriminate yourself.",
+        "what_say_arrested": "What should you say if arrested?",
+        "explain_what_happened": "Explain what happened",
+        "ask_for_lawyer": "Ask for a lawyer",
+        "refuse_give_name": "Refuse to give your name",
+        "try_negotiate": "Try to negotiate",
+        "always_ask_lawyer": "Always ask for a lawyer immediately and remain silent.",
+        "check_answer": "✓ Check Answer {number}",
+        "question_number": "Question {number}: {question}",
+        "select_answer": "Select your answer:",
+        "your_score": "Score",
+        
+        # Community
+        "talk_community": "💬 Talk to Your Community",
+        "community_intro": "Share experiences, ask questions, give advice - together we are stronger",
+        "share_exp_tab": "💭 Share Experiences",
+        "ask_q_tab": "❓ Ask Questions",
+        "give_advice_tab": "💡 Give Advice",
+        "share_your_exp": "💭 Share Your Experience",
+        "share_story": "Share your story to help others. All posts are moderated for safety.",
+        "title_label": "Title:",
+        "exp_placeholder": "e.g., Tips for dealing with traffic stops",
+        "your_story": "Your story:",
+        "story_placeholder": "Share your experience...",
+        "post_anonymously": "Post anonymously",
+        "share_exp_btn": "📤 Share Experience",
+        "fill_title_content": "⚠️ Please fill in both title and content",
+        "exp_shared": "✅ Your experience has been shared! Thank you for helping the community.",
+        "ask_community": "❓ Ask the Community",
+        "question_help": "Have a question? The community is here to help.",
+        "your_question": "Your question:",
+        "question_placeholder": "e.g., What are my rights during a traffic stop?",
+        "details_label": "Details:",
+        "details_placeholder": "Provide more context...",
+        "ask_anon": "Ask anonymously",
+        "ask_q_btn": "❓ Ask Question",
+        "enter_question": "⚠️ Please enter your question",
+        "question_posted": "✅ Your question has been posted!",
+        "give_advice": "💡 Give Advice",
+        "help_others": "Help others with your knowledge and experience.",
+        "topic_label": "Topic:",
+        "topic_placeholder": "e.g., How to prepare for court",
+        "your_advice": "Your advice:",
+        "advice_placeholder": "Share what you know...",
+        "share_anon": "Share anonymously",
+        "share_advice_btn": "💡 Share Advice",
+        "share_wisdom": "✅ Thank you for sharing your wisdom!",
+        "fill_topic_advice": "⚠️ Please fill in both topic and advice",
+        "recent_posts": "📋 Recent Community Posts",
+        "no_posts_yet": "💭 No community posts yet. Be the first to share!",
+        "posted_recently": "Posted {timestamp}",
+        
+        # Crisis
+        "crisis_hotlines": "🚨 Crisis Resources & Hotlines",
+        "crisis_support_24": "24/7 Support When You Need It Most",
+        "emergency_hotlines_header": "🆘 Emergency Hotlines",
+        "in_immediate_danger": "If you are in immediate danger, call 911",
+        "emergency_number": "Emergency",
+        "suicide_prevention": "National Suicide Prevention Lifeline",
+        "domestic_violence": "National Domestic Violence Hotline",
+        "sexual_assault": "RAINN - Sexual Assault Support",
+        "poison_control": "Poison Control Center",
+        "crisis_text": "Crisis Text Line",
+        "safety_procedures": "📋 Safety Procedures",
+        "stay_safe": "🛡️ Stay Safe",
+        "stay_safe_desc": "Keep yourself safe - do not physically resist. Your safety is the priority.",
+        "document_details": "📝 Document Details",
+        "document_details_desc": "Remember: officer names, badge numbers, locations, times, what they said and did.",
+        "record_safely": "🎥 Record Safely",
+        "record_safely_desc": "If safe and legal in your area, record the interaction. Keep the camera visible.",
+        "call_for_help": "📞 Call for Help",
+        "call_help_desc": "Call 911 if in immediate danger. Stay calm and clear when explaining.",
+        "get_legal_help": "⚖️ Get Legal Help",
+        "legal_help_desc": "Contact an attorney immediately. Many public defenders offer emergency services.",
+        "medical_attention": "🏥 Medical Attention",
+        "medical_attention_desc": "If injured, seek medical care and document injuries with photos.",
+        "mental_health_support": "🧠 Mental Health & Support",
+        "legal_troubles_trauma": "Experiencing legal troubles, police encounters, or discrimination can be traumatic.",
+        "mental_health_resources": "Mental health resources:",
+        "samhsa_helpline": "SAMHSA National Helpline: 1-800-662-4357 (free, confidential, 24/7)",
+        "psychology_directory": "Local therapists: Search Psychology Today's directory",
+        "support_groups": "Support groups: NAACP, community centers, legal aid organizations often host support groups",
+        
         # Additional UI Labels
         "home_icon": "🏠",
         "translation_icon": "🗣️",
@@ -1051,6 +1178,133 @@ UI_STRINGS = {
         "resource_address": "Dirección: ",
         "resource_website": "Sitio Web: ",
         "loading_resources": "Encontrando recursos cerca de ti...",
+        
+        # Dashboard & Document Assistant
+        "saved_deadlines": "⏰ Tus Plazos Guardados",
+        "upload_legal_doc": "Cargar un Documento Legal",
+        "important_dates": "📅 Fechas Importantes",
+        "required_actions": "✓ Acciones Requeridas",
+        "critical_deadlines": "⏰ Plazos Críticos",
+        "penalties_warnings": "⚠️ Multas y Advertencias",
+        "extraction_guide": "Guía de Extracción de Documentos",
+        "demo_mode_active": "📺 **MODO DE DEMOSTRACIÓN ACTIVO** - Estos son datos de muestra para propósitos de demostración",
+        "have_deadlines": "📋 ¡Tienes plazos importantes que administrar!",
+        "view_all_deadlines": "📋 Ver Todos los Plazos →",
+        "from_document": "De:",
+        "file_type": "Tipo de Archivo",
+        "file_size": "Tamaño del Archivo",
+        "status_ready": "Listo para extracción",
+        "extract_information": "🔍 Extraer Información",
+        "extracting_info": "Extrayendo información del documento...",
+        "no_dates_found": "No se encontraron fechas",
+        "no_deadlines_found": "No se encontraron plazos",
+        "no_penalties_found": "No se encontraron multas",
+        "download_summary": "📥 Descargar Resumen",
+        "download_as_txt": "Descargar como TXT",
+        "save_deadlines_to_dashboard": "💾 Guardar Plazos en el Panel",
+        
+        # Rights & Quiz
+        "know_your_rights_long": "⚖️ Conoce Tus Derechos",
+        "education_quizzes": "Educación, Quizzes y Módulos de Aprendizaje",
+        "learn_tab": "📚 Aprender",
+        "quiz_tab": "🧪 Quiz",
+        "rights_education": "Educación de Derechos",
+        "select_topic": "Selecciona un tema:",
+        "test_knowledge": "Prueba tu conocimiento sobre tus derechos civiles y protecciones legales.",
+        "rights_quiz": "Quiz de Derechos",
+        "can_police_search": "¿Pueden los policías buscar tu carro sin consentimiento?",
+        "only_with_warrant": "Solo con una orden",
+        "only_prob_cause": "Solo si tienen causa probable",
+        "both_a_and_b": "Ambos A y B",
+        "never_without": "No, nunca",
+        "police_can_search": "La policía puede hacer una búsqueda con una orden O si tienen causa probable para creer que hay pruebas en el carro.",
+        "answer_police_q": "¿Tienes que responder preguntas de la policía?",
+        "yes_always": "Sí, siempre",
+        "right_remain_silent": "No, tienes derecho a permanecer en silencio",
+        "only_your_name": "Solo tu nombre",
+        "only_if_arrested": "Solo si eres arrestado",
+        "fifth_amendment": "Tienes derecho de la Quinta Enmienda a permanecer en silencio y no auto-incriminarte.",
+        "what_say_arrested": "¿Qué deberías decir si eres arrestado?",
+        "explain_what_happened": "Explicar lo que sucedió",
+        "ask_for_lawyer": "Pedir un abogado",
+        "refuse_give_name": "Negarse a dar tu nombre",
+        "try_negotiate": "Intentar negociar",
+        "always_ask_lawyer": "Siempre pide un abogado inmediatamente y permanece en silencio.",
+        "check_answer": "✓ Verificar Respuesta {number}",
+        "question_number": "Pregunta {number}: {question}",
+        "select_answer": "Selecciona tu respuesta:",
+        "your_score": "Tu Puntuación",
+        
+        # Community
+        "talk_community": "💬 Habla con Tu Comunidad",
+        "community_intro": "Comparte experiencias, haz preguntas, da consejos - juntos somos más fuertes",
+        "share_exp_tab": "💭 Compartir Experiencias",
+        "ask_q_tab": "❓ Hacer Preguntas",
+        "give_advice_tab": "💡 Dar Consejos",
+        "share_your_exp": "💭 Comparte Tu Experiencia",
+        "share_story": "Comparte tu historia para ayudar a otros. Todos los posts son moderados por seguridad.",
+        "title_label": "Título:",
+        "exp_placeholder": "p.ej., Consejos para lidiar con paradas de tráfico",
+        "your_story": "Tu historia:",
+        "story_placeholder": "Comparte tu experiencia...",
+        "post_anonymously": "Publicar anónimamente",
+        "share_exp_btn": "📤 Compartir Experiencia",
+        "fill_title_content": "⚠️ Por favor completa el título y el contenido",
+        "exp_shared": "✅ ¡Tu experiencia ha sido compartida! Gracias por ayudar a la comunidad.",
+        "ask_community": "❓ Pregunta a la Comunidad",
+        "question_help": "¿Tienes una pregunta? La comunidad está aquí para ayudar.",
+        "your_question": "Tu pregunta:",
+        "question_placeholder": "p.ej., ¿Cuáles son mis derechos durante una parada de tráfico?",
+        "details_label": "Detalles:",
+        "details_placeholder": "Proporciona más contexto...",
+        "ask_anon": "Preguntar anónimamente",
+        "ask_q_btn": "❓ Hacer Pregunta",
+        "enter_question": "⚠️ Por favor ingresa tu pregunta",
+        "question_posted": "✅ ¡Tu pregunta ha sido publicada!",
+        "give_advice": "💡 Dar Consejos",
+        "help_others": "Ayuda a otros con tu conocimiento y experiencia.",
+        "topic_label": "Tema:",
+        "topic_placeholder": "p.ej., Cómo prepararse para la corte",
+        "your_advice": "Tu consejo:",
+        "advice_placeholder": "Comparte lo que sabes...",
+        "share_anon": "Compartir anónimamente",
+        "share_advice_btn": "💡 Compartir Consejo",
+        "share_wisdom": "✅ ¡Gracias por compartir tu sabiduría!",
+        "fill_topic_advice": "⚠️ Por favor completa el tema y el consejo",
+        "recent_posts": "📋 Posts Recientes de la Comunidad",
+        "no_posts_yet": "💭 Aún no hay posts de la comunidad. ¡Sé el primero en compartir!",
+        "posted_recently": "Publicado {timestamp}",
+        
+        # Crisis
+        "crisis_hotlines": "🚨 Recursos de Crisis y Líneas Directas",
+        "crisis_support_24": "Apoyo 24/7 Cuando Lo Necesites",
+        "emergency_hotlines_header": "🆘 Líneas Directas de Emergencia",
+        "in_immediate_danger": "Si estás en peligro inmediato, llama al 911",
+        "emergency_number": "Emergencia",
+        "suicide_prevention": "Línea Nacional de Prevención del Suicidio",
+        "domestic_violence": "Línea Directa de Violencia Doméstica Nacional",
+        "sexual_assault": "RAINN - Apoyo para Agresión Sexual",
+        "poison_control": "Centro de Control de Envenenamiento",
+        "crisis_text": "Línea de Crisis por Texto",
+        "safety_procedures": "📋 Procedimientos de Seguridad",
+        "stay_safe": "🛡️ Mantente Seguro",
+        "stay_safe_desc": "Mantente seguro - no resistas físicamente. Tu seguridad es la prioridad.",
+        "document_details": "📝 Documentar Detalles",
+        "document_details_desc": "Recuerda: nombres de oficiales, números de insignia, ubicaciones, horas, qué dijeron e hicieron.",
+        "record_safely": "🎥 Grabar de Forma Segura",
+        "record_safely_desc": "Si es seguro y legal en tu área, graba la interacción. Mantén la cámara visible.",
+        "call_for_help": "📞 Llamar Pidiendo Ayuda",
+        "call_help_desc": "Llama al 911 si estás en peligro inmediato. Mantente tranquilo y claro al explicar.",
+        "get_legal_help": "⚖️ Obtener Ayuda Legal",
+        "legal_help_desc": "Contacta a un abogado inmediatamente. Muchos defensores públicos ofrecen servicios de emergencia.",
+        "medical_attention": "🏥 Atención Médica",
+        "medical_attention_desc": "Si estás lesionado, busca atención médica y documenta las lesiones con fotos.",
+        "mental_health_support": "🧠 Apoyo de Salud Mental",
+        "legal_troubles_trauma": "Experimentar problemas legales, encuentros policiales o discriminación puede ser traumático.",
+        "mental_health_resources": "Recursos de salud mental:",
+        "samhsa_helpline": "Línea de Ayuda Nacional SAMHSA: 1-800-662-4357 (gratis, confidencial, 24/7)",
+        "psychology_directory": "Terapeutas locales: Busca en el directorio de Psychology Today",
+        "support_groups": "Grupos de apoyo: NAACP, centros comunitarios, organizaciones de ayuda legal a menudo ofrecen grupos de apoyo",
         
         # Additional UI Labels
         "home_icon": "🏠",
@@ -1613,8 +1867,8 @@ def page_home():
     
     # Show saved deadlines section (NEW)
     if st.session_state.saved_deadlines:
-        st.markdown("## ⏰ Your Saved Deadlines")
-        st.warning("📋 You have important deadlines to manage!")
+        st.markdown(f"## {t('saved_deadlines')}")
+        st.warning(f"📋 {t('have_deadlines')}")
         
         for deadline in st.session_state.saved_deadlines[-3:]:  # Show last 3
             col1, col2 = st.columns([4, 1])
@@ -1622,7 +1876,7 @@ def page_home():
                 st.markdown(f"""
                 <div class="dashboard-card">
                     <p><strong>📅 {deadline['deadline']}</strong></p>
-                    <p>From: {deadline.get('document', 'Unknown document')}</p>
+                    <p>{t('from_document')}: {deadline.get('document', 'Unknown document')}</p>
                 </div>
                 """, unsafe_allow_html=True)
             with col2:
@@ -1631,7 +1885,7 @@ def page_home():
                         delete_deadline(deadline.get('id'))
                         st.rerun()
         
-        if st.button("📋 View All Deadlines →", use_container_width=True):
+        if st.button(t('view_all_deadlines'), use_container_width=True):
             st.session_state.page = "DocumentAssistant"
             st.rerun()
         st.divider()
@@ -1647,8 +1901,8 @@ def page_home():
             st.markdown(f"""
             <div class="dashboard-card">
                 <div class="card-icon">🗣️</div>
-                <div class="card-title">Real-Time Translation</div>
-                <div class="card-description">Translate officer statements in real-time to 14 languages</div>
+                <div class="card-title">{t_bilingual('card_translation_title')}</div>
+                <div class="card-description">{t('card_translation_desc')}</div>
             </div>
             """, unsafe_allow_html=True)
             if st.button("📖 Open Feature", use_container_width=True, key="open_translation"):
@@ -1662,8 +1916,8 @@ def page_home():
             st.markdown(f"""
             <div class="dashboard-card">
                 <div class="card-icon">📄</div>
-                <div class="card-title">Legal Documents</div>
-                <div class="card-description">Extract deadlines, penalties, and required actions from documents</div>
+                <div class="card-title">{t_bilingual('card_documents_title')}</div>
+                <div class="card-description">{t('card_documents_desc')}</div>
             </div>
             """, unsafe_allow_html=True)
             if st.button("📖 Open Feature", use_container_width=True, key="open_documents"):
@@ -1677,8 +1931,8 @@ def page_home():
             st.markdown(f"""
             <div class="dashboard-card">
                 <div class="card-icon">⚖️</div>
-                <div class="card-title">Know Your Rights</div>
-                <div class="card-description">Learn your civil rights and test your knowledge with interactive quizzes</div>
+                <div class="card-title">{t_bilingual('card_rights_title')}</div>
+                <div class="card-description">{t('card_rights_desc')}</div>
             </div>
             """, unsafe_allow_html=True)
             if st.button("📖 Open Feature", use_container_width=True, key="open_rights"):
@@ -1692,8 +1946,8 @@ def page_home():
             st.markdown(f"""
             <div class="dashboard-card">
                 <div class="card-icon">📍</div>
-                <div class="card-title">Resources Near You</div>
-                <div class="card-description">Find legal aid, community centers, and emergency services nearby</div>
+                <div class="card-title">{t_bilingual('card_nearby_title')}</div>
+                <div class="card-description">{t('card_nearby_desc')}</div>
             </div>
             """, unsafe_allow_html=True)
             if st.button("📖 Open Feature", use_container_width=True, key="open_nearby"):
@@ -1706,8 +1960,8 @@ def page_home():
             st.markdown(f"""
             <div class="dashboard-card">
                 <div class="card-icon">📝</div>
-                <div class="card-title">Encounter Log</div>
-                <div class="card-description">Document and track your encounters with law enforcement</div>
+                <div class="card-title">{t_bilingual('card_logging_title')}</div>
+                <div class="card-description">{t('card_logging_desc')}</div>
             </div>
             """, unsafe_allow_html=True)
             if st.button("📖 Open Feature", use_container_width=True, key="open_logging"):
@@ -1721,8 +1975,8 @@ def page_home():
             st.markdown(f"""
             <div class="dashboard-card">
                 <div class="card-icon">🚨</div>
-                <div class="card-title">Crisis Resources</div>
-                <div class="card-description">24/7 hotlines and emergency support for critical situations</div>
+                <div class="card-title">{t_bilingual('card_emergency_title')}</div>
+                <div class="card-description">{t('card_emergency_desc')}</div>
             </div>
             """, unsafe_allow_html=True)
             if st.button("📖 Open Feature", use_container_width=True, key="open_crisis"):
@@ -1736,8 +1990,8 @@ def page_home():
             st.markdown(f"""
             <div class="dashboard-card">
                 <div class="card-icon">💬</div>
-                <div class="card-title">Talk to Your Community</div>
-                <div class="card-description">Share experiences, ask questions, and get advice from the community</div>
+                <div class="card-title">{t_bilingual('card_resources_title')}</div>
+                <div class="card-description">{t('card_resources_desc')}</div>
             </div>
             """, unsafe_allow_html=True)
             if st.button("📖 Open Feature", use_container_width=True, key="open_community"):
@@ -1911,10 +2165,10 @@ def page_documents():
     """)
     
     # Document upload interface
-    tab1, tab2 = st.tabs(["📤 Upload Document", "📋 Document Extraction"])
+    tab1, tab2 = st.tabs([t('upload_document'), "📋 Document Extraction"])
     
     with tab1:
-        st.markdown("### Upload a Legal Document")
+        st.markdown(f"### {t('upload_legal_doc')}")
         uploaded_file = st.file_uploader(
             "Choose a document (PDF, JPG, PNG)",
             type=["pdf", "jpg", "jpeg", "png"],
@@ -1927,15 +2181,15 @@ def page_documents():
             # Show file info
             col1, col2, col3 = st.columns(3)
             with col1:
-                st.metric("File Type", uploaded_file.type)
+                st.metric(t('file_type'), uploaded_file.type)
             with col2:
-                st.metric("File Size", f"{uploaded_file.size / 1024:.1f} KB")
+                st.metric(t('file_size'), f"{uploaded_file.size / 1024:.1f} KB")
             with col3:
-                st.metric("Status", "Ready for extraction")
+                st.metric(t('status_ready'), t('status_ready'))
             
             # Mock document extraction (in production, use Tesseract OCR)
-            if st.button("🔍 Extract Information", use_container_width=True, key="extract_doc"):
-                with st.spinner("Extracting information from document..."):
+            if st.button(t('extract_information'), use_container_width=True, key="extract_doc"):
+                with st.spinner(t('extracting_info')):
                     # Mock extraction - sample legal text
                     sample_text = """
                     NOTICE TO APPEAR IN COURT
@@ -1961,41 +2215,41 @@ def page_documents():
                     col1, col2 = st.columns(2)
                     
                     with col1:
-                        st.markdown("### 📅 Important Dates")
+                        st.markdown(f"### {t('important_dates')}")
                         if extracted["dates"]:
                             for date in extracted["dates"]:
                                 st.markdown(f"• **{date}**")
                         else:
-                            st.info("No dates found")
+                            st.info(t('no_dates_found'))
                         
-                        st.markdown("### ✓ Required Actions")
+                        st.markdown(f"### {t('required_actions')}")
                         if extracted["deadlines"]:
                             for deadline in extracted["deadlines"]:
                                 st.markdown(f"• {deadline}")
                         else:
-                            st.info("No deadlines found")
+                            st.info(t('no_deadlines_found'))
                     
                     with col2:
-                        st.markdown("### ⏰ Critical Deadlines")
+                        st.markdown(f"### {t('critical_deadlines')}")
                         if extracted["deadlines"]:
                             for deadline in extracted["deadlines"]:
                                 st.warning(f"⚠️ {deadline}")
                         else:
-                            st.info("No deadlines found")
+                            st.info(t('no_deadlines_found'))
                         
-                        st.markdown("### ⚠️ Penalties & Warnings")
+                        st.markdown(f"### {t('penalties_warnings')}")
                         if extracted["penalties"]:
                             for penalty in extracted["penalties"]:
                                 st.error(f"❌ {penalty}")
                         else:
-                            st.info("No penalties found")
+                            st.info(t('no_penalties_found'))
                     
                     # Download summary
                     st.divider()
                     col1, col2 = st.columns(2)
                     
                     with col1:
-                        if st.button("📥 Download Summary", use_container_width=True):
+                        if st.button(t('download_summary'), use_container_width=True):
                             summary_text = f"""
 DOCUMENT EXTRACTION SUMMARY
 ==========================
@@ -2010,7 +2264,7 @@ PENALTIES:
 {chr(10).join(extracted['penalties']) if extracted['penalties'] else 'None'}
                             """
                             st.download_button(
-                                label="Download as TXT",
+                                label=t('download_as_txt'),
                                 data=summary_text,
                                 file_name="document_summary.txt",
                                 mime="text/plain"
@@ -2018,7 +2272,7 @@ PENALTIES:
                     
                     # Save deadlines feature
                     with col2:
-                        if st.button("💾 Save Deadlines to Dashboard", use_container_width=True, key="save_deadlines_btn"):
+                        if st.button(t('save_deadlines_to_dashboard'), use_container_width=True, key="save_deadlines_btn"):
                             if extracted["deadlines"]:
                                 for deadline in extracted["deadlines"]:
                                     deadline_data = {
@@ -2034,7 +2288,7 @@ PENALTIES:
                                 st.warning("⚠️ No deadlines to save")
     
     with tab2:
-        st.markdown("### Document Extraction Guide")
+        st.markdown(f"### {t('extraction_guide')}")
         st.markdown("""
         **This tool can extract:**
         - **Dates**: Court dates, deadlines, filing dates
@@ -2162,18 +2416,18 @@ def page_rights_near_me():
 
 def page_know_your_rights():
     """Combined Rights Education and Interactive Quizzes - Unified Learning Center."""
-    st.markdown(f"# ⚖️ Know Your Rights")
-    st.markdown(f"_Education, Quizzes & Learning Modules_")
+    st.markdown(f"# {t('know_your_rights_long')}")
+    st.markdown(f"_{t('education_quizzes')}_")
     st.divider()
     
     # Tab-based interface
-    tab1, tab2 = st.tabs(["📚 Learn", "🧪 Quiz"])
+    tab1, tab2 = st.tabs([t('learn_tab'), t('quiz_tab')])
     
     with tab1:
-        st.markdown(f"## Rights Education")
+        st.markdown(f"## {t('rights_education')}")
         
         selected_right = st.selectbox(
-            "Select a topic:",
+            t('select_topic'),
             list(RIGHTS_EDUCATION.keys()),
             key="rights_select"
         )
@@ -2189,28 +2443,28 @@ def page_know_your_rights():
             st.caption(f"📖 Topic {list(RIGHTS_EDUCATION.keys()).index(selected_right) + 1} of {len(RIGHTS_EDUCATION)}")
     
     with tab2:
-        st.markdown(f"## Rights Quiz")
-        st.markdown(f"Test your knowledge about your civil rights and legal protections.")
+        st.markdown(f"## {t('rights_quiz')}")
+        st.markdown(t('test_knowledge'))
         st.divider()
         
         quiz_questions = [
             {
-                "question": "Can police search your car without consent?",
-                "options": ["Only with a warrant", "Only if they have probable cause", "Both A and B", "No, never"],
+                "question": t('can_police_search'),
+                "options": [t('only_with_warrant'), t('only_prob_cause'), t('both_a_and_b'), t('never_without')],
                 "correct": 2,
-                "explanation": "Police can search with a warrant OR if they have probable cause to believe evidence is in the car."
+                "explanation": t('police_can_search')
             },
             {
-                "question": "Do you have to answer police questions?",
-                "options": ["Yes, always", "No, you have the right to remain silent", "Only your name", "Only if arrested"],
+                "question": t('answer_police_q'),
+                "options": [t('yes_always'), t('right_remain_silent'), t('only_your_name'), t('only_if_arrested')],
                 "correct": 1,
-                "explanation": "You have the Fifth Amendment right to remain silent and not incriminate yourself."
+                "explanation": t('fifth_amendment')
             },
             {
-                "question": "What should you say if arrested?",
-                "options": ["Explain what happened", "Ask for a lawyer", "Refuse to give your name", "Try to negotiate"],
+                "question": t('what_say_arrested'),
+                "options": [t('explain_what_happened'), t('ask_for_lawyer'), t('refuse_give_name'), t('try_negotiate')],
                 "correct": 1,
-                "explanation": "Always ask for a lawyer immediately and remain silent."
+                "explanation": t('always_ask_lawyer')
             }
         ]
         
@@ -2218,14 +2472,14 @@ def page_know_your_rights():
         answered = 0
         
         for i, q in enumerate(quiz_questions):
-            st.markdown(f"### Question {i+1}: {q['question']}")
+            st.markdown(f"### {t('question_number').format(number=i+1, question=q['question'])}")
             answer = st.radio(
-                "Select your answer:",
+                t('select_answer'),
                 q['options'],
                 key=f"quiz_q{i}"
             )
             
-            if st.button(f"✓ Check Answer {i+1}", key=f"check_q{i}"):
+            if st.button(t('check_answer').format(number=i+1), key=f"check_q{i}"):
                 answered += 1
                 if answer == q['options'][q['correct']]:
                     st.success("✅ Correct!")
@@ -2234,10 +2488,10 @@ def page_know_your_rights():
                     st.error(f"❌ Incorrect. {q['explanation']}")
             st.divider()
         
-        if answered > 0:
-            quiz_pct = (score / len(quiz_questions)) * 100
-            st.progress(quiz_pct / 100)
-            st.metric("Score", f"{score}/{len(quiz_questions)}", f"{quiz_pct:.0f}%")
+            if quiz_pct:
+                quiz_pct = (score / len(quiz_questions)) * 100
+                st.progress(quiz_pct / 100)
+                st.metric(t('your_score'), f"{score}/{len(quiz_questions)}", f"{quiz_pct:.0f}%")
 
 def page_community_discussion():
     """Talk to Your Community - Safe community discussion space."""
@@ -2256,7 +2510,7 @@ def page_community_discussion():
         post_content = st.text_area("Your story:", placeholder="Share your experience...", height=200, key="exp_content")
         anonymous = st.checkbox("Post anonymously", value=True, key="exp_anon")
         
-        if st.button("📤 Share Experience", use_container_width=True, key="submit_exp"):
+        if st.button(t('share_exp_btn'), use_container_width=True, key="submit_exp"):
             if post_title and post_content:
                 post = {
                     "type": "experience",
@@ -2266,19 +2520,19 @@ def page_community_discussion():
                     "author": "Anonymous" if anonymous else "Community Member"
                 }
                 save_community_post(post)
-                st.success("✅ Your experience has been shared! Thank you for helping the community.")
+                st.success(t('exp_shared'))
             else:
-                st.warning("⚠️ Please fill in both title and content")
+                st.warning(t('fill_title_content'))
     
     with tab2:
-        st.markdown("### ❓ Ask the Community")
-        st.markdown("Have a question? The community is here to help.")
+        st.markdown(f"### {t('ask_community')}")
+        st.markdown(t('question_help'))
         
-        q_title = st.text_input("Your question:", placeholder="e.g., What are my rights during a traffic stop?", key="q_title")
-        q_content = st.text_area("Details:", placeholder="Provide more context...", height=150, key="q_content")
-        anonymous = st.checkbox("Ask anonymously", value=True, key="q_anon")
+        q_title = st.text_input(t('your_question'), placeholder=t('question_placeholder'), key="q_title")
+        q_content = st.text_area(t('details_label'), placeholder=t('details_placeholder'), height=150, key="q_content")
+        anonymous = st.checkbox(t('ask_anon'), value=True, key="q_anon")
         
-        if st.button("❓ Ask Question", use_container_width=True, key="submit_q"):
+        if st.button(t('ask_q_btn'), use_container_width=True, key="submit_q"):
             if q_title:
                 post = {
                     "type": "question",
@@ -2289,19 +2543,19 @@ def page_community_discussion():
                     "responses": []
                 }
                 save_community_post(post)
-                st.success("✅ Your question has been posted!")
+                st.success(t('question_posted'))
             else:
-                st.warning("⚠️ Please enter your question")
+                st.warning(t('enter_question'))
     
     with tab3:
-        st.markdown("### 💡 Give Advice")
-        st.markdown("Help others with your knowledge and experience.")
+        st.markdown(f"### {t('give_advice')}")
+        st.markdown(t('help_others'))
         
-        advice_title = st.text_input("Topic:", placeholder="e.g., How to prepare for court", key="adv_title")
-        advice_content = st.text_area("Your advice:", placeholder="Share what you know...", height=200, key="adv_content")
-        anonymous = st.checkbox("Share anonymously", value=True, key="adv_anon")
+        advice_title = st.text_input(t('topic_label'), placeholder=t('topic_placeholder'), key="adv_title")
+        advice_content = st.text_area(t('your_advice'), placeholder=t('advice_placeholder'), height=200, key="adv_content")
+        anonymous = st.checkbox(t('share_anon'), value=True, key="adv_anon")
         
-        if st.button("💡 Share Advice", use_container_width=True, key="submit_adv"):
+        if st.button(t('share_advice_btn'), use_container_width=True, key="submit_adv"):
             if advice_title and advice_content:
                 post = {
                     "type": "advice",
@@ -2311,9 +2565,9 @@ def page_community_discussion():
                     "author": "Anonymous" if anonymous else "Community Member"
                 }
                 save_community_post(post)
-                st.success("✅ Thank you for sharing your wisdom!")
+                st.success(t('share_wisdom'))
             else:
-                st.warning("⚠️ Please fill in both topic and advice")
+                st.warning(t('fill_topic_advice'))
     
     # Display recent community posts
     st.divider()
@@ -2332,13 +2586,13 @@ def page_community_discussion():
 
 def page_crisis_resources():
     """Crisis Resources & Hotlines - Emergency assistance and mental health support."""
-    st.markdown(f"# 🚨 Crisis Resources & Hotlines")
-    st.markdown(f"_24/7 Support When You Need It Most_")
+    st.markdown(f"# {t('crisis_hotlines')}")
+    st.markdown(f"_{t('crisis_support_24')}_")
     st.divider()
     
     # Critical hotlines section
-    st.markdown(f"## 🆘 Emergency Hotlines")
-    st.markdown("**If you are in immediate danger, call 911**")
+    st.markdown(f"## {t('emergency_hotlines_header')}")
+    st.markdown(f"**{t('in_immediate_danger')}**")
     
     crisis_contacts = {
         "🆘 Emergency / Emergencia": "911",
@@ -2364,7 +2618,7 @@ def page_crisis_resources():
     st.divider()
     
     # Emergency procedures
-    st.markdown(f"## 📋 Safety Procedures")
+    st.markdown(f"## {t('safety_procedures')}")
     
     procedures = [
         ("🛡️ Stay Safe", "Keep yourself safe - do not physically resist. Your safety is the priority."),
@@ -2383,7 +2637,7 @@ def page_crisis_resources():
     st.divider()
     
     # Mental health and support
-    st.markdown(f"## 🧠 Mental Health & Support")
+    st.markdown(f"## {t('mental_health_support')}")
     st.markdown("""
     Experiencing legal troubles, police encounters, or discrimination can be traumatic.
     
