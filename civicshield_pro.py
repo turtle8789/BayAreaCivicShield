@@ -1393,11 +1393,11 @@ def t(key: str) -> str:
     else:
         return key  # Return the key if not found
 
-def t_bilingual(key: str) -> str:
+def t(key: str) -> str:
     """
     Get bilingual text: Selected Language / English
     Example: Traduccion / Translation
-    Usage: st.markdown(t_bilingual('translation_title'))
+    Usage: st.markdown(t('translation_title'))
     """
     lang = st.session_state.selected_language
     if lang == "English":
@@ -1861,8 +1861,8 @@ def page_home():
         # Show demo mode indicator
         st.info("📺 **DEMO MODE ACTIVE** - This is sample data for demonstration purposes")
     
-    st.markdown(f"# 🏠 {t_bilingual('home_title')}")
-    st.markdown(f"## {t_bilingual('home_subtitle')}")
+    st.markdown(f"# 🏠 {t('home_title')}")
+    st.markdown(f"## {t('home_subtitle')}")
     st.markdown("---")
     
     # Show saved deadlines section (NEW)
@@ -1890,7 +1890,7 @@ def page_home():
             st.rerun()
         st.divider()
     
-    st.markdown(f"### {t_bilingual('dashboard_intro')}")
+    st.markdown(f"### {t('dashboard_intro')}")
     
     # Create feature cards in a 2-column grid layout
     col1, col2 = st.columns(2)
@@ -1901,7 +1901,7 @@ def page_home():
             st.markdown(f"""
             <div class="dashboard-card">
                 <div class="card-icon">🗣️</div>
-                <div class="card-title">{t_bilingual('card_translation_title')}</div>
+                <div class="card-title">{t('card_translation_title')}</div>
                 <div class="card-description">{t('card_translation_desc')}</div>
             </div>
             """, unsafe_allow_html=True)
@@ -1916,7 +1916,7 @@ def page_home():
             st.markdown(f"""
             <div class="dashboard-card">
                 <div class="card-icon">📄</div>
-                <div class="card-title">{t_bilingual('card_documents_title')}</div>
+                <div class="card-title">{t('card_documents_title')}</div>
                 <div class="card-description">{t('card_documents_desc')}</div>
             </div>
             """, unsafe_allow_html=True)
@@ -1931,7 +1931,7 @@ def page_home():
             st.markdown(f"""
             <div class="dashboard-card">
                 <div class="card-icon">⚖️</div>
-                <div class="card-title">{t_bilingual('card_rights_title')}</div>
+                <div class="card-title">{t('card_rights_title')}</div>
                 <div class="card-description">{t('card_rights_desc')}</div>
             </div>
             """, unsafe_allow_html=True)
@@ -1946,7 +1946,7 @@ def page_home():
             st.markdown(f"""
             <div class="dashboard-card">
                 <div class="card-icon">📍</div>
-                <div class="card-title">{t_bilingual('card_nearby_title')}</div>
+                <div class="card-title">{t('card_nearby_title')}</div>
                 <div class="card-description">{t('card_nearby_desc')}</div>
             </div>
             """, unsafe_allow_html=True)
@@ -1960,7 +1960,7 @@ def page_home():
             st.markdown(f"""
             <div class="dashboard-card">
                 <div class="card-icon">📝</div>
-                <div class="card-title">{t_bilingual('card_logging_title')}</div>
+                <div class="card-title">{t('card_logging_title')}</div>
                 <div class="card-description">{t('card_logging_desc')}</div>
             </div>
             """, unsafe_allow_html=True)
@@ -1975,7 +1975,7 @@ def page_home():
             st.markdown(f"""
             <div class="dashboard-card">
                 <div class="card-icon">🚨</div>
-                <div class="card-title">{t_bilingual('card_emergency_title')}</div>
+                <div class="card-title">{t('card_emergency_title')}</div>
                 <div class="card-description">{t('card_emergency_desc')}</div>
             </div>
             """, unsafe_allow_html=True)
@@ -1990,7 +1990,7 @@ def page_home():
             st.markdown(f"""
             <div class="dashboard-card">
                 <div class="card-icon">💬</div>
-                <div class="card-title">{t_bilingual('card_resources_title')}</div>
+                <div class="card-title">{t('card_resources_title')}</div>
                 <div class="card-description">{t('card_resources_desc')}</div>
             </div>
             """, unsafe_allow_html=True)
@@ -2230,8 +2230,8 @@ def page_translation():
 
 def page_documents():
     """Legal document assistant page with OCR and extraction."""
-    st.markdown(f"# 📄 {t_bilingual('documents_title')}")
-    st.markdown(f"_{t_bilingual('documents_subtitle')}_")
+    st.markdown(f"# 📄 {t('documents_title')}")
+    st.markdown(f"_{t('documents_subtitle')}_")
     st.divider()
     
     st.markdown("""
@@ -2390,8 +2390,8 @@ PENALTIES:
 
 def page_resources_near_you():
     """Unified Resources Near You - location-based legal aid and community services finder."""
-    st.markdown(f"# 📍 {t_bilingual('location_title')}")
-    st.markdown(f"_{t_bilingual('nearby_subtitle')}_")
+    st.markdown(f"# 📍 {t('location_title')}")
+    st.markdown(f"_{t('nearby_subtitle')}_")
     st.divider()
     
     # Resource search interface
@@ -2399,7 +2399,7 @@ def page_resources_near_you():
     
     with col1:
         address = st.text_input(
-            t_bilingual('enter_address'),
+            t('enter_address'),
             placeholder="Enter address, city, or ZIP code",
             key="resource_address"
         )
@@ -2407,7 +2407,7 @@ def page_resources_near_you():
     
     with col2:
         radius = st.slider(
-            t_bilingual('search_radius_miles'),
+            t('search_radius_miles'),
             min_value=1,
             max_value=50,
             value=5,
@@ -2427,7 +2427,7 @@ def page_resources_near_you():
                 resources = [r for r in resources if r['category'] == st.session_state.resource_category_filter]
         
         if resources:
-            st.success(f"✅ {t_bilingual('found_resources')}: {len(resources)} {t_bilingual('resources_found')} {t_bilingual('within_miles')} {radius}")
+            st.success(f"✅ {t('found_resources')}: {len(resources)} {t('resources_found')} {t('within_miles')} {radius}")
             
             # Display resources in modern cards
             for idx, resource in enumerate(resources):
@@ -2437,17 +2437,17 @@ def page_resources_near_you():
                         <div class="card-icon">📍</div>
                         <div class="card-title">{resource['name']}</div>
                         <div class="card-description">
-                            <p><strong>{t_bilingual('distance_away')}:</strong> {resource['distance']} miles</p>
-                            <p><strong>{t_bilingual('resource_address')}:</strong> {resource['address']}</p>
-                            <p><strong>{t_bilingual('resource_phone')}:</strong> {resource['phone']}</p>
-                            <p><strong>{t_bilingual('resource_hours')}:</strong> {resource['hours']}</p>
+                            <p><strong>{t('distance_away')}:</strong> {resource['distance']} miles</p>
+                            <p><strong>{t('resource_address')}:</strong> {resource['address']}</p>
+                            <p><strong>{t('resource_phone')}:</strong> {resource['phone']}</p>
+                            <p><strong>{t('resource_hours')}:</strong> {resource['hours']}</p>
                             <p><strong>Website:</strong> {resource['website']}</p>
                         </div>
                     </div>
                     """, unsafe_allow_html=True)
                     
                     # Get Directions button - opens Google Maps
-                    if st.button(f"🗺️ {t_bilingual('get_directions')} - {resource['name']}", use_container_width=True, key=f"directions_{idx}"):
+                    if st.button(f"🗺️ {t('get_directions')} - {resource['name']}", use_container_width=True, key=f"directions_{idx}"):
                         # Build Google Maps URL
                         address_encoded = resource['address'].replace(' ', '+')
                         maps_url = f"https://www.google.com/maps/search/{address_encoded}/"
@@ -2464,7 +2464,7 @@ def page_resources_near_you():
     
     # Browse by Resource Type
     st.divider()
-    st.markdown(f"### 📋 {t_bilingual('browse_resources')}")
+    st.markdown(f"### 📋 {t('browse_resources')}")
     
     resource_categories = [
         ("⚖️ Legal Aid", "Legal Aid"),
@@ -3268,3 +3268,4 @@ def main():
 # ============================================================================
 if __name__ == "__main__":
     main()
+
