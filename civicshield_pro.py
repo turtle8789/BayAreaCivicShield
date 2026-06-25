@@ -31,6 +31,7 @@ import os
 from datetime import datetime
 import io
 import re
+import copy
 from PIL import Image
 import qrcode
 
@@ -666,6 +667,7 @@ UI_STRINGS = {
         
         # Common Buttons
         "btn_open": "Open Feature",
+        "btn_delete": "❌",
         "btn_record": "🎤 Record",
         "btn_stop": "⏹️ Stop",
         "btn_translate": "🌐 Translate",
@@ -689,6 +691,34 @@ UI_STRINGS = {
         "generating_audio": "Generating audio...",
         "audio_ready": "✅ Audio ready to play",
         "audio_failed": "❌ Audio generation failed",
+        "speech_recognized": "Speech captured and converted to text.",
+        "mic_unclear": "Could not understand the recorded speech. Please speak clearly and try again.",
+        "stt_unavailable": "Speech-to-text service is currently unavailable. Please try again in a moment.",
+        "unable_process_audio": "Unable to process recorded audio. Please record again.",
+        "mic_recorder_title": "Microphone Recorder",
+        "mic_recorder_desc": "Use Start Recording and Stop Recording to capture officer speech.",
+        "mic_help": "If your browser blocks microphone access, allow microphone permission and record again.",
+        "mic_access_failed": "Microphone access failed. Please allow browser microphone permission and try again.",
+        "mic_no_audio": "No audio was captured. Microphone permission may be denied. Allow access and try recording again.",
+        "btn_clear_filter": "Clear Filter",
+        "currently_filtering": "Currently filtering by",
+        "quiz_correct": "✅ Correct!",
+        "quiz_incorrect": "❌ Incorrect.",
+        "language_selector_error": "❌ Language selector error",
+        "demo_section_title": "Demo & Testing",
+        "demo_on": "🎬 Demo ON",
+        "demo_off": "🎬 Demo OFF",
+        "tour_button": "🎓 Tour",
+        "tour_complete": "✅ ¡Tour completado! Estás listo para usar CivicShield.",
+        "btn_go_home": "🏠 Ir al Inicio",
+        "btn_skip_tour": "⏭️ Omitir Tour",
+        "btn_next": "Siguiente ➡️",
+        "btn_start_using": "🎉 ¡Comenzar!",
+        "tour_complete": "✅ Tour Complete! You're ready to use CivicShield.",
+        "btn_go_home": "🏠 Go to Home",
+        "btn_skip_tour": "⏭️ Skip Tour",
+        "btn_next": "Next ➡️",
+        "btn_start_using": "🎉 Start Using!",
         
         # Document Assistant Page
         "documents_title": "Legal Document Assistant",
@@ -713,6 +743,11 @@ UI_STRINGS = {
         "right_sixth": "Sixth Amendment: Right to Attorney",
         "right_traffic": "Traffic Stop Rights",
         "right_arrest": "If You Are Arrested",
+        "right_fourth_content": "**Your Right:** You have the right to be free from unreasonable searches and seizures.\n\n**Key Points:**\n- Police generally need a warrant to search your home, car, or personal belongings\n- You can refuse a search by saying: \"I do not consent to a search\"\n- Do NOT physically resist - it could result in additional charges\n- Even if you refuse, police may continue if they have a warrant or probable cause\n\n**What You CAN Do:**\n- Remain silent and ask \"Am I free to go?\"\n- Ask \"Do you have a warrant?\"\n- Keep your hands visible\n- Do not physically obstruct police",
+        "right_fifth_content": "**Your Right:** You have the right to remain silent and not incriminate yourself.\n\n**Key Points:**\n- You do NOT have to answer police questions\n- Say clearly: \"I am exercising my right to remain silent\"\n- This right applies even if you haven't been arrested\n- Staying silent cannot be used against you in court\n\n**Important:**\n- You must tell police you are invoking this right - silence alone may not be enough\n- If arrested, ask for a lawyer immediately\n- Do not try to explain yourself or negotiate",
+        "right_sixth_content": "**Your Right:** You have the right to an attorney.\n\n**Key Points:**\n- If you cannot afford an attorney, one will be provided\n- You can request an attorney at ANY time during questioning\n- Once you ask for a lawyer, police should stop questioning you\n- You have the right to have your attorney present during questioning\n\n**What to Say:**\n- \"I want to speak to an attorney\"\n- \"I am invoking my right to an attorney\"\n- Then remain silent until your attorney arrives",
+        "right_traffic_content": "**During a Traffic Stop:**\n- You must provide your license, registration, and proof of insurance\n- You can ask: \"Am I being detained or am I free to go?\"\n- You do NOT have to consent to a search of your vehicle\n- Say clearly: \"I do not consent to a search\"\n\n**Vehicle Search:**\n- Police can look through windows without permission\n- Police can search your car if they find probable cause\n- They can search without consent if you're arrested\n- You CAN refuse the search, but they may proceed if they have probable cause\n\n**Your Rights:**\n- Keep hands visible\n- Speak calmly and politely\n- Do not physically resist\n- You can film the stop (but don't interfere)",
+        "right_arrest_content": "**Important Steps:**\n1. Remain silent - do not answer questions\n2. Say \"I want a lawyer\" clearly\n3. Do not sign anything without your attorney\n4. Do not discuss the case with cellmates or other inmates\n\n**Your Rights Upon Arrest:**\n- You have the right to be informed of charges against you\n- You have the right to a phone call\n- You have the right to remain silent\n- You have the right to an attorney\n\n**What NOT to Do:**\n- Do not resist arrest (even if you believe it's illegal)\n- Do not sign any statements\n- Do not consent to searches\n- Do not make deals with police without a lawyer",
         
         # Community Resources
         "resources_title": "Community Resources",
@@ -951,6 +986,96 @@ UI_STRINGS = {
         "samhsa_helpline": "SAMHSA National Helpline: 1-800-662-4357 (free, confidential, 24/7)",
         "psychology_directory": "Local therapists: Search Psychology Today's directory",
         "support_groups": "Support groups: NAACP, community centers, legal aid organizations often host support groups",
+
+        # Community, landing, tutorial, and navigation additions
+        "author_anonymous": "Anonymous",
+        "author_community_member": "Community Member",
+        "posted_recently": "Posted",
+        "recently": "recently",
+        "contact_emergency": "🆘 Emergency / Emergencia",
+        "contact_suicide": "🧠 National Suicide Prevention Lifeline",
+        "contact_domestic": "💔 National Domestic Violence Hotline",
+        "contact_rainn": "🤝 RAINN - Sexual Assault Support",
+        "contact_poison": "☠️ Poison Control Center",
+        "contact_crisis_text": "📱 Crisis Text Line",
+        "contact_crisis_text_number": "Text HOME to 741741",
+        "enc_type_traffic_stop": "Traffic Stop",
+        "enc_type_street_encounter": "Street Encounter",
+        "enc_type_arrest": "Arrest",
+        "enc_type_search": "Search",
+        "enc_type_other": "Other",
+        "encounter_label": "Encounter",
+        "unknown": "Unknown",
+        "na": "N/A",
+        "error_generating_qr": "Error generating QR code",
+        "btn_launch_app": "🚀 Launch App",
+        "btn_start_demo": "📺 Start Demo",
+        "btn_quick_tour": "❓ Quick Tour",
+        "share_with_others": "📱 Share with Others",
+        "qr_generation_in_progress": "QR code generation in progress...",
+        "key_features_label": "Key Features:",
+        "btn_previous": "⬅️ Previous",
+        "language_change_error": "Language change error",
+        "demo_mode_active_sidebar": "✅ Demo Mode Active - Sample data is displayed",
+        "screen_reader_off": "🔇 Screen Reader OFF",
+        "navigation_title": "Navigation",
+        "nav_rights_full": "⚖️ Know Your Rights",
+        "nav_resources_near_you": "📍 Resources Near You",
+        "nav_logging_full": "📝 Encounter Log",
+        "nav_crisis_resources": "🚨 Crisis Resources",
+        "nav_community": "💬 Talk to Your Community",
+        "sidebar_built_for": "Built for civil rights protection worldwide.",
+        "show_landing_page": "🏠 Show Landing Page",
+        "landing_hero_html": "<div class=\"landing-hero\"><h1>⚖️ CivicShield Pro</h1><h2>Know Your Rights. Protect Yourself. Get Help.</h2><p>A professional, multi-language platform empowering people to understand and assert their civil rights in real-time encounters.</p></div>",
+        "landing_purpose_md": "### 🎯 Purpose\nCivicShield Pro provides judges, advocates, and community members with:\n\n- **Real-time legal translation** in 14 languages\n- **Instant rights information** tailored to your situation\n- **Document analysis** with deadline extraction\n- **Community support** and shared experiences\n- **Crisis resources** available 24/7",
+        "landing_features_md": "### ⭐ Key Features\n\n- 🗣️ **Real-Time Translation** - Translate officer statements instantly\n- 📄 **Legal Documents** - Extract key info from court documents\n- ⚖️ **Know Your Rights** - Learn civil rights with interactive quiz\n- 📍 **Resources Near You** - Find legal aid & services by location\n- 📝 **Encounter Log** - Document police interactions\n- 🚨 **Crisis Hotlines** - 24/7 emergency support\n- 💬 **Community Forum** - Share and learn from others",
+        "landing_share_md": "**Share CivicShield with judges, advocates, and community members:**\n\n1. Scan the QR code to access the app\n2. No installation needed - works in any browser\n3. Available in 14 languages\n4. Works on desktop, tablet, and mobile",
+        "landing_who_should_use_md": "### 👥 Who Should Use CivicShield?\n\n**For Judges & Legal Professionals:**\n- Understand community perspective on civil rights protection\n- Assess whether defendants understand their rights\n- Reference real-time translation capabilities in decisions\n\n**For Advocates & Legal Aid:**\n- Provide clients with multi-language legal information\n- Help clients document encounters\n- Connect community members with resources\n\n**For Educators:**\n- Teach students about civil rights\n- Demonstrate real-world legal scenarios\n- Interactive learning with quizzes\n\n**For Community Members:**\n- Know what to do in a police encounter\n- Access emergency resources instantly\n- Connect with and learn from community experiences",
+        "landing_disclaimer_md": "**⚠️ Legal Disclaimer:**\n\nCivicShield Pro provides educational information about civil rights, not legal advice.\nWhile we strive for accuracy, laws vary by jurisdiction and change frequently.\nAlways consult with a qualified attorney for your specific situation.",
+        "tutorial_intro_html": "<div class=\"tutorial-container\"><h1>👋 Welcome to CivicShield Pro!</h1><p>Let's take a quick tour to help you get started.</p></div>",
+        "tutorial_step1_title": "🏠 Home Dashboard",
+        "tutorial_step1_desc": "Your central hub to access all CivicShield features. Each card represents a powerful tool for understanding and protecting your rights.",
+        "tutorial_step1_feat1": "Navigate to any feature",
+        "tutorial_step1_feat2": "View saved deadlines",
+        "tutorial_step1_feat3": "Access crisis resources",
+        "tutorial_step2_title": "🗣️ Real-Time Translation",
+        "tutorial_step2_desc": "Instantly translate officer statements into 14 languages. Record conversations and get immediate translations to ensure you understand your rights.",
+        "tutorial_step2_feat1": "Speech-to-text in any language",
+        "tutorial_step2_feat2": "Real-time translation",
+        "tutorial_step2_feat3": "Audio playback in your language",
+        "tutorial_step3_title": "📄 Legal Documents",
+        "tutorial_step3_desc": "Upload court documents, legal notices, or contracts. CivicShield extracts key information and identifies important deadlines.",
+        "tutorial_step3_feat1": "Extract deadlines automatically",
+        "tutorial_step3_feat2": "Identify penalties",
+        "tutorial_step3_feat3": "Get translations",
+        "tutorial_step4_title": "⚖️ Know Your Rights",
+        "tutorial_step4_desc": "Learn about civil rights with educational content and test your knowledge with interactive quizzes. Available in multiple languages.",
+        "tutorial_step4_feat1": "Learn civil rights",
+        "tutorial_step4_feat2": "Take interactive quizzes",
+        "tutorial_step4_feat3": "Track progress",
+        "tutorial_step5_title": "📍 Resources Near You",
+        "tutorial_step5_desc": "Find legal aid organizations, community centers, and emergency services near your location. Get directions with one click.",
+        "tutorial_step5_feat1": "Search by location",
+        "tutorial_step5_feat2": "Browse by category",
+        "tutorial_step5_feat3": "Get directions instantly",
+        "tutorial_step6_title": "💬 Community Forum",
+        "tutorial_step6_desc": "Connect with others, share experiences, ask questions, and get advice from community members. Fully anonymous if you choose.",
+        "tutorial_step6_feat1": "Share experiences anonymously",
+        "tutorial_step6_feat2": "Ask legal questions",
+        "tutorial_step6_feat3": "Give advice",
+        "documents_intro_md": "Upload a legal document (image or PDF) to extract key information:\n- Important dates and deadlines\n- Required actions\n- Penalties and warnings\n- Government agencies",
+        "document_extraction_tab": "📋 Document Extraction",
+        "choose_document": "Choose a document (PDF, JPG, PNG)",
+        "file_uploaded": "✅ File uploaded",
+        "saved_deadlines_count": "✅ Saved {count} deadline(s) to your dashboard!",
+        "no_deadlines_to_save": "⚠️ No deadlines to save",
+        "extraction_guide_md": "**This tool can extract:**\n- **Dates**: Court dates, deadlines, filing dates\n- **Deadlines**: \"Must respond by...\", \"Appear on...\"\n- **Actions**: What you need to do\n- **Penalties**: Fines, consequences for non-compliance\n- **Agencies**: Court, government offices mentioned\n\n**Works best with:**\n- ✅ Clear, printed documents\n- ✅ Good lighting and contrast\n- ✅ English language text\n- ✅ High resolution images\n\n**May have issues with:**\n- ❌ Handwritten documents\n- ❌ Very old or damaged documents\n- ❌ Multiple languages mixed\n- ❌ Low quality images",
+        "topic_progress": "📖 Topic {current} of {total}",
+        "enter_address_placeholder": "Enter address, city, or ZIP code",
+        "screen_reader_address_search": "Enter address for resource search",
+        "miles_unit": "miles",
+        "open_in_google_maps": "Open in Google Maps",
+        "opening_maps_to": "Opening maps to",
         
         # Additional UI Labels
         "home_icon": "🏠",
@@ -1020,6 +1145,7 @@ UI_STRINGS = {
         
         # Common Buttons
         "btn_open": "Abrir Característica",
+        "btn_delete": "❌",
         "btn_record": "🎤 Grabar",
         "btn_stop": "⏹️ Detener",
         "btn_translate": "🌐 Traducir",
@@ -1043,6 +1169,24 @@ UI_STRINGS = {
         "generating_audio": "Generando audio...",
         "audio_ready": "✅ Audio listo para reproducir",
         "audio_failed": "❌ Generación de audio fallida",
+        "mic_recorder_title": "Grabadora de Micrófono",
+        "mic_recorder_desc": "Use 'Iniciar Grabación' y 'Detener Grabación' para capturar el habla del oficial.",
+        "mic_help": "Si tu navegador bloquea el acceso al micrófono, permite el permiso de micrófono y graba de nuevo.",
+        "mic_access_failed": "Acceso al micrófono falló. Por favor permite el permiso del micrófono en el navegador e inténtalo de nuevo.",
+        "mic_no_audio": "No se capturó audio. Es posible que el permiso del micrófono esté denegado. Permite el acceso e inténtalo de nuevo.",
+        "btn_clear_filter": "Borrar Filtro",
+        "currently_filtering": "Actualmente filtrando por",
+        "quiz_correct": "✅ ¡Correcto!",
+        "quiz_incorrect": "❌ Incorrecto.",
+        "language_selector_error": "❌ Error del selector de idioma",
+        "demo_section_title": "Demo y Pruebas",
+        "demo_on": "🎬 Demo ACTIVADA",
+        "demo_off": "🎬 Demo DESACTIVADA",
+        "tour_button": "🎓 Tour",
+        "speech_recognized": "Discurso capturado y convertido a texto.",
+        "mic_unclear": "No se pudo entender el discurso grabado. Por favor, hable claramente e inténtelo de nuevo.",
+        "stt_unavailable": "El servicio de reconocimiento de voz no está disponible actualmente. Por favor, inténtelo de nuevo en un momento.",
+        "unable_process_audio": "No se puede procesar el audio grabado. Por favor, grabe de nuevo.",
         
         # Document Assistant Page
         "documents_title": "Asistente de Documentos Legales",
@@ -1067,6 +1211,11 @@ UI_STRINGS = {
         "right_sixth": "Sexta Enmienda: Derecho a un Abogado",
         "right_traffic": "Derechos en Paradas de Tráfico",
         "right_arrest": "Si Eres Arrestado",
+        "right_fourth_content": "**Tu derecho:** Tienes derecho a estar libre de registros e incautaciones irrazonables.\n\n**Puntos clave:**\n- La policía generalmente necesita una orden para registrar tu casa, auto o pertenencias\n- Puedes rechazar un registro diciendo: \"No doy mi consentimiento para un registro\"\n- NO te resistas físicamente: puede generar cargos adicionales\n- Incluso si te niegas, la policía puede continuar si tiene orden o causa probable\n\n**Lo que SÍ puedes hacer:**\n- Guardar silencio y preguntar \"¿Soy libre de irme?\"\n- Preguntar \"¿Tiene una orden?\"\n- Mantener las manos visibles\n- No obstruir físicamente a la policía",
+        "right_fifth_content": "**Tu derecho:** Tienes derecho a guardar silencio y no incriminarte.\n\n**Puntos clave:**\n- NO tienes que responder preguntas de la policía\n- Di claramente: \"Estoy ejerciendo mi derecho a guardar silencio\"\n- Este derecho aplica incluso si no has sido arrestado\n- Guardar silencio no puede usarse en tu contra en la corte\n\n**Importante:**\n- Debes informar a la policía que invocas este derecho\n- Si te arrestan, pide un abogado inmediatamente\n- No intentes explicarte ni negociar",
+        "right_sixth_content": "**Tu derecho:** Tienes derecho a un abogado.\n\n**Puntos clave:**\n- Si no puedes pagar un abogado, te asignarán uno\n- Puedes solicitar un abogado en CUALQUIER momento durante el interrogatorio\n- Una vez que pidas un abogado, la policía debe detener el interrogatorio\n- Tienes derecho a que tu abogado esté presente durante el interrogatorio\n\n**Qué decir:**\n- \"Quiero hablar con un abogado\"\n- \"Estoy invocando mi derecho a un abogado\"\n- Luego guarda silencio hasta que llegue tu abogado",
+        "right_traffic_content": "**Durante una parada de tráfico:**\n- Debes presentar licencia, registro y seguro\n- Puedes preguntar: \"¿Estoy detenido o soy libre de irme?\"\n- NO tienes que consentir el registro de tu vehículo\n- Di claramente: \"No doy mi consentimiento para un registro\"\n\n**Registro del vehículo:**\n- La policía puede mirar por las ventanas sin permiso\n- Puede registrar tu auto si tiene causa probable\n- Puede registrar sin consentimiento si estás arrestado\n- Puedes negarte, pero podrían continuar con causa probable\n\n**Tus derechos:**\n- Mantén las manos visibles\n- Habla con calma y cortesía\n- No te resistas físicamente\n- Puedes grabar la parada (sin interferir)",
+        "right_arrest_content": "**Pasos importantes:**\n1. Guarda silencio: no respondas preguntas\n2. Di \"Quiero un abogado\" claramente\n3. No firmes nada sin tu abogado\n4. No hables del caso con otras personas detenidas\n\n**Tus derechos al ser arrestado:**\n- Derecho a ser informado de los cargos\n- Derecho a una llamada telefónica\n- Derecho a guardar silencio\n- Derecho a un abogado\n\n**Qué NO hacer:**\n- No te resistas al arresto\n- No firmes declaraciones\n- No consientas registros\n- No hagas acuerdos con la policía sin abogado",
         
         # Community Resources
         "resources_title": "Recursos Comunitarios",
@@ -1305,6 +1454,94 @@ UI_STRINGS = {
         "samhsa_helpline": "Línea de Ayuda Nacional SAMHSA: 1-800-662-4357 (gratis, confidencial, 24/7)",
         "psychology_directory": "Terapeutas locales: Busca en el directorio de Psychology Today",
         "support_groups": "Grupos de apoyo: NAACP, centros comunitarios, organizaciones de ayuda legal a menudo ofrecen grupos de apoyo",
+        "author_anonymous": "Anónimo",
+        "author_community_member": "Miembro de la comunidad",
+        "posted_recently": "Publicado",
+        "recently": "recientemente",
+        "contact_emergency": "🆘 Emergencia / Emergency",
+        "contact_suicide": "🧠 Línea Nacional de Prevención del Suicidio",
+        "contact_domestic": "💔 Línea Nacional de Violencia Doméstica",
+        "contact_rainn": "🤝 RAINN - Apoyo para Agresión Sexual",
+        "contact_poison": "☠️ Centro de Control de Envenenamiento",
+        "contact_crisis_text": "📱 Línea de Crisis por Texto",
+        "contact_crisis_text_number": "Envía HOME al 741741",
+        "enc_type_traffic_stop": "Parada de tráfico",
+        "enc_type_street_encounter": "Encuentro en la calle",
+        "enc_type_arrest": "Arresto",
+        "enc_type_search": "Registro",
+        "enc_type_other": "Otro",
+        "encounter_label": "Encuentro",
+        "unknown": "Desconocido",
+        "na": "N/D",
+        "error_generating_qr": "Error al generar código QR",
+        "btn_launch_app": "🚀 Iniciar App",
+        "btn_start_demo": "📺 Iniciar Demo",
+        "btn_quick_tour": "❓ Tour Rápido",
+        "share_with_others": "📱 Compartir con otros",
+        "qr_generation_in_progress": "Generación de código QR en progreso...",
+        "key_features_label": "Funciones clave:",
+        "btn_previous": "⬅️ Anterior",
+        "language_change_error": "Error al cambiar idioma",
+        "demo_mode_active_sidebar": "✅ Modo demo activo - se muestran datos de ejemplo",
+        "screen_reader_off": "🔇 Lector de pantalla DESACTIVADO",
+        "navigation_title": "Navegación",
+        "nav_rights_full": "⚖️ Conoce Tus Derechos",
+        "nav_resources_near_you": "📍 Recursos Cerca de Ti",
+        "nav_logging_full": "📝 Registro de Encuentros",
+        "nav_crisis_resources": "🚨 Recursos de Crisis",
+        "nav_community": "💬 Habla con tu comunidad",
+        "sidebar_built_for": "Creado para la protección de derechos civiles en todo el mundo.",
+        "show_landing_page": "🏠 Mostrar página de inicio",
+        "landing_hero_html": "<div class=\"landing-hero\"><h1>⚖️ CivicShield Pro</h1><h2>Conoce tus derechos. Protégete. Obtén ayuda.</h2><p>Una plataforma profesional y multilingüe para ayudar a las personas a comprender y hacer valer sus derechos civiles en encuentros en tiempo real.</p></div>",
+        "landing_purpose_md": "### 🎯 Propósito\nCivicShield Pro ofrece a jueces, defensores y miembros de la comunidad:\n\n- **Traducción legal en tiempo real** en 14 idiomas\n- **Información inmediata de derechos** según tu situación\n- **Análisis de documentos** con extracción de plazos\n- **Apoyo comunitario** y experiencias compartidas\n- **Recursos de crisis** disponibles 24/7",
+        "landing_features_md": "### ⭐ Funciones clave\n\n- 🗣️ **Traducción en tiempo real** - Traduce declaraciones de oficiales al instante\n- 📄 **Documentos legales** - Extrae información clave de documentos judiciales\n- ⚖️ **Conoce tus derechos** - Aprende derechos civiles con quiz interactivo\n- 📍 **Recursos cerca de ti** - Encuentra ayuda legal y servicios por ubicación\n- 📝 **Registro de encuentros** - Documenta interacciones policiales\n- 🚨 **Líneas de crisis** - Soporte de emergencia 24/7\n- 💬 **Foro comunitario** - Comparte y aprende de otros",
+        "landing_share_md": "**Comparte CivicShield con jueces, defensores y miembros de la comunidad:**\n\n1. Escanea el código QR para acceder a la app\n2. No requiere instalación - funciona en cualquier navegador\n3. Disponible en 14 idiomas\n4. Funciona en escritorio, tablet y móvil",
+        "landing_who_should_use_md": "### 👥 ¿Quién debería usar CivicShield?\n\n**Para jueces y profesionales legales:**\n- Comprender la perspectiva comunitaria sobre protección de derechos civiles\n- Evaluar si los acusados entienden sus derechos\n- Referenciar capacidades de traducción en tiempo real en decisiones\n\n**Para defensores y ayuda legal:**\n- Brindar información legal multilingüe a clientes\n- Ayudar a documentar encuentros\n- Conectar miembros de la comunidad con recursos\n\n**Para educadores:**\n- Enseñar derechos civiles\n- Demostrar escenarios legales del mundo real\n- Aprendizaje interactivo con quizzes\n\n**Para miembros de la comunidad:**\n- Saber qué hacer en un encuentro policial\n- Acceder a recursos de emergencia al instante\n- Conectarse y aprender de experiencias comunitarias",
+        "landing_disclaimer_md": "**⚠️ Aviso legal:**\n\nCivicShield Pro proporciona información educativa sobre derechos civiles, no asesoría legal.\nAunque buscamos precisión, las leyes varían por jurisdicción y cambian con frecuencia.\nConsulta siempre con un abogado calificado para tu situación específica.",
+        "tutorial_intro_html": "<div class=\"tutorial-container\"><h1>👋 ¡Bienvenido a CivicShield Pro!</h1><p>Hagamos un tour rápido para ayudarte a comenzar.</p></div>",
+        "tutorial_step1_title": "🏠 Panel principal",
+        "tutorial_step1_desc": "Tu centro principal para acceder a todas las funciones de CivicShield. Cada tarjeta representa una herramienta para comprender y proteger tus derechos.",
+        "tutorial_step1_feat1": "Navegar a cualquier función",
+        "tutorial_step1_feat2": "Ver plazos guardados",
+        "tutorial_step1_feat3": "Acceder a recursos de crisis",
+        "tutorial_step2_title": "🗣️ Traducción en tiempo real",
+        "tutorial_step2_desc": "Traduce instantáneamente declaraciones de oficiales en 14 idiomas. Graba conversaciones y obtén traducciones inmediatas para entender tus derechos.",
+        "tutorial_step2_feat1": "Voz a texto en cualquier idioma",
+        "tutorial_step2_feat2": "Traducción en tiempo real",
+        "tutorial_step2_feat3": "Audio en tu idioma",
+        "tutorial_step3_title": "📄 Documentos legales",
+        "tutorial_step3_desc": "Sube documentos judiciales, avisos legales o contratos. CivicShield extrae información clave e identifica plazos importantes.",
+        "tutorial_step3_feat1": "Extraer plazos automáticamente",
+        "tutorial_step3_feat2": "Identificar penalizaciones",
+        "tutorial_step3_feat3": "Obtener traducciones",
+        "tutorial_step4_title": "⚖️ Conoce tus derechos",
+        "tutorial_step4_desc": "Aprende sobre derechos civiles con contenido educativo y prueba tus conocimientos con quizzes interactivos.",
+        "tutorial_step4_feat1": "Aprender derechos civiles",
+        "tutorial_step4_feat2": "Tomar quizzes interactivos",
+        "tutorial_step4_feat3": "Seguir progreso",
+        "tutorial_step5_title": "📍 Recursos cerca de ti",
+        "tutorial_step5_desc": "Encuentra organizaciones de ayuda legal, centros comunitarios y servicios de emergencia cerca de tu ubicación.",
+        "tutorial_step5_feat1": "Buscar por ubicación",
+        "tutorial_step5_feat2": "Explorar por categoría",
+        "tutorial_step5_feat3": "Obtener direcciones al instante",
+        "tutorial_step6_title": "💬 Foro comunitario",
+        "tutorial_step6_desc": "Conéctate con otras personas, comparte experiencias, haz preguntas y recibe consejos de la comunidad.",
+        "tutorial_step6_feat1": "Compartir experiencias anónimas",
+        "tutorial_step6_feat2": "Hacer preguntas legales",
+        "tutorial_step6_feat3": "Dar consejos",
+        "documents_intro_md": "Sube un documento legal (imagen o PDF) para extraer información clave:\n- Fechas y plazos importantes\n- Acciones requeridas\n- Penalizaciones y advertencias\n- Agencias gubernamentales",
+        "document_extraction_tab": "📋 Extracción de Documento",
+        "choose_document": "Elige un documento (PDF, JPG, PNG)",
+        "file_uploaded": "✅ Archivo subido",
+        "saved_deadlines_count": "✅ ¡Guardados {count} plazo(s) en tu panel!",
+        "no_deadlines_to_save": "⚠️ No hay plazos para guardar",
+        "extraction_guide_md": "**Esta herramienta puede extraer:**\n- **Fechas**: fechas de corte, plazos, fechas de presentación\n- **Plazos**: \"Debe responder antes de...\", \"Comparecer el...\"\n- **Acciones**: lo que debes hacer\n- **Penalizaciones**: multas, consecuencias por incumplimiento\n- **Agencias**: tribunales, oficinas gubernamentales mencionadas\n\n**Funciona mejor con:**\n- ✅ Documentos impresos y claros\n- ✅ Buena iluminación y contraste\n- ✅ Texto en inglés\n- ✅ Imágenes de alta resolución\n\n**Puede tener problemas con:**\n- ❌ Documentos manuscritos\n- ❌ Documentos muy antiguos o dañados\n- ❌ Múltiples idiomas mezclados\n- ❌ Imágenes de baja calidad",
+        "topic_progress": "📖 Tema {current} de {total}",
+        "enter_address_placeholder": "Ingresa dirección, ciudad o código postal",
+        "screen_reader_address_search": "Ingresa dirección para buscar recursos",
+        "miles_unit": "millas",
+        "open_in_google_maps": "Abrir en Google Maps",
+        "opening_maps_to": "Abriendo mapas a",
         
         # Additional UI Labels
         "home_icon": "🏠",
@@ -1327,12 +1564,130 @@ UI_STRINGS = {
         "success_icon": "✅",
         "error_icon": "❌",
     },
+
+    "Cantonese / 粵語": {
+        # Sidebar
+        "sidebar_title": "CivicShield",
+        "sidebar_tagline": "了解您的權利",
+        "select_language": "📍 選擇語言：",
+        "nav_home": "🏠 主頁",
+        "nav_translation": "🗣️ 實時翻譯",
+        "nav_documents": "📄 法律文件",
+        "nav_rights": "📚 權利中心",
+        "nav_quiz": "❓ 權利測驗",
+        "nav_resources": "🏥 社區資源",
+        "nav_nearby": "📍 附近的權利",
+        "nav_logging": "📝 遭遇記錄",
+        "nav_emergency": "🚨 緊急協助",
+        "nav_about": "關於 CivicShield",
+        "sidebar_version": "版本 3.0.0",
+        "sidebar_purpose": "專業民權保護及法律翻譯",
+        "sidebar_languages": "支援語言：14",
+        "sidebar_disclaimer": "⚠️ 法律免責聲明",
+        "sidebar_disclaimer_text": "此應用程式提供教育性資訊，並非法律建議。請就您的具體情況諮詢合格律師。",
+
+        # Home/Dashboard
+        "home_title": "歡迎使用 CivicShield",
+        "home_subtitle": "了解您的權利。保護自己。獲得幫助。",
+        "dashboard_intro": "選擇以下功能以開始：",
+
+        # Feature Cards
+        "card_translation_title": "實時翻譯",
+        "card_translation_desc": "翻譯警察陳述並以您的語言獲取法律建議",
+        "card_documents_title": "法律文件助理",
+        "card_documents_desc": "上傳文件、提取關鍵資訊並翻譯成您的語言",
+        "card_rights_title": "權利教育中心",
+        "card_rights_desc": "了解您的憲法權利和法律保護",
+        "card_quiz_title": "權利測驗",
+        "card_quiz_desc": "測試您對自身權利和公民自由的認識",
+        "card_resources_title": "社區資源",
+        "card_resources_desc": "尋找法律援助、緊急服務和支持機構",
+        "card_nearby_title": "附近的權利",
+        "card_nearby_desc": "尋找附近的法律援助、法院和社區服務",
+        "card_logging_title": "遭遇記錄",
+        "card_logging_desc": "記錄和追蹤警察遭遇及事件",
+        "card_emergency_title": "緊急協助",
+        "card_emergency_desc": "獲取危機熱線和緊急程序",
+
+        # Common Buttons
+        "btn_open": "開啟功能",
+        "btn_delete": "❌",
+        "btn_record": "🎤 錄音",
+        "btn_stop": "⏹️ 停止",
+        "btn_translate": "🌐 翻譯",
+        "btn_listen": "🔊 聆聽",
+        "btn_download": "📥 下載",
+        "btn_search": "🔍 搜索",
+        "btn_log": "📝 記錄",
+        "btn_back": "← 返回",
+        "btn_submit": "✓ 提交",
+        "btn_cancel": "✗ 取消",
+
+        # Real-Time Translation Page (keys 50–100)
+        "translation_title":    "實時翻譯",
+        "translation_subtitle": "翻譯警察陳述並獲取法律建議",
+        "officer_statement":    "警察陳述（英語）：",
+        "your_rights":          "您的權利及法律建議：",
+        "record_officer":       "🎤 錄製警察聲音",
+        "stop_recording":       "⏹️ 停止錄音並翻譯",
+        "listen_to_advice":     "🔊 聆聽建議",
+        "translation_hint":     "輸入文字或錄製音頻以翻譯",
+        "generating_audio":     "正在生成音頻...",
+        "audio_ready":          "✅ 音頻已準備好播放",
+        "audio_failed":         "❌ 音頻生成失敗",
+        "speech_recognized":    "已捕獲語音並轉換為文字。",
+        "mic_unclear":          "無法理解錄製的語音。請清晰說話並再試。",
+        "stt_unavailable":      "語音轉文字服務目前不可用。請稍後再試。",
+        "unable_process_audio": "無法處理錄製的音頻。請重新錄製。",
+        "mic_recorder_title":   "麥克風錄音機",
+        "mic_recorder_desc":    "使用「開始錄音」和「停止錄音」來捕捉警察的語音。",
+        "mic_help":             "如果您的瀏覽器阻止了麥克風訪問，請允許麥克風權限後重新錄音。",
+        "mic_access_failed":    "麥克風訪問失敗。請允許瀏覽器麥克風權限後再試。",
+        "mic_no_audio":         "未捕獲到音頻。麥克風權限可能被拒絕。請允許訪問並重新嘗試錄音。",
+        "btn_clear_filter":     "清除過濾器",
+        "currently_filtering":  "目前按以下條件過濾",
+        "quiz_correct":         "✅ 正確！",
+        "quiz_incorrect":       "❌ 錯誤。",
+        "language_selector_error": "❌ 語言選擇器錯誤",
+        "demo_section_title":   "演示和測試",
+        "demo_on":              "🎬 演示開啟",
+        "demo_off":             "🎬 演示關閉",
+        "tour_button":          "🎓 導覽",
+        "tour_complete":        "✅ 導覽完成！您可以開始使用 CivicShield。",
+        "btn_go_home":          "🏠 返回主頁",
+        "btn_skip_tour":        "⏭️ 跳過導覽",
+        "btn_next":             "下一步 ➡️",
+        "btn_start_using":      "🎉 開始使用！",
+
+        # Document Assistant Page (keys 84–96)
+        "documents_title":      "法律文件助理",
+        "documents_subtitle":   "上傳文件並提取關鍵資訊",
+        "upload_document":      "📤 上傳文件",
+        "take_photo":           "📸 拍照",
+        "extract_text":         "提取文字",
+        "simplify_text":        "簡化法律語言",
+        "translate_document":   "🌐 翻譯文件",
+        "extract_dates":        "📅 找到的日期",
+        "extract_deadlines":    "⏰ 截止日期",
+        "extract_agencies":     "🏛️ 政府機構",
+        "extract_actions":      "✅ 所需行動",
+        "download_report":      "📥 下載報告",
+        "report_generated":     "報告已生成",
+
+        # Rights Education (keys 97–100)
+        "rights_title":    "權利教育中心",
+        "rights_subtitle": "了解您的憲法權利",
+        "right_fourth":    "第四修正案：搜查與扣押",
+        "right_fifth":     "第五修正案：緘默權",
+    },
 }
 
-# Add fallback for all other languages (map to English)
+# Ensure all 14 languages exist and include all keys.
 for lang_name in LANGUAGE_MAP.keys():
     if lang_name not in UI_STRINGS:
-        UI_STRINGS[lang_name] = UI_STRINGS["English"]
+        UI_STRINGS[lang_name] = copy.deepcopy(UI_STRINGS["English"])
+    for key, value in UI_STRINGS["English"].items():
+        UI_STRINGS[lang_name].setdefault(key, value)
 
 # ============================================================================
 # SESSION STATE INITIALIZATION
@@ -1341,8 +1696,8 @@ def init_session_state():
     """Initialize all session state variables on first run."""
     if "page" not in st.session_state:
         st.session_state.page = "Landing"  # Show landing page first
-    if "selected_language" not in st.session_state:
-        st.session_state.selected_language = "English"
+    if "language" not in st.session_state:
+        st.session_state.language = st.session_state.get("selected_language", "English")
     if "encounter_log" not in st.session_state:
         st.session_state.encounter_log = load_encounters()
     if "emergency_activated" not in st.session_state:
@@ -1381,29 +1736,13 @@ def init_session_state():
 # ============================================================================
 def t(key: str) -> str:
     """
-    Get translated UI string for the current language.
-    Fallback to English if translation not available.
-    Usage: st.markdown(t('home_title'))
-    """
-    lang = st.session_state.selected_language
-    if lang in UI_STRINGS and key in UI_STRINGS[lang]:
-        return UI_STRINGS[lang][key]
-    elif key in UI_STRINGS["English"]:
-        return UI_STRINGS["English"][key]
-    else:
-        return key  # Return the key if not found
-
-def t(key: str) -> str:
-    """
     Get translated text in selected language.
     Example: st.markdown(t('translation_title'))
     Safe fallback to English if language not available or session not initialized.
     """
     try:
-        # Try to get selected language from session state
-        lang = st.session_state.get("selected_language", "English")
+        lang = st.session_state.get("language", st.session_state.get("selected_language", "English"))
     except:
-        # If session state is not available, use English
         lang = "English"
     
     # Ensure language is valid
@@ -1696,100 +2035,24 @@ def get_translator(source_lang, target_lang):
 # ============================================================================
 RIGHTS_EDUCATION = {
     "Fourth Amendment": {
-        "title": "Fourth Amendment: Protection from Searches",
-        "content": """
-**Your Right:** You have the right to be free from unreasonable searches and seizures.
-
-**Key Points:**
-- Police generally need a warrant to search your home, car, or personal belongings
-- You can refuse a search by saying: "I do not consent to a search"
-- Do NOT physically resist - it could result in additional charges
-- Even if you refuse, police may continue if they have a warrant or probable cause
-
-**What You CAN Do:**
-- Remain silent and ask "Am I free to go?"
-- Ask "Do you have a warrant?"
-- Keep your hands visible
-- Do not physically obstruct police
-        """
+        "title_key": "right_fourth",
+        "content_key": "right_fourth_content"
     },
     "Fifth Amendment": {
-        "title": "Fifth Amendment: Right to Remain Silent",
-        "content": """
-**Your Right:** You have the right to remain silent and not incriminate yourself.
-
-**Key Points:**
-- You do NOT have to answer police questions
-- Say clearly: "I am exercising my right to remain silent"
-- This right applies even if you haven't been arrested
-- Staying silent cannot be used against you in court
-
-**Important:**
-- You must tell police you are invoking this right - silence alone may not be enough
-- If arrested, ask for a lawyer immediately
-- Do not try to explain yourself or negotiate
-        """
+        "title_key": "right_fifth",
+        "content_key": "right_fifth_content"
     },
     "Sixth Amendment": {
-        "title": "Sixth Amendment: Right to an Attorney",
-        "content": """
-**Your Right:** You have the right to an attorney.
-
-**Key Points:**
-- If you cannot afford an attorney, one will be provided
-- You can request an attorney at ANY time during questioning
-- Once you ask for a lawyer, police should stop questioning you
-- You have the right to have your attorney present during questioning
-
-**What to Say:**
-- "I want to speak to an attorney"
-- "I am invoking my right to an attorney"
-- Then remain silent until your attorney arrives
-        """
+        "title_key": "right_sixth",
+        "content_key": "right_sixth_content"
     },
     "Traffic Stops": {
-        "title": "Traffic Stop Rights (California)",
-        "content": """
-**During a Traffic Stop:**
-- You must provide your license, registration, and proof of insurance
-- You can ask: "Am I being detained or am I free to go?"
-- You do NOT have to consent to a search of your vehicle
-- Say clearly: "I do not consent to a search"
-
-**Vehicle Search:**
-- Police can look through windows without permission
-- Police can search your car if they find probable cause
-- They can search without consent if you're arrested
-- You CAN refuse the search, but they may proceed if they have probable cause
-
-**Your Rights:**
-- Keep hands visible
-- Speak calmly and politely
-- Do not physically resist
-- You can film the stop (but don't interfere)
-        """
+        "title_key": "right_traffic",
+        "content_key": "right_traffic_content"
     },
     "Arrest": {
-        "title": "If You Are Arrested",
-        "content": """
-**Important Steps:**
-1. Remain silent - do not answer questions
-2. Say "I want a lawyer" clearly
-3. Do not sign anything without your attorney
-4. Do not discuss the case with cellmates or other inmates
-
-**Your Rights Upon Arrest:**
-- You have the right to be informed of charges against you
-- You have the right to a phone call
-- You have the right to remain silent
-- You have the right to an attorney
-
-**What NOT to Do:**
-- Do not resist arrest (even if you believe it's illegal)
-- Do not sign any statements
-- Do not consent to searches
-- Do not make deals with police without a lawyer
-        """
+        "title_key": "right_arrest",
+        "content_key": "right_arrest_content"
     }
 }
 
@@ -1868,7 +2131,7 @@ def page_home():
         st.session_state.encounter_log = demo_data["encounter_log"]
         
         # Show demo mode indicator
-        st.info("📺 **DEMO MODE ACTIVE** - This is sample data for demonstration purposes")
+        st.info(t('demo_mode_active'))
     
     st.markdown(f"# 🏠 {t('home_title')}")
     st.markdown(f"## {t('home_subtitle')}")
@@ -1889,7 +2152,7 @@ def page_home():
                 </div>
                 """, unsafe_allow_html=True)
             with col2:
-                if st.button("❌", key=f"del_deadline_{deadline.get('id')}"):
+                if st.button(t('btn_delete'), key=f"del_deadline_{deadline.get('id')}"):
                     if not st.session_state.demo_mode:  # Don't delete in demo mode
                         delete_deadline(deadline.get('id'))
                         st.rerun()
@@ -1914,7 +2177,7 @@ def page_home():
                 <div class="card-description">{t('card_translation_desc')}</div>
             </div>
             """, unsafe_allow_html=True)
-            if st.button("📖 Open Feature", use_container_width=True, key="open_translation"):
+            if st.button(f"📖 {t('btn_open')}", use_container_width=True, key="open_translation"):
                 st.session_state.page = "Translation"
                 st.rerun()
         
@@ -1929,7 +2192,7 @@ def page_home():
                 <div class="card-description">{t('card_documents_desc')}</div>
             </div>
             """, unsafe_allow_html=True)
-            if st.button("📖 Open Feature", use_container_width=True, key="open_documents"):
+            if st.button(f"📖 {t('btn_open')}", use_container_width=True, key="open_documents"):
                 st.session_state.page = "DocumentAssistant"
                 st.rerun()
         
@@ -1944,7 +2207,7 @@ def page_home():
                 <div class="card-description">{t('card_rights_desc')}</div>
             </div>
             """, unsafe_allow_html=True)
-            if st.button("📖 Open Feature", use_container_width=True, key="open_rights"):
+            if st.button(f"📖 {t('btn_open')}", use_container_width=True, key="open_rights"):
                 st.session_state.page = "KnowYourRights"
                 st.rerun()
         
@@ -1959,7 +2222,7 @@ def page_home():
                 <div class="card-description">{t('card_nearby_desc')}</div>
             </div>
             """, unsafe_allow_html=True)
-            if st.button("📖 Open Feature", use_container_width=True, key="open_nearby"):
+            if st.button(f"📖 {t('btn_open')}", use_container_width=True, key="open_nearby"):
                 st.session_state.page = "ResourcesNearYou"
                 st.rerun()
     
@@ -1973,7 +2236,7 @@ def page_home():
                 <div class="card-description">{t('card_logging_desc')}</div>
             </div>
             """, unsafe_allow_html=True)
-            if st.button("📖 Open Feature", use_container_width=True, key="open_logging"):
+            if st.button(f"📖 {t('btn_open')}", use_container_width=True, key="open_logging"):
                 st.session_state.page = "EncounterLogging"
                 st.rerun()
         
@@ -1988,7 +2251,7 @@ def page_home():
                 <div class="card-description">{t('card_emergency_desc')}</div>
             </div>
             """, unsafe_allow_html=True)
-            if st.button("📖 Open Feature", use_container_width=True, key="open_crisis"):
+            if st.button(f"📖 {t('btn_open')}", use_container_width=True, key="open_crisis"):
                 st.session_state.page = "CrisisResources"
                 st.rerun()
         
@@ -2003,7 +2266,7 @@ def page_home():
                 <div class="card-description">{t('card_resources_desc')}</div>
             </div>
             """, unsafe_allow_html=True)
-            if st.button("📖 Open Feature", use_container_width=True, key="open_community"):
+            if st.button(f"📖 {t('btn_open')}", use_container_width=True, key="open_community"):
                 st.session_state.page = "CommunityDiscussion"
                 st.rerun()
 
@@ -2124,11 +2387,11 @@ def page_translation():
     
     with col1:
         st.markdown(f"## {t('officer_statement')}")
-        st.markdown("""
+        st.markdown(f"""
         <div class="translation-shell">
-            <h3>Microphone Recorder</h3>
-            <p>Use Start Recording and Stop Recording to capture officer speech.</p>
-            <div class="mic-help">If your browser blocks microphone access, allow microphone permission and record again.</div>
+            <h3>{t('mic_recorder_title')}</h3>
+            <p>{t('mic_recorder_desc')}</p>
+            <div class="mic-help">{t('mic_help')}</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -2141,9 +2404,7 @@ def page_translation():
                 key="officer_mic_recorder"
             )
         except Exception:
-            st.session_state.translation_mic_error = (
-                "Microphone access failed. Please allow browser microphone permission and try again."
-            )
+            st.session_state.translation_mic_error = t('mic_access_failed')
 
         if recorder_output and isinstance(recorder_output, dict):
             audio_bytes = recorder_output.get("bytes")
@@ -2159,20 +2420,18 @@ def page_translation():
                         audio_data = recognizer.record(source)
                     transcript = recognizer.recognize_google(audio_data, language="en-US")
                     st.session_state.translation_transcript = transcript
-                    st.success("Speech captured and converted to text.")
+                    st.success(t('speech_recognized'))
                 except sr.UnknownValueError:
                     st.session_state.translation_transcript = ""
-                    st.session_state.translation_mic_error = "Could not understand the recorded speech. Please speak clearly and try again."
+                    st.session_state.translation_mic_error = t('mic_unclear')
                 except sr.RequestError:
                     st.session_state.translation_transcript = ""
-                    st.session_state.translation_mic_error = "Speech-to-text service is currently unavailable. Please try again in a moment."
+                    st.session_state.translation_mic_error = t('stt_unavailable')
                 except Exception:
                     st.session_state.translation_transcript = ""
-                    st.session_state.translation_mic_error = "Unable to process recorded audio. Please record again."
+                    st.session_state.translation_mic_error = t('unable_process_audio')
             else:
-                st.session_state.translation_mic_error = (
-                    "No audio was captured. Microphone permission may be denied. Allow access and try recording again."
-                )
+                st.session_state.translation_mic_error = t('mic_no_audio')
 
         if st.session_state.translation_mic_error:
             st.error(st.session_state.translation_mic_error)
@@ -2190,12 +2449,12 @@ def page_translation():
         st.markdown(f"## {t('your_rights')}")
         
         if english_text:
-            target_lang = LANGUAGE_MAP[st.session_state.selected_language]["code"]
+            target_lang = LANGUAGE_MAP[st.session_state.language]["code"]
             
             # Generate legal advice based on officer statement
             legal_advice = get_legal_advice_for_statement(english_text)
             
-            if st.session_state.selected_language != "English":
+            if st.session_state.language != "English":
                 try:
                     translator = get_translator("en", target_lang)
                     if translator:
@@ -2243,27 +2502,21 @@ def page_documents():
     st.markdown(f"_{t('documents_subtitle')}_")
     st.divider()
     
-    st.markdown("""
-    Upload a legal document (image or PDF) to extract key information:
-    - Important dates and deadlines
-    - Required actions
-    - Penalties and warnings
-    - Government agencies
-    """)
+    st.markdown(t('documents_intro_md'))
     
     # Document upload interface
-    tab1, tab2 = st.tabs([t('upload_document'), "📋 Document Extraction"])
+    tab1, tab2 = st.tabs([t('upload_document'), t('document_extraction_tab')])
     
     with tab1:
         st.markdown(f"### {t('upload_legal_doc')}")
         uploaded_file = st.file_uploader(
-            "Choose a document (PDF, JPG, PNG)",
+            t('choose_document'),
             type=["pdf", "jpg", "jpeg", "png"],
             key="doc_uploader"
         )
         
         if uploaded_file:
-            st.success(f"✅ File uploaded: {uploaded_file.name}")
+            st.success(f"{t('file_uploaded')}: {uploaded_file.name}")
             
             # Show file info
             col1, col2, col3 = st.columns(3)
@@ -2367,35 +2620,16 @@ PENALTIES:
                                         "document": uploaded_file.name,
                                         "extracted_dates": extracted["dates"],
                                         "status": "Active",
-                                        "language": st.session_state.selected_language
+                                        "language": st.session_state.language
                                     }
                                     save_deadline(deadline_data)
-                                st.success(f"✅ Saved {len(extracted['deadlines'])} deadline(s) to your dashboard!")
+                                st.success(f"{t('saved_deadlines_count').format(count=len(extracted['deadlines']))}")
                             else:
-                                st.warning("⚠️ No deadlines to save")
+                                st.warning(t('no_deadlines_to_save'))
     
     with tab2:
         st.markdown(f"### {t('extraction_guide')}")
-        st.markdown("""
-        **This tool can extract:**
-        - **Dates**: Court dates, deadlines, filing dates
-        - **Deadlines**: "Must respond by...", "Appear on..."
-        - **Actions**: What you need to do
-        - **Penalties**: Fines, consequences for non-compliance
-        - **Agencies**: Court, government offices mentioned
-        
-        **Works best with:**
-        - ✅ Clear, printed documents
-        - ✅ Good lighting and contrast
-        - ✅ English language text
-        - ✅ High resolution images
-        
-        **May have issues with:**
-        - ❌ Handwritten documents
-        - ❌ Very old or damaged documents
-        - ❌ Multiple languages mixed
-        - ❌ Low quality images
-        """)
+        st.markdown(t('extraction_guide_md'))
 
 def page_resources_near_you():
     """Unified Resources Near You - location-based legal aid and community services finder."""
@@ -2409,10 +2643,10 @@ def page_resources_near_you():
     with col1:
         address = st.text_input(
             t('enter_address'),
-            placeholder="Enter address, city, or ZIP code",
+            placeholder=t('enter_address_placeholder'),
             key="resource_address"
         )
-        add_screen_reader_label(f"Enter address for resource search: {address}")
+        add_screen_reader_label(f"{t('screen_reader_address_search')}: {address}")
     
     with col2:
         radius = st.slider(
@@ -2446,11 +2680,11 @@ def page_resources_near_you():
                         <div class="card-icon">📍</div>
                         <div class="card-title">{resource['name']}</div>
                         <div class="card-description">
-                            <p><strong>{t('distance_away')}:</strong> {resource['distance']} miles</p>
+                            <p><strong>{t('distance_away')}:</strong> {resource['distance']} {t('miles_unit')}</p>
                             <p><strong>{t('resource_address')}:</strong> {resource['address']}</p>
                             <p><strong>{t('resource_phone')}:</strong> {resource['phone']}</p>
                             <p><strong>{t('resource_hours')}:</strong> {resource['hours']}</p>
-                            <p><strong>Website:</strong> {resource['website']}</p>
+                            <p><strong>{t('resource_website')}:</strong> {resource['website']}</p>
                         </div>
                     </div>
                     """, unsafe_allow_html=True)
@@ -2463,11 +2697,11 @@ def page_resources_near_you():
                         st.markdown(f"""
                         <a href="{maps_url}" target="_blank">
                         <button style="width: 100%; padding: 8px; background-color: #4285F4; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                        🗺️ Open in Google Maps
+                        🗺️ {t('open_in_google_maps')}
                         </button>
                         </a>
                         """, unsafe_allow_html=True)
-                        st.success(f"📍 Opening maps to: {resource['name']}")
+                        st.success(f"📍 {t('opening_maps_to')}: {resource['name']}")
         else:
             st.warning(f"⚠️ {t('no_resources_found')}")
     
@@ -2492,8 +2726,8 @@ def page_resources_near_you():
     
     # Show active filter
     if st.session_state.resource_category_filter:
-        st.info(f"📁 Currently filtering by: **{st.session_state.resource_category_filter}**")
-        if st.button("❌ Clear Filter", use_container_width=True):
+        st.info(f"📁 {t('currently_filtering')}: **{st.session_state.resource_category_filter}**")
+        if st.button(f"❌ {t('btn_clear_filter')}", use_container_width=True):
             st.session_state.resource_category_filter = None
             st.rerun()
 
@@ -2513,21 +2747,23 @@ def page_know_your_rights():
     with tab1:
         st.markdown(f"## {t('rights_education')}")
         
+        rights_options = list(RIGHTS_EDUCATION.keys())
         selected_right = st.selectbox(
             t('select_topic'),
-            list(RIGHTS_EDUCATION.keys()),
-            key="rights_select"
+            rights_options,
+            key="rights_select",
+            format_func=lambda k: t(RIGHTS_EDUCATION[k]['title_key'])
         )
         
         if selected_right:
             right = RIGHTS_EDUCATION[selected_right]
-            st.markdown(f"### {right['title']}")
-            st.markdown(right['content'])
+            st.markdown(f"### {t(right['title_key'])}")
+            st.markdown(t(right['content_key']))
             
             # Progress indicator
             progress_pct = (list(RIGHTS_EDUCATION.keys()).index(selected_right) + 1) / len(RIGHTS_EDUCATION) * 100
             st.progress(progress_pct / 100)
-            st.caption(f"📖 Topic {list(RIGHTS_EDUCATION.keys()).index(selected_right) + 1} of {len(RIGHTS_EDUCATION)}")
+            st.caption(t('topic_progress').format(current=list(RIGHTS_EDUCATION.keys()).index(selected_right) + 1, total=len(RIGHTS_EDUCATION)))
     
     with tab2:
         st.markdown(f"## {t('rights_quiz')}")
@@ -2569,10 +2805,10 @@ def page_know_your_rights():
             if st.button(t('check_answer').format(number=i+1), key=f"check_q{i}"):
                 answered += 1
                 if answer == q['options'][q['correct']]:
-                    st.success("✅ Correct!")
+                    st.success(t('quiz_correct'))
                     score += 1
                 else:
-                    st.error(f"❌ Incorrect. {q['explanation']}")
+                    st.error(f"{t('quiz_incorrect')} {q['explanation']}")
             st.divider()
         
             if quiz_pct:
@@ -2582,20 +2818,20 @@ def page_know_your_rights():
 
 def page_community_discussion():
     """Talk to Your Community - Safe community discussion space."""
-    st.markdown(f"# 💬 Talk to Your Community")
-    st.markdown(f"_Share experiences, ask questions, give advice - together we are stronger_")
+    st.markdown(f"# 💬 {t('talk_community')}")
+    st.markdown(f"_{t('community_intro')}_")
     st.divider()
     
     # Tabs for different community features
-    tab1, tab2, tab3 = st.tabs(["💭 Share Experiences", "❓ Ask Questions", "💡 Give Advice"])
+    tab1, tab2, tab3 = st.tabs([t('share_exp_tab'), t('ask_q_tab'), t('give_advice_tab')])
     
     with tab1:
-        st.markdown("### 💭 Share Your Experience")
-        st.markdown("Share your story to help others. All posts are moderated for safety.")
+        st.markdown(f"### {t('share_your_exp')}")
+        st.markdown(t('share_story'))
         
-        post_title = st.text_input("Title:", placeholder="e.g., Tips for dealing with traffic stops", key="exp_title")
-        post_content = st.text_area("Your story:", placeholder="Share your experience...", height=200, key="exp_content")
-        anonymous = st.checkbox("Post anonymously", value=True, key="exp_anon")
+        post_title = st.text_input(t('title_label'), placeholder=t('exp_placeholder'), key="exp_title")
+        post_content = st.text_area(t('your_story'), placeholder=t('story_placeholder'), height=200, key="exp_content")
+        anonymous = st.checkbox(t('post_anonymously'), value=True, key="exp_anon")
         
         if st.button(t('share_exp_btn'), use_container_width=True, key="submit_exp"):
             if post_title and post_content:
@@ -2604,7 +2840,7 @@ def page_community_discussion():
                     "title": post_title,
                     "content": post_content,
                     "anonymous": anonymous,
-                    "author": "Anonymous" if anonymous else "Community Member"
+                    "author": t('author_anonymous') if anonymous else t('author_community_member')
                 }
                 save_community_post(post)
                 st.success(t('exp_shared'))
@@ -2626,7 +2862,7 @@ def page_community_discussion():
                     "title": q_title,
                     "content": q_content,
                     "anonymous": anonymous,
-                    "author": "Anonymous" if anonymous else "Community Member",
+                    "author": t('author_anonymous') if anonymous else t('author_community_member'),
                     "responses": []
                 }
                 save_community_post(post)
@@ -2649,7 +2885,7 @@ def page_community_discussion():
                     "title": advice_title,
                     "content": advice_content,
                     "anonymous": anonymous,
-                    "author": "Anonymous" if anonymous else "Community Member"
+                    "author": t('author_anonymous') if anonymous else t('author_community_member')
                 }
                 save_community_post(post)
                 st.success(t('share_wisdom'))
@@ -2658,7 +2894,7 @@ def page_community_discussion():
     
     # Display recent community posts
     st.divider()
-    st.markdown("## 📋 Recent Community Posts")
+    st.markdown(f"## {t('recent_posts')}")
     
     if st.session_state.community_posts:
         # Sort by newest first
@@ -2667,9 +2903,9 @@ def page_community_discussion():
         for post in sorted_posts:
             with st.expander(f"{post.get('type', '').title()} - {post['title']} - {post['author']}"):
                 st.markdown(post.get("content", ""))
-                st.caption(f"Posted {post.get('timestamp', 'recently')}")
+                st.caption(f"{t('posted_recently')} {post.get('timestamp', t('recently'))}")
     else:
-        st.info("💭 No community posts yet. Be the first to share!")
+            st.info(t('no_posts_yet'))
 
 def page_crisis_resources():
     """Crisis Resources & Hotlines - Emergency assistance and mental health support."""
@@ -2682,12 +2918,12 @@ def page_crisis_resources():
     st.markdown(f"**{t('in_immediate_danger')}**")
     
     crisis_contacts = {
-        "🆘 Emergency / Emergencia": "911",
-        "🧠 National Suicide Prevention Lifeline": "988",
-        "💔 National Domestic Violence Hotline": "1-800-799-7233",
-        "🤝 RAINN - Sexual Assault Support": "1-800-656-4673",
-        "☠️ Poison Control Center": "1-800-222-1222",
-        "📱 Crisis Text Line": "Text HOME to 741741"
+        t('contact_emergency'): "911",
+        t('contact_suicide'): "988",
+        t('contact_domestic'): "1-800-799-7233",
+        t('contact_rainn'): "1-800-656-4673",
+        t('contact_poison'): "1-800-222-1222",
+        t('contact_crisis_text'): t('contact_crisis_text_number')
     }
     
     cols = st.columns(3)
@@ -2708,12 +2944,12 @@ def page_crisis_resources():
     st.markdown(f"## {t('safety_procedures')}")
     
     procedures = [
-        ("🛡️ Stay Safe", "Keep yourself safe - do not physically resist. Your safety is the priority."),
-        ("📝 Document Details", "Remember: officer names, badge numbers, locations, times, what they said and did."),
-        ("🎥 Record Safely", "If safe and legal in your area, record the interaction. Keep the camera visible."),
-        ("📞 Call for Help", "Call 911 if in immediate danger. Stay calm and clear when explaining."),
-        ("⚖️ Get Legal Help", "Contact an attorney immediately. Many public defenders offer emergency services."),
-        ("🏥 Medical Attention", "If injured, seek medical care and document injuries with photos.")
+        (t('stay_safe'), t('stay_safe_desc')),
+        (t('document_details'), t('document_details_desc')),
+        (t('record_safely'), t('record_safely_desc')),
+        (t('call_for_help'), t('call_help_desc')),
+        (t('get_legal_help'), t('legal_help_desc')),
+        (t('medical_attention'), t('medical_attention_desc'))
     ]
     
     for title, desc in procedures:
@@ -2725,14 +2961,14 @@ def page_crisis_resources():
     
     # Mental health and support
     st.markdown(f"## {t('mental_health_support')}")
-    st.markdown("""
-    Experiencing legal troubles, police encounters, or discrimination can be traumatic.
+    st.markdown(f"""
+    {t('legal_troubles_trauma')}
     
-    **Mental health resources:**
-    - **SAMHSA National Helpline**: 1-800-662-4357 (free, confidential, 24/7)
-    - **Crisis Text Line**: Text HOME to 741741
-    - **Local therapists**: Search Psychology Today's directory
-    - **Support groups**: NAACP, community centers, legal aid organizations often host support groups
+    **{t('mental_health_resources')}**
+    - **{t('samhsa_helpline')}**
+    - **{t('crisis_text')}**: {t('contact_crisis_text_number')}
+    - **{t('psychology_directory')}**
+    - **{t('support_groups')}**
     """)
 
 def page_emergency():
@@ -2754,7 +2990,7 @@ def page_encounter_logging():
         
         encounter_type = st.selectbox(
             t('encounter_type'),
-            ["Traffic Stop", "Street Encounter", "Arrest", "Search", "Other"],
+            [t('enc_type_traffic_stop'), t('enc_type_street_encounter'), t('enc_type_arrest'), t('enc_type_search'), t('enc_type_other')],
             key="enc_type"
         )
         
@@ -2775,7 +3011,7 @@ def page_encounter_logging():
                 "details": details,
                 "officer_badge": badge_number,
                 "officer_agency": agency,
-                "language": st.session_state.selected_language
+                "language": st.session_state.language
             }
             save_encounter(encounter)
             st.success(t('encounter_saved'))
@@ -2787,7 +3023,7 @@ def page_encounter_logging():
         if encounters:
             st.write(f"{t('total_encounters')}{len(encounters)}")
             for i, enc in enumerate(reversed(encounters)):
-                with st.expander(f"Encounter {len(encounters)-i}: {enc.get('type', 'Unknown')} - {enc.get('timestamp', 'N/A')}"):
+                with st.expander(f"{t('encounter_label')} {len(encounters)-i}: {enc.get('type', t('unknown'))} - {enc.get('timestamp', t('na'))}"):
                     st.json(enc)
         else:
             st.info(t('no_data'))
@@ -2807,7 +3043,7 @@ def generate_qr_code(url: str, size: int = 10):
         img = qr.make_image(fill_color="black", back_color="white")
         return img
     except Exception as e:
-        st.error(f"Error generating QR code: {e}")
+        st.error(f"{t('error_generating_qr')}: {e}")
         return None
 
 def get_demo_data():
@@ -2876,40 +3112,15 @@ def page_landing():
     # Hide sidebar for landing page
     st.set_page_config(page_title="CivicShield Pro - Know Your Rights", layout="wide")
     
-    st.markdown("""
-    <div class="landing-hero">
-        <h1>⚖️ CivicShield Pro</h1>
-        <h2>Know Your Rights. Protect Yourself. Get Help.</h2>
-        <p>A professional, multi-language platform empowering people to understand and assert their civil rights in real-time encounters.</p>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown(t('landing_hero_html'), unsafe_allow_html=True)
     
     col1, col2 = st.columns([1, 1])
     
     with col1:
-        st.markdown("""
-        ### 🎯 Purpose
-        CivicShield Pro provides judges, advocates, and community members with:
-        
-        - **Real-time legal translation** in 14 languages
-        - **Instant rights information** tailored to your situation
-        - **Document analysis** with deadline extraction
-        - **Community support** and shared experiences
-        - **Crisis resources** available 24/7
-        """)
+        st.markdown(t('landing_purpose_md'))
     
     with col2:
-        st.markdown("""
-        ### ⭐ Key Features
-        
-        - 🗣️ **Real-Time Translation** - Translate officer statements instantly
-        - 📄 **Legal Documents** - Extract key info from court documents
-        - ⚖️ **Know Your Rights** - Learn civil rights with interactive quiz
-        - 📍 **Resources Near You** - Find legal aid & services by location
-        - 📝 **Encounter Log** - Document police interactions
-        - 🚨 **Crisis Hotlines** - 24/7 emergency support
-        - 💬 **Community Forum** - Share and learn from others
-        """)
+        st.markdown(t('landing_features_md'))
     
     st.divider()
     
@@ -2917,21 +3128,21 @@ def page_landing():
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        if st.button("🚀 Launch App", use_container_width=True):
+        if st.button(t('btn_launch_app'), use_container_width=True):
             st.session_state.skip_landing = True
             st.session_state.first_time_user = True
             st.session_state.page = "Tutorial"
             st.rerun()
     
     with col2:
-        if st.button("📺 Start Demo", use_container_width=True):
+        if st.button(t('btn_start_demo'), use_container_width=True):
             st.session_state.demo_mode = True
             st.session_state.skip_landing = True
             st.session_state.page = "Home"
             st.rerun()
     
     with col3:
-        if st.button("❓ Quick Tour", use_container_width=True):
+        if st.button(t('btn_quick_tour'), use_container_width=True):
             st.session_state.skip_landing = True
             st.session_state.tutorial_step = 0
             st.session_state.page = "Tutorial"
@@ -2940,18 +3151,11 @@ def page_landing():
     st.divider()
     
     # QR Code for easy sharing
-    st.markdown("### 📱 Share with Others")
+    st.markdown(f"### {t('share_with_others')}")
     col1, col2 = st.columns([2, 1])
     
     with col1:
-        st.markdown("""
-        **Share CivicShield with judges, advocates, and community members:**
-        
-        1. Scan the QR code to access the app
-        2. No installation needed - works in any browser
-        3. Available in 14 languages
-        4. Works on desktop, tablet, and mobile
-        """)
+        st.markdown(t('landing_share_md'))
     
     with col2:
         # Generate QR code for app URL (in production, use actual deployment URL)
@@ -2961,86 +3165,53 @@ def page_landing():
             if qr_img:
                 st.image(qr_img, use_column_width=True)
         except:
-            st.info("QR code generation in progress...")
+            st.info(t('qr_generation_in_progress'))
     
     st.divider()
     
     # Target users
-    st.markdown("""
-    ### 👥 Who Should Use CivicShield?
-    
-    **For Judges & Legal Professionals:**
-    - Understand community perspective on civil rights protection
-    - Assess whether defendants understand their rights
-    - Reference real-time translation capabilities in decisions
-    
-    **For Advocates & Legal Aid:**
-    - Provide clients with multi-language legal information
-    - Help clients document encounters
-    - Connect community members with resources
-    
-    **For Educators:**
-    - Teach students about civil rights
-    - Demonstrate real-world legal scenarios
-    - Interactive learning with quizzes
-    
-    **For Community Members:**
-    - Know what to do in a police encounter
-    - Access emergency resources instantly
-    - Connect with and learn from community experiences
-    """)
+    st.markdown(t('landing_who_should_use_md'))
     
     st.divider()
     
     # Footer with disclaimer
-    st.warning("""
-    **⚠️ Legal Disclaimer:**
-    
-    CivicShield Pro provides educational information about civil rights, not legal advice. 
-    While we strive for accuracy, laws vary by jurisdiction and change frequently. 
-    Always consult with a qualified attorney for your specific situation.
-    """)
+    st.warning(t('landing_disclaimer_md'))
 
 def page_tutorial():
     """First-time user tutorial with interactive walkthrough."""
-    st.markdown("""
-    <div class="tutorial-container">
-        <h1>👋 Welcome to CivicShield Pro!</h1>
-        <p>Let's take a quick tour to help you get started.</p>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown(t('tutorial_intro_html'), unsafe_allow_html=True)
     
     # Tutorial steps
     steps = [
         {
-            "title": "🏠 Home Dashboard",
-            "description": "Your central hub to access all CivicShield features. Each card represents a powerful tool for understanding and protecting your rights.",
-            "features": ["Navigate to any feature", "View saved deadlines", "Access crisis resources"]
+            "title": t('tutorial_step1_title'),
+            "description": t('tutorial_step1_desc'),
+            "features": [t('tutorial_step1_feat1'), t('tutorial_step1_feat2'), t('tutorial_step1_feat3')]
         },
         {
-            "title": "🗣️ Real-Time Translation",
-            "description": "Instantly translate officer statements into 14 languages. Record conversations and get immediate translations to ensure you understand your rights.",
-            "features": ["Speech-to-text in any language", "Real-time translation", "Audio playback in your language"]
+            "title": t('tutorial_step2_title'),
+            "description": t('tutorial_step2_desc'),
+            "features": [t('tutorial_step2_feat1'), t('tutorial_step2_feat2'), t('tutorial_step2_feat3')]
         },
         {
-            "title": "📄 Legal Documents",
-            "description": "Upload court documents, legal notices, or contracts. CivicShield extracts key information and identifies important deadlines.",
-            "features": ["Extract deadlines automatically", "Identify penalties", "Get translations"]
+            "title": t('tutorial_step3_title'),
+            "description": t('tutorial_step3_desc'),
+            "features": [t('tutorial_step3_feat1'), t('tutorial_step3_feat2'), t('tutorial_step3_feat3')]
         },
         {
-            "title": "⚖️ Know Your Rights",
-            "description": "Learn about civil rights with educational content and test your knowledge with interactive quizzes. Available in multiple languages.",
-            "features": ["Learn civil rights", "Take interactive quizzes", "Track progress"]
+            "title": t('tutorial_step4_title'),
+            "description": t('tutorial_step4_desc'),
+            "features": [t('tutorial_step4_feat1'), t('tutorial_step4_feat2'), t('tutorial_step4_feat3')]
         },
         {
-            "title": "📍 Resources Near You",
-            "description": "Find legal aid organizations, community centers, and emergency services near your location. Get directions with one click.",
-            "features": ["Search by location", "Browse by category", "Get directions instantly"]
+            "title": t('tutorial_step5_title'),
+            "description": t('tutorial_step5_desc'),
+            "features": [t('tutorial_step5_feat1'), t('tutorial_step5_feat2'), t('tutorial_step5_feat3')]
         },
         {
-            "title": "💬 Community Forum",
-            "description": "Connect with others, share experiences, ask questions, and get advice from community members. Fully anonymous if you choose.",
-            "features": ["Share experiences anonymously", "Ask legal questions", "Give advice"]
+            "title": t('tutorial_step6_title'),
+            "description": t('tutorial_step6_desc'),
+            "features": [t('tutorial_step6_feat1'), t('tutorial_step6_feat2'), t('tutorial_step6_feat3')]
         }
     ]
     
@@ -3054,7 +3225,7 @@ def page_tutorial():
             <div class="step-number">{step_idx + 1}</div>
             <h2>{step['title']}</h2>
             <div class="step-description">{step['description']}</div>
-            <h4>✨ Key Features:</h4>
+            <h4>✨ {t('key_features_label')}</h4>
         </div>
         """, unsafe_allow_html=True)
         
@@ -3068,30 +3239,30 @@ def page_tutorial():
         
         with col1:
             if step_idx > 0:
-                if st.button("⬅️ Previous", use_container_width=True):
+                if st.button(t('btn_previous'), use_container_width=True):
                     st.session_state.tutorial_step -= 1
                     st.rerun()
         
         with col2:
-            if st.button("⏭️ Skip Tour", use_container_width=True):
+            if st.button(t('btn_skip_tour'), use_container_width=True):
                 st.session_state.tutorial_step = 0
                 st.session_state.page = "Home"
                 st.rerun()
         
         with col3:
-            if step_idx < len(steps) - 1:
-                if st.button("Next ➡️", use_container_width=True):
-                    st.session_state.tutorial_step += 1
-                    st.rerun()
-            else:
-                if st.button("🎉 Start Using!", use_container_width=True):
-                    st.session_state.tutorial_step = 0
-                    st.session_state.first_time_user = False
-                    st.session_state.page = "Home"
-                    st.rerun()
+                if step_idx < len(steps) - 1:
+                    if st.button(t('btn_next'), use_container_width=True):
+                        st.session_state.tutorial_step += 1
+                        st.rerun()
+                else:
+                    if st.button(t('btn_start_using'), use_container_width=True):
+                        st.session_state.tutorial_step = 0
+                        st.session_state.first_time_user = False
+                        st.session_state.page = "Home"
+                        st.rerun()
     else:
-        st.success("✅ Tour Complete! You're ready to use CivicShield.")
-        if st.button("🏠 Go to Home", use_container_width=True):
+        st.success(t('tour_complete'))
+        if st.button(t('btn_go_home'), use_container_width=True):
             st.session_state.page = "Home"
             st.rerun()
 
@@ -3128,19 +3299,19 @@ def main():
         try:
             new_lang = st.session_state.language_selector
             if new_lang in LANGUAGE_MAP:
-                st.session_state.selected_language = new_lang
+                st.session_state.language = new_lang
                 st.rerun()
         except Exception as e:
-            st.error(f"Language change error: {e}")
+            st.error(f"{t('language_change_error')}: {e}")
     
     try:
         lang_list = list(LANGUAGE_MAP.keys())
-        current_lang = st.session_state.selected_language
+        current_lang = st.session_state.language
         
         # Ensure current language is in the list
         if current_lang not in lang_list:
             current_lang = "English"
-            st.session_state.selected_language = "English"
+            st.session_state.language = "English"
         
         current_index = lang_list.index(current_lang)
         
@@ -3152,30 +3323,30 @@ def main():
             on_change=on_language_change
         )
     except Exception as e:
-        st.sidebar.error(f"❌ Language selector error: {e}")
-        st.session_state.selected_language = "English"
+        st.sidebar.error(f"{t('language_selector_error')}: {e}")
+        st.session_state.language = "English"
     
     st.sidebar.divider()
     
     # Demo Mode toggle
-    st.sidebar.markdown("### 📺 Demo & Testing")
+    st.sidebar.markdown(f"### 📺 {t('demo_section_title')}")
     col1, col2 = st.columns(2)
     with col1:
         if st.button(
-            "🎬 Demo ON" if st.session_state.demo_mode else "🎬 Demo OFF",
+            t('demo_on') if st.session_state.demo_mode else t('demo_off'),
             use_container_width=True,
             key="demo_toggle"
         ):
             st.session_state.demo_mode = not st.session_state.demo_mode
             st.rerun()
     with col2:
-        if st.button("🎓 Tour", use_container_width=True, key="tour_button"):
+        if st.button(t('tour_button'), use_container_width=True, key="tour_button"):
             st.session_state.tutorial_step = 0
             st.session_state.page = "Tutorial"
             st.rerun()
     
     if st.session_state.demo_mode:
-        st.sidebar.success("✅ Demo Mode Active - Sample data is displayed")
+        st.sidebar.success(t('demo_mode_active_sidebar'))
     
     st.sidebar.divider()
     
@@ -3210,7 +3381,7 @@ def main():
         col1, col2 = st.columns(2)
         with col1:
             if st.button(
-                f"📢 {t('screen_reader')}" if st.session_state.screen_reader_enabled else "🔇 Screen Reader OFF",
+                f"📢 {t('screen_reader')}" if st.session_state.screen_reader_enabled else t('screen_reader_off'),
                 use_container_width=True,
                 key="screen_reader_toggle"
             ):
@@ -3222,17 +3393,17 @@ def main():
     st.sidebar.divider()
     
     # Navigation menu
-    st.sidebar.markdown("### 🧭 Navigation")
+    st.sidebar.markdown(f"### 🧭 {t('navigation_title')}")
     
     nav_options = {
         t('nav_home'): "Home",
         t('nav_translation'): "Translation",
         t('nav_documents'): "DocumentAssistant",
-        "⚖️ Know Your Rights": "KnowYourRights",
-        "📍 Resources Near You": "ResourcesNearYou",
-        "📝 Encounter Log": "EncounterLogging",
-        "🚨 Crisis Resources": "CrisisResources",
-        "💬 Talk to Your Community": "CommunityDiscussion",
+        t('nav_rights_full'): "KnowYourRights",
+        t('nav_resources_near_you'): "ResourcesNearYou",
+        t('nav_logging_full'): "EncounterLogging",
+        t('nav_crisis_resources'): "CrisisResources",
+        t('nav_community'): "CommunityDiscussion",
     }
     
     for label, page_name in nav_options.items():
@@ -3251,7 +3422,7 @@ def main():
     
     **{t('sidebar_languages')}**
     
-    Built for civil rights protection worldwide.
+    {t('sidebar_built_for')}
     """)
     
     st.sidebar.divider()
@@ -3266,7 +3437,7 @@ def main():
     st.sidebar.divider()
     
     # Landing page quick link
-    if st.sidebar.button("🏠 Show Landing Page", use_container_width=True):
+    if st.sidebar.button(t('show_landing_page'), use_container_width=True):
         st.session_state.page = "Landing"
         st.session_state.skip_landing = False
         st.rerun()
