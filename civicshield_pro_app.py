@@ -7427,6 +7427,22 @@ def page_landing():
     """Landing page for first-time visitors - judges see this first."""
     # Hide sidebar for landing page
     st.set_page_config(page_title="CivicShield Pro - Know Your Rights", layout="wide")
+
+    lang_list = list(LANGUAGE_MAP.keys())
+    current_lang = st.session_state.get("language", "English")
+    if current_lang not in lang_list:
+        current_lang = "English"
+        st.session_state.language = "English"
+
+    selected_lang = st.selectbox(
+        t('select_language'),
+        lang_list,
+        index=lang_list.index(current_lang),
+        key="landing_language_selector"
+    )
+    if selected_lang != current_lang:
+        st.session_state.language = selected_lang
+        st.rerun()
     
     st.markdown(t('landing_hero_html'), unsafe_allow_html=True)
     

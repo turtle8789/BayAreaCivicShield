@@ -3316,6 +3316,25 @@ UI_STRINGS = {
         "tutorial_step6_feat3": "Advice sharing",
 
         "documents_intro_md": "Mag‑upload ng legal na dokumento (larawan o PDF) upang i‑extract ang:\n- Mga petsa at deadline\n- Mga kinakailangang aksyon\n- Mga parusa at babala\n- Mga ahensiya ng gobyerno\n- Buod ng dokumento",
+        "extract_deadlines_found": "📋 Mga importanteng deadline na nahanap",
+        "extract_penalties_found": "⚠️ Mga parusa na nahanap",
+        "extract_requirements_found": "✓ Mga kinakailangan na nahanap",
+
+        "search_radius_km": "Search radius (km):",
+
+        "resource_category": "Kategorya ng serbisyo:",
+        "resource_distance": "Distansya:",
+        "resource_map_link": "🗺️ Mapa",
+        "resource_description": "Deskripsyon:",
+        "resource_notes": "Mga Tala:",
+        "resource_tags": "Mga Tag:",
+        "resource_id": "Resource ID:",
+        "resource_source": "Pinagmulan:",
+        "resource_updated": "Huling update:",
+        "resource_error": "Nagkaroon ng error sa pagkuha ng serbisyo",
+        "resource_loading": "Naglo-load ng impormasyon ng serbisyo...",
+        "resource_retry": "Subukang muli",
+        "resource_empty": "Walang detalye para sa serbisyong ito", 
     },
     "Hindi / हिन्दी": {
         "sidebar_title": "CivicShield",
@@ -3757,7 +3776,7 @@ UI_STRINGS = {
         "tutorial_step6_feat3": "सलाह साझा करना",
 
         "documents_intro_md": "कानूनी दस्तावेज़ (फोटो या PDF) अपलोड करें ताकि:\n- तिथियाँ और डेडलाइन निकाली जा सकें\n- आवश्यक कार्य पहचाने जा सकें\n- दंड और चेतावनियाँ मिल सकें\n- सरकारी एजेंसियाँ पहचानी जा सकें\n- दस्तावेज़ का सारांश तैयार हो सके",
-
+    
     },
     "Korean / 한국어": {
         "sidebar_title": "CivicShield",
