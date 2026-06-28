@@ -7515,6 +7515,92 @@ def fetch_lawhelp_resources() -> list:
 
     return resources
 
+def reverse_geocode(lat: float, lon: float) -> str:
+    """
+    Convert latitude/longitude into a human-readable address using Nominatim.
+    """
+    url = f"https://nominatim.openstreetmap.org/reverse?lat={lat}&lon={lon}&format=json"
+    try:
+        response = requests.get(url, headers={"User-Agent": "CivicShieldPro/3.0"}, timeout=10)
+        data = response.json()
+        return data.get("display_name", f"{lat}, {lon}")
+    except Exception:
+        return f"{lat}, {lon}"
+    
+def fetch_211_resources(city: str) -> list:
+    """
+    Fetch community resources from 211 California API.
+    """
+    url = f"https://api.211ca.org/search?city={quote_plus(city)}"
+    try:
+        response = requests.get(url, timeout=10)
+        data = response.json()
+    except Exception:
+        return []
+
+    resources = []
+    for item in data.get("results", []):
+        name = item.get("name")
+        address = item.get("address")
+        phone = item.get("phone")
+        category = item.get("category")
+
+        if name and address:
+            resources.append({
+                "name": name,
+                "category": category or "Community Resource",
+                "address": address,
+                "phone": phone or "",
+                "website": item.get("website", ""),
+                "hours": item.get("hours", "")
+            })
+
+    return resources
+
+def fetch_osm_resources(lat: float, lon: float, radius_meters: int = 5000) -> list:
+    """
+    Fetch community centers, NGOs, and social facilities from OpenStreetMap.
+    """
+    query = f"""
+    [out:json];
+    (
+      node["amenity"="community_centre"](around:{radius_meters},{lat},{lon});
+      node["social_facility"](around:{radius_meters},{lat},{lon});
+      node["office"="ngo"](around:{radius_meters},{lat},{lon});
+    );
+    out;
+    """
+
+    try:
+        response = requests.post("https://overpass-api.de/api/interpreter", data=query, timeout=15)
+        data = response.json()
+    except Exception:
+        return []
+
+    resources = []
+    for element in data.get("elements", []):
+        name = element.get("tags", {}).get("name")
+        if not name:
+            continue
+
+        lat2 = element.get("lat")
+        lon2 = element.get("lon")
+
+        # Reverse geocode to get a real address
+        address = reverse_geocode(lat2, lon2)
+
+        resources.append({
+            "name": name,
+            "category": "Community Center",
+            "address": address,
+            "phone": "",
+            "website": "",
+            "hours": "",
+            "latitude": lat2,
+            "longitude": lon2
+        })
+
+    return resources
 
 
 
