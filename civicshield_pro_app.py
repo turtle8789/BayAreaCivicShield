@@ -32,8 +32,14 @@ from datetime import datetime
 import io
 import re
 import copy
+import math
 from PIL import Image
 import qrcode
+from urllib.parse import quote_plus
+from urllib.request import Request, urlopen
+import requests
+from bs4 import BeautifulSoup
+
 
 # Optional imports with graceful fallback
 try:
@@ -7425,74 +7431,126 @@ def add_screen_reader_label(label: str):
 # ============================================================================
 # LOCATION-BASED RESOURCE FINDER
 # ============================================================================
+@st.cache_data(show_spinner=False)
+def geocode_address(address: str):
+    """Geocode an address using OpenStreetMap Nominatim."""
+    if not address or not address.strip():
+        return None
+
+    encoded_address = quote_plus(address.strip())
+    request = Request(
+        f"https://nominatim.openstreetmap.org/search?q={encoded_address}&format=json&limit=1",
+        headers={"User-Agent": "CivicShieldPro/3.0 (Streamlit app)"}
+    )
+
+    try:
+        with urlopen(request, timeout=10) as response:
+            results = json.loads(response.read().decode("utf-8"))
+    except Exception:
+        return None
+
+    if not results:
+        return None
+
+    return float(results[0]["lat"]), float(results[0]["lon"])
+
+
+def haversine_miles(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    """Compute great-circle distance in miles between two lat/lon pairs."""
+    earth_radius_miles = 3958.7613
+
+    lat1_rad = math.radians(lat1)
+    lon1_rad = math.radians(lon1)
+    lat2_rad = math.radians(lat2)
+    lon2_rad = math.radians(lon2)
+
+    delta_lat = lat2_rad - lat1_rad
+    delta_lon = lon2_rad - lon1_rad
+
+    arc = (
+        math.sin(delta_lat / 2) ** 2
+        + math.cos(lat1_rad) * math.cos(lat2_rad) * math.sin(delta_lon / 2) ** 2
+    )
+    central_angle = 2 * math.atan2(math.sqrt(arc), math.sqrt(1 - arc))
+    return earth_radius_miles * central_angle
+
+
+def build_google_maps_search_url(address: str) -> str:
+    """Build a Google Maps search URL for an address."""
+    return f"https://www.google.com/maps/search/?api=1&query={quote_plus(address.strip())}"
+
+def fetch_lawhelp_resources() -> list:
+    """
+    Fetch California legal aid resources dynamically from LawHelpCA directory.
+    """
+    url = "https://www.lawhelpca.org/legal-aid"
+    try:
+        html = requests.get(url, timeout=10).text
+    except Exception:
+        return []
+
+    soup = BeautifulSoup(html, "html.parser")
+    resources = []
+
+    for item in soup.select(".views-row"):
+        name_el = item.select_one(".title")
+        address_el = item.select_one(".address")
+        phone_el = item.select_one(".phone")
+        link_el = item.select_one("a")
+
+        name = name_el.get_text(strip=True) if name_el else ""
+        address = address_el.get_text(strip=True) if address_el else ""
+        phone = phone_el.get_text(strip=True) if phone_el else ""
+        website = link_el["href"] if link_el and link_el.has_attr("href") else ""
+
+        if name and address:
+            resources.append({
+                "name": name,
+                "category": "Legal Aid",
+                "address": address,
+                "phone": phone,
+                "website": website,
+                "hours": "",
+            })
+
+    return resources
+
+
+
+
 def find_resources_by_location(address: str, search_radius_miles: int = 5) -> list:
     """
     Find nearby resources based on address.
-
-    This is a simplified mock implementation using hardcoded coordinates.
-    For production, integrate with Google Maps API or geolocation service.
     """
-    # Mock locations (in production, use Geocoding API)
-    RESOURCES_DB = [
-        {
-            "name": "California Rural Legal Assistance (CRLA)",
-            "category": "Legal Aid",
-            "address": "123 Main St, San Francisco, CA 94102",
-            "phone": "1-833-435-2752",
-            "website": "crla.org",
-            "hours": "9AM - 5PM Mon-Fri",
-            "latitude": 37.7749,
-            "longitude": -122.4194,
-            "distance": 2.5
-        },
-        {
-            "name": "Community Legal Services Center",
-            "category": "Legal Aid",
-            "address": "456 Oak Ave, San Francisco, CA 94103",
-            "phone": "(415) 701-1000",
-            "website": "legalaid.org",
-            "hours": "8AM - 6PM Mon-Sat",
-            "latitude": 37.7750,
-            "longitude": -122.4185,
-            "distance": 2.8
-        },
-        {
-            "name": "Immigrant Rights Center",
-            "category": "Immigration Support",
-            "address": "789 Pine St, San Francisco, CA 94104",
-            "phone": "1-888-624-4747",
-            "website": "immigrationrights.org",
-            "hours": "10AM - 4PM Daily",
-            "latitude": 37.7951,
-            "longitude": -122.3975,
-            "distance": 3.2
-        },
-        {
-            "name": "Community Health & Resources",
-            "category": "Community Center",
-            "address": "321 Elm Way, San Francisco, CA 94105",
-            "phone": "(415) 555-0123",
-            "website": "communitycenter.org",
-            "hours": "9AM - 9PM Daily",
-            "latitude": 37.7849,
-            "longitude": -122.2864,
-            "distance": 4.1
-        },
-        {
-            "name": "Multi-Language Translation Services",
-            "category": "Language Services",
-            "address": "654 Maple Rd, San Francisco, CA 94106",
-            "phone": "1-800-827-7223",
-            "website": "translationservices.org",
-            "hours": "8AM - 8PM Daily",
-            "latitude": 37.7749,
-            "longitude": -122.3967,
-            "distance": 1.8
-        }
-    ]
-    
-    # Mock: filter resources within search radius
-    nearby_resources = [r for r in RESOURCES_DB if r["distance"] <= search_radius_miles]
+    RESOURCES_DB = fetch_lawhelp_resources()
+
+    user_coordinates = geocode_address(address)
+    if not user_coordinates:
+        return []
+
+    user_latitude, user_longitude = user_coordinates
+    nearby_resources = []
+
+    for resource in RESOURCES_DB:
+        resource_coordinates = geocode_address(resource["address"])
+        if not resource_coordinates:
+            continue
+
+        resource_latitude, resource_longitude = resource_coordinates
+        distance = haversine_miles(
+            user_latitude,
+            user_longitude,
+            resource_latitude,
+            resource_longitude
+        )
+
+        if distance <= search_radius_miles:
+            resource_with_distance = resource.copy()
+            resource_with_distance["latitude"] = resource_latitude
+            resource_with_distance["longitude"] = resource_longitude
+            resource_with_distance["distance"] = round(distance, 1)
+            nearby_resources.append(resource_with_distance)
+
     return sorted(nearby_resources, key=lambda x: x["distance"])
 
 def extract_deadline_and_dates(text: str) -> dict:
@@ -8395,19 +8453,24 @@ def page_resources_near_you():
                     </div>
                     """, unsafe_allow_html=True)
                     
-                    # Get Directions button - opens Google Maps
-                    if st.button(f"🗺️ {t('get_directions')} - {resource['name']}", use_container_width=True, key=f"directions_{idx}"):
-                        # Build Google Maps URL
-                        address_encoded = resource['address'].replace(' ', '+')
-                        maps_url = f"https://www.google.com/maps/search/{address_encoded}/"
-                        st.markdown(f"""
-                        <a href="{maps_url}" target="_blank">
-                        <button style="width: 100%; padding: 8px; background-color: #4285F4; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                        🗺️ {t('open_in_google_maps')}
-                        </button>
-                        </a>
-                        """, unsafe_allow_html=True)
-                        st.success(f"📍 {t('opening_maps_to')}: {resource['name']}")
+                    maps_url = build_google_maps_search_url(resource['address'])
+                    if hasattr(st, "link_button"):
+                        st.link_button(
+                            f"🗺️ {t('get_directions')} - {resource['name']}",
+                            maps_url,
+                            use_container_width=True
+                        )
+                    else:
+                        st.markdown(
+                            f"""
+                            <a href="{maps_url}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+                                <button style="width: 100%; padding: 8px; background-color: #4285F4; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                    🗺️ {t('get_directions')} - {resource['name']}
+                                </button>
+                            </a>
+                            """,
+                            unsafe_allow_html=True
+                        )
         else:
             st.warning(f"⚠️ {t('no_resources_found')}")
     
