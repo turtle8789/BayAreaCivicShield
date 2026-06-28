@@ -7626,6 +7626,11 @@ def find_resources_by_location(address: str, search_radius_miles: int = 5) -> li
 
     # Merge all three sources
     RESOURCES_DB = lawhelp + resources_211 + osm_resources
+    print("LAWHELP:", len(lawhelp))
+    print("211:", len(resources_211))
+    print("OSM:", len(osm_resources))
+    print("TOTAL:", len(RESOURCES_DB))
+
 
     # If user address cannot be geocoded, stop early
     if not user_coordinates:
