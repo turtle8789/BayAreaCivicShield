@@ -7602,6 +7602,35 @@ def fetch_osm_resources(lat: float, lon: float, radius_meters: int = 5000) -> li
 
     return resources
 
+def fetch_211_resources(city: str) -> list:
+    """
+    Fetch community resources from 211 California API.
+    """
+    url = f"https://api.211ca.org/search?city={quote_plus(city)}"
+    try:
+        response = requests.get(url, timeout=10)
+        data = response.json()
+    except Exception:
+        return []
+
+    resources = []
+    for item in data.get("results", []):
+        name = item.get("name")
+        address = item.get("address")
+        phone = item.get("phone")
+        category = item.get("category")
+
+        if name and address:
+            resources.append({
+                "name": name,
+                "category": category or "Community Resource",
+                "address": address,
+                "phone": phone or "",
+                "website": item.get("website", ""),
+                "hours": item.get("hours", "")
+            })
+
+    return resources
 
 
 def find_resources_by_location(address: str, search_radius_miles: int = 5) -> list:
