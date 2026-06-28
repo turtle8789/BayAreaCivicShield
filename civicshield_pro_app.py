@@ -7522,21 +7522,41 @@ def find_resources_by_location(address: str, search_radius_miles: int = 5) -> li
     """
     Find nearby resources based on address.
     """
-    RESOURCES_DB = fetch_lawhelp_resources()
 
+    # 1. LawHelpCA legal aid
+    lawhelp = fetch_lawhelp_resources()
+
+    # 2. 211 California community resources
+    city_only = address.split(",")[0]
+    resources_211 = fetch_211_resources(city_only)
+
+    # 3. OSM community centers (requires user coordinates)
     user_coordinates = geocode_address(address)
+    osm_resources = []
+    if user_coordinates:
+        user_lat, user_lon = user_coordinates
+        osm_resources = fetch_osm_resources(user_lat, user_lon)
+
+    # Merge all three sources
+    RESOURCES_DB = lawhelp + resources_211 + osm_resources
+
+    # If user address cannot be geocoded, stop early
     if not user_coordinates:
         return []
 
     user_latitude, user_longitude = user_coordinates
     nearby_resources = []
 
+    # Filter resources by distance
     for resource in RESOURCES_DB:
+        # Geocode each resource's address
         resource_coordinates = geocode_address(resource["address"])
         if not resource_coordinates:
             continue
 
         resource_latitude, resource_longitude = resource_coordinates
+
+        # Compute distance
         distance = haversine_miles(
             user_latitude,
             user_longitude,
@@ -7544,6 +7564,7 @@ def find_resources_by_location(address: str, search_radius_miles: int = 5) -> li
             resource_longitude
         )
 
+        # Keep only resources within radius
         if distance <= search_radius_miles:
             resource_with_distance = resource.copy()
             resource_with_distance["latitude"] = resource_latitude
@@ -7551,7 +7572,10 @@ def find_resources_by_location(address: str, search_radius_miles: int = 5) -> li
             resource_with_distance["distance"] = round(distance, 1)
             nearby_resources.append(resource_with_distance)
 
+    # Sort by nearest
     return sorted(nearby_resources, key=lambda x: x["distance"])
+
+
 
 def extract_deadline_and_dates(text: str) -> dict:
     """
