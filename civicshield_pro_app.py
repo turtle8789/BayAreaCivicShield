@@ -7618,6 +7618,7 @@ def find_resources_by_location(address: str, search_radius_miles: int = 5) -> li
 
     # 3. OSM community centers (requires user coordinates)
     user_coordinates = geocode_address(address)
+    print("DEBUG USER COORDS:", user_coordinates)
     osm_resources = []
     if user_coordinates:
         user_lat, user_lon = user_coordinates
