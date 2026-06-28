@@ -8060,6 +8060,8 @@ def page_translation():
     if "translation_mic_error" not in st.session_state:
         st.session_state.translation_mic_error = ""
     
+    target_lang = LANGUAGE_MAP[st.session_state.language]["code"]
+
     # Input section
     col1, col2 = st.columns([1, 1])
     
@@ -8073,6 +8075,13 @@ def page_translation():
             height=120,
             disabled=True,
             key="play_before_script_text"
+        )
+        st.text_area(
+            t('officer_script_translated'),
+            value=translate_for_user(t('play_before_audio'), target_lang),
+            height=120,
+            disabled=True,
+            key="play_before_script_translated"
         )
 
         before_audio_bytes = build_tts_audio_bytes(t('play_before_audio'), "en")
@@ -8143,8 +8152,6 @@ def page_translation():
         st.markdown(f"## {t('your_rights')}")
         
         if english_text:
-            target_lang = LANGUAGE_MAP[st.session_state.language]["code"]
-            
             # Generate legal advice based on officer statement
             legal_advice = get_legal_advice_for_statement(english_text)
             translated_advice = legal_advice
