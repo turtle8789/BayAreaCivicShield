@@ -684,6 +684,14 @@ UI_STRINGS = {
         "translation_subtitle": "Translate officer statements and get legal advice",
         "officer_statement": "Officer's Statement (English):",
         "your_rights": "Your Rights & Legal Advice:",
+        "play_before_title": "1. Play Before Interaction",
+        "play_before_desc": "Play this to the officer before recording begins.",
+        "play_before_audio": "Officer, before we begin, I am using a translation app to avoid any language barriers. I am recording with your knowledge for safety and accuracy.",
+        "play_after_title": "3. Play After Understanding Rights",
+        "play_after_desc": "Play this to the officer after you hear your rights.",
+        "play_after_audio": "I understand, officer, and I will comply, but I will be using my right to remain silent.",
+        "officer_script": "Officer-facing script (English):",
+        "officer_script_translated": "What this says in your language:",
         "record_officer": "🎤 Record Officer's Voice",
         "stop_recording": "⏹️ Stop Recording & Translate",
         "listen_to_advice": "🔊 Listen to Advice",
@@ -1153,6 +1161,14 @@ UI_STRINGS = {
         "translation_subtitle": "Traduce declaraciones de oficiales y obtén asesoramiento legal",
         "officer_statement": "Declaración del Oficial (Inglés):",
         "your_rights": "Tus Derechos y Asesoramiento Legal:",
+        "play_before_title": "1. Reproducir Antes de la Interacción",
+        "play_before_desc": "Muéstrale esto al oficial antes de comenzar la grabación.",
+        "play_before_audio": "Oficial, antes de comenzar, estoy usando una aplicación de traducción para evitar barreras idiomáticas. Estoy grabando con su conocimiento por seguridad y precisión.",
+        "play_after_title": "3. Reproducir Después de Entender tus Derechos",
+        "play_after_desc": "Muéstrale esto al oficial después de escuchar tus derechos.",
+        "play_after_audio": "Entiendo, oficial, y voy a cooperar, pero ejerceré mi derecho a guardar silencio.",
+        "officer_script": "Texto para el oficial (Inglés):",
+        "officer_script_translated": "Lo que esto significa en tu idioma:",
         "record_officer": "🎤 Grabar Voz del Oficial",
         "stop_recording": "⏹️ Detener Grabación y Traducir",
         "listen_to_advice": "🔊 Escuchar Consejo",
@@ -1619,6 +1635,14 @@ UI_STRINGS = {
         "translation_subtitle": "翻譯警察陳述並獲取法律建議",
         "officer_statement":    "警察陳述（英語）：",
         "your_rights":          "您的權利及法律建議：",
+        "play_before_title": "1. 互動前播放",
+        "play_before_desc": "在錄音開始前，將此播放給警察聽。",
+        "play_before_audio": "警察，在我們開始之前，我正在使用翻譯應用程式以避免語言障礙。為了安全和準確，我在您知情的情況下進行錄音。",
+        "play_after_title": "3. 了解權利後播放",
+        "play_after_desc": "聆聽您的權利後，將此播放給警察聽。",
+        "play_after_audio": "警察，我明白，我會配合，但我將行使我保持沉默的權利。",
+        "officer_script": "警察聽的內容（英語）：",
+        "officer_script_translated": "這在您的語言中的意思：",
         "record_officer":       "🎤 錄製警察聲音",
         "stop_recording":       "⏹️ 停止錄音並翻譯",
         "listen_to_advice":     "🔊 聆聽建議",
@@ -2055,6 +2079,14 @@ UI_STRINGS = {
         "translation_subtitle": "翻译警官陈述并获取法律建议",
         "officer_statement": "警官陈述（英文）：",
         "your_rights": "你的权利与法律建议：",
+        "play_before_title": "1. 互动前播放",
+        "play_before_desc": "录音开始前，将此内容播放给警察听。",
+        "play_before_audio": "警官，在我们开始之前，我正在使用翻译应用程序以避免语言障碍。为了安全和准确，我在您知情的情况下进行录音。",
+        "play_after_title": "3. 了解权利后播放",
+        "play_after_desc": "听完您的权利后，将此内容播放给警察听。",
+        "play_after_audio": "我明白，警官，我会配合，但我将行使我保持沉默的权利。",
+        "officer_script": "给警察的内容（英语）：",
+        "officer_script_translated": "这句话用您的语言是：",
         "record_officer": "🎤 录制警官声音",
         "stop_recording": "⏹️ 停止录音并翻译",
         "listen_to_advice": "🔊 收听建议",
@@ -2494,6 +2526,14 @@ UI_STRINGS = {
         "translation_subtitle": "Phiên dịch lời nói của cảnh sát và nhận tư vấn pháp lý",
         "officer_statement": "Lời nói của cảnh sát (Tiếng Anh):",
         "your_rights": "Quyền Lợi & Tư Vấn Pháp Lý:",
+        "play_before_title": "1. Phát Trước Khi Tương Tác",
+        "play_before_desc": "Phát đoạn này cho cảnh sát nghe trước khi bắt đầu ghi âm.",
+        "play_before_audio": "Thưa cảnh sát, trước khi bắt đầu, tôi đang sử dụng ứng dụng dịch thuật để tránh rào cản ngôn ngữ. Tôi đang ghi âm với sự hiểu biết của anh để đảm bảo an toàn và chính xác.",
+        "play_after_title": "3. Phát Sau Khi Hiểu Quyền",
+        "play_after_desc": "Phát đoạn này cho cảnh sát nghe sau khi bạn nghe quyền của mình.",
+        "play_after_audio": "Tôi hiểu, thưa cảnh sát, và tôi sẽ tuân thủ, nhưng tôi sẽ sử dụng quyền im lặng của mình.",
+        "officer_script": "Nội dung cho cảnh sát (tiếng Anh):",
+        "officer_script_translated": "Đoạn này có nghĩa gì trong ngôn ngữ của bạn:",
         "record_officer": "🎤 Ghi âm giọng cảnh sát",
         "stop_recording": "⏹️ Dừng ghi âm & dịch",
         "listen_to_advice": "🔊 Nghe tư vấn",
@@ -2936,6 +2976,14 @@ UI_STRINGS = {
         "translation_subtitle": "Isalin ang sinasabi ng pulis at tumanggap ng legal na gabay",
         "officer_statement": "Sinasabi ng pulis (Ingles):",
         "your_rights": "Mga Karapatan at Legal na Payo:",
+        "play_before_title": "1. I-play Bago ang Pakikipag-ugnayan",
+        "play_before_desc": "I-play ito para sa pulis bago magsimulang mag-record.",
+        "play_before_audio": "Opisyal, bago tayo magsimula, gumagamit ako ng translation app para maiwasan ang mga hadlang sa wika. Nire-record ko ito nang may kaalaman ninyo para sa kaligtasan at katumpakan.",
+        "play_after_title": "3. I-play Pagkatapos Maunawaan ang Mga Karapatan",
+        "play_after_desc": "I-play ito para sa pulis pagkatapos marinig ang iyong mga karapatan.",
+        "play_after_audio": "Naiintindihan ko, opisyal, at susundin ko, ngunit gagamitin ko ang aking karapatang manatiling tahimik.",
+        "officer_script": "Script para sa pulis (Ingles):",
+        "officer_script_translated": "Ano ang ibig sabihin nito sa inyong wika:",
         "record_officer": "🎤 I‑record ang boses ng pulis",
         "stop_recording": "⏹️ Itigil ang pag‑record at isalin",
         "listen_to_advice": "🔊 Pakinggan ang payo",
@@ -3397,6 +3445,14 @@ UI_STRINGS = {
         "translation_subtitle": "पुलिस क्या कह रही है उसका अनुवाद करें और कानूनी सलाह प्राप्त करें",
         "officer_statement": "पुलिस द्वारा कहा गया (अंग्रेज़ी):",
         "your_rights": "आपके अधिकार और कानूनी सलाह:",
+        "play_before_title": "1. बातचीत से पहले चलाएँ",
+        "play_before_desc": "रिकॉर्डिंग शुरू होने से पहले यह पुलिस को सुनाएँ।",
+        "play_before_audio": "अधिकारी, शुरू करने से पहले, मैं किसी भी भाषा की बाधा से बचने के लिए एक अनुवाद ऐप का उपयोग कर रहा हूँ। मैं सुरक्षा और सटीकता के लिए आपकी जानकारी में रिकॉर्डिंग कर रहा हूँ।",
+        "play_after_title": "3. अधिकार समझने के बाद चलाएँ",
+        "play_after_desc": "अपने अधिकार सुनने के बाद यह पुलिस को सुनाएँ।",
+        "play_after_audio": "मैं समझता हूँ, अधिकारी, और मैं सहयोग करूँगा, लेकिन मैं अपने चुप रहने के अधिकार का उपयोग करूँगा।",
+        "officer_script": "पुलिस के लिए स्क्रिप्ट (अंग्रेज़ी):",
+        "officer_script_translated": "यह आपकी भाषा में क्या कहता है:",
         "record_officer": "🎤 पुलिस की आवाज़ रिकॉर्ड करें",
         "stop_recording": "⏹️ रिकॉर्डिंग रोकें और अनुवाद करें",
         "listen_to_advice": "🔊 सलाह सुनें",
@@ -3839,6 +3895,14 @@ UI_STRINGS = {
         "translation_subtitle": "경찰이 말하는 내용을 번역하고 법률 조언을 제공합니다",
         "officer_statement": "경찰이 말한 내용 (영어):",
         "your_rights": "당신의 권리 및 법률 조언:",
+        "play_before_title": "1. 상호작용 전 재생",
+        "play_before_desc": "녹음 시작 전 경찰에게 이 내용을 재생하세요.",
+        "play_before_audio": "경찰관님, 시작하기 전에 언어 장벽을 피하기 위해 번역 앱을 사용하고 있습니다. 안전과 정확성을 위해 경찰관님의 양해 하에 녹음하겠습니다.",
+        "play_after_title": "3. 권리 이해 후 재생",
+        "play_after_desc": "자신의 권리를 들은 후 경찰에게 이 내용을 재생하세요.",
+        "play_after_audio": "이해합니다, 경찰관님. 협조하겠지만 묵비권을 행사하겠습니다.",
+        "officer_script": "경찰용 스크립트 (영어):",
+        "officer_script_translated": "이것이 귀하의 언어로 의미하는 바:",
         "record_officer": "🎤 경찰 음성 녹음",
         "stop_recording": "⏹️ 녹음 중지 및 번역",
         "listen_to_advice": "🔊 조언 듣기",
@@ -4281,6 +4345,14 @@ UI_STRINGS = {
         "translation_subtitle": "警察が話した内容を翻訳し、法律アドバイスを提供します",
         "officer_statement": "警察が話した内容（英語）:",
         "your_rights": "あなたの権利と法律アドバイス:",
+        "play_before_title": "1. やり取りの前に再生する",
+        "play_before_desc": "録音を開始する前に、警察官にこの内容を再生してください。",
+        "play_before_audio": "警察官の方、始める前に申し上げます。言語の壁を避けるために翻訳アプリを使用しております。安全性と正確性のために、ご了承のうえ録音させていただいております。",
+        "play_after_title": "3. 権利を理解した後に再生する",
+        "play_after_desc": "ご自身の権利を確認した後に、警察官にこの内容を再生してください。",
+        "play_after_audio": "承知いたしました、警察官の方。ご指示に従いますが、黙秘権を行使させていただきます。",
+        "officer_script": "警察官向けスクリプト（英語）：",
+        "officer_script_translated": "これがあなたの言語での意味：",
         "record_officer": "🎤 警察の音声を録音",
         "stop_recording": "⏹️ 録音停止して翻訳",
         "listen_to_advice": "🔊 アドバイスを再生",
@@ -4723,6 +4795,14 @@ UI_STRINGS = {
         "translation_subtitle": "ترجمة ما يقوله الضابط وتقديم نصائح قانونية",
         "officer_statement": "ما قاله الضابط (بالإنجليزية):",
         "your_rights": "حقوقك والنصيحة القانونية:",
+        "play_before_title": "1. تشغيل قبل التفاعل",
+        "play_before_desc": "شغّل هذا للضابط قبل بدء التسجيل.",
+        "play_before_audio": "أيها الضابط، قبل أن نبدأ، أنا أستخدم تطبيق ترجمة لتجنب أي حواجز لغوية. أنا أسجل بعلمك لأغراض السلامة والدقة.",
+        "play_after_title": "3. تشغيل بعد فهم الحقوق",
+        "play_after_desc": "شغّل هذا للضابط بعد أن تسمع حقوقك.",
+        "play_after_audio": "أفهم ذلك أيها الضابط، وسأتعاون معك، لكنني سأستخدم حقي في التزام الصمت.",
+        "officer_script": "النص الموجه للضابط (بالإنجليزية):",
+        "officer_script_translated": "ما يعنيه هذا بلغتك:",
         "record_officer": "🎤 تسجيل صوت الضابط",
         "stop_recording": "⏹️ إيقاف التسجيل والترجمة",
         "listen_to_advice": "🔊 الاستماع للنصيحة",
@@ -5165,6 +5245,14 @@ UI_STRINGS = {
         "translation_subtitle": "Traduza o que o policial diz e receba orientação jurídica",
         "officer_statement": "O que o policial disse (em inglês):",
         "your_rights": "Seus direitos e orientação jurídica:",
+        "play_before_title": "1. Reproduzir Antes da Interação",
+        "play_before_desc": "Reproduza isso para o policial antes de começar a gravar.",
+        "play_before_audio": "Oficial, antes de começarmos, estou usando um aplicativo de tradução para evitar barreiras linguísticas. Estou gravando com o seu conhecimento para segurança e precisão.",
+        "play_after_title": "3. Reproduzir Após Entender os Direitos",
+        "play_after_desc": "Reproduza isso para o policial após ouvir seus direitos.",
+        "play_after_audio": "Entendo, oficial, e vou cooperar, mas vou exercer meu direito de permanecer em silêncio.",
+        "officer_script": "Script para o policial (Inglês):",
+        "officer_script_translated": "O que isso significa no seu idioma:",
         "record_officer": "🎤 Gravar fala do policial",
         "stop_recording": "⏹️ Parar gravação e traduzir",
         "listen_to_advice": "🔊 Ouvir orientação",
@@ -5607,6 +5695,14 @@ UI_STRINGS = {
         "translation_subtitle": "போலீஸ் கூறுவதை மொழிபெயர்த்து சட்ட ஆலோசனை பெறுங்கள்",
         "officer_statement": "போலீஸ் கூறியது (ஆங்கிலத்தில்):",
         "your_rights": "உங்கள் உரிமைகள் மற்றும் சட்ட ஆலோசனை:",
+        "play_before_title": "1. தொடர்புக்கு முன் பாடல் இயக்கவும்",
+        "play_before_desc": "பதிவு தொடங்குவதற்கு முன் இதை போலீஸிடம் இயக்கவும்.",
+        "play_before_audio": "அதிகாரியே, தொடங்குவதற்கு முன்பு, மொழித் தடைகளைத் தவிர்க்க நான் ஒரு மொழிபெயர்ப்பு ஆப்பை பயன்படுத்துகிறேன். பாதுகாப்பு மற்றும் துல்லியத்திற்காக உங்கள் அறிவோடு பதிவு செய்கிறேன்.",
+        "play_after_title": "3. உரிமைகளை புரிந்த பிறகு இயக்கவும்",
+        "play_after_desc": "உங்கள் உரிமைகளை கேட்ட பிறகு இதை போலீஸிடம் இயக்கவும்.",
+        "play_after_audio": "நான் புரிகிறேன், அதிகாரியே, நான் இணங்குவேன், ஆனால் என் மவுனமாக இருக்கும் உரிமையை பயன்படுத்துவேன்.",
+        "officer_script": "அதிகாரிக்கான உரை (ஆங்கிலத்தில்):",
+        "officer_script_translated": "இது உங்கள் மொழியில் என்னவென்றால்:",
         "record_officer": "🎤 போலீஸ் பேச்சை பதிவு செய்யுங்கள்",
         "stop_recording": "⏹️ பதிவு நிறுத்தி மொழிபெயர்க்க",
         "listen_to_advice": "🔊 ஆலோசனையை கேட்க",
@@ -6048,6 +6144,14 @@ UI_STRINGS = {
         "translation_subtitle": "పోలీసులు ఏమి చెబుతున్నారో అనువదించండి మరియు లీగల్ మార్గదర్శకత్వం పొందండి",
         "officer_statement": "పోలీసులు చెబుతున్నది (ఇంగ్లీష్):",
         "your_rights": "మీ హక్కులు మరియు లీగల్ సలహా:",
+        "play_before_title": "1. మాట్లాడేముందు ప్లే చేయండి",
+        "play_before_desc": "రికార్డింగ్ మొదలవ్వడానికి ముందు పోలీసుకి ఇది వినిపించండి.",
+        "play_before_audio": "అయ్యా, మొదలవ్వడానికి ముందు, నేను భాష అడ్డంకులు లేకుండా అర్థం చేసుకోవడానికి అనువాద యాప్ వాడుతున్నాను. మీకు తెలిసేట్టుగా సేఫ్టీ కోసం రికార్డ్ చేస్తున్నాను.",
+        "play_after_title": "3. హక్కులు అర్థమైన తర్వాత ప్లే చేయండి",
+        "play_after_desc": "మీ హక్కులు విన్న తర్వాత పోలీసుకి ఇది వినిపించండి.",
+        "play_after_audio": "అర్థమైంది అయ్యా, నేను సహకరిస్తాను, కానీ నా మౌనంగా ఉండే హక్కు వాడుతాను.",
+        "officer_script": "పోలీసుకి చెప్పే స్క్రిప్ట్ (ఇంగ్లీష్లో):",
+        "officer_script_translated": "ఇది మీ భాషలో అర్థం:",
         "record_officer": "🎤 పోలీసుల వాయిస్‌ను రికార్డ్ చేయండి",
         "stop_recording": "⏹️ రికార్డింగ్ ఆపి అనువదించండి",
         "listen_to_advice": "🔊 సలహా వినండి",
@@ -6613,6 +6717,14 @@ UI_STRINGS = {
         "translation_subtitle": "ਪੁਲਿਸ ਕੀ ਕਹਿ ਰਹੀ ਹੈ ਤਰਜਮਾ ਕਰੋ ਅਤੇ ਲੀਗਲ ਸਲਾਹ ਲਵੋ",
         "officer_statement": "ਪੁਲਿਸ ਕੀ ਕਹਿ ਰਹੀ ਹੈ (ਅੰਗਰੇਜ਼ੀ):",
         "your_rights": "ਤੁਹਾਡੇ ਹੱਕ ਅਤੇ ਲੀਗਲ ਸਲਾਹ:",
+        "play_before_title": "1. ਗੱਲਬਾਤ ਤੋਂ ਪਹਿਲਾਂ ਚਲਾਓ",
+        "play_before_desc": "ਰਿਕਾਰਡਿੰਗ ਸ਼ੁਰੂ ਹੋਣ ਤੋਂ ਪਹਿਲਾਂ ਪੁਲਿਸ ਨੂੰ ਇਹ ਸੁਣਾਓ।",
+        "play_before_audio": "ਅਫ਼ਸਰ ਜੀ, ਸ਼ੁਰੂ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ, ਮੈਂ ਭਾਸ਼ਾ ਦੀਆਂ ਰੁਕਾਵਟਾਂ ਤੋਂ ਬਚਣ ਲਈ ਟ੍ਰਾਂਸਲੇਸ਼ਨ ਐਪ ਵਰਤ ਰਿਹਾ ਹਾਂ। ਸੁਰੱਖਿਆ ਅਤੇ ਸਹੀ ਜਾਣਕਾਰੀ ਲਈ ਤੁਹਾਡੀ ਜਾਣਕਾਰੀ ਵਿੱਚ ਰਿਕਾਰਡ ਕਰ ਰਿਹਾ ਹਾਂ।",
+        "play_after_title": "3. ਹੱਕ ਸਮਝਣ ਤੋਂ ਬਾਅਦ ਚਲਾਓ",
+        "play_after_desc": "ਆਪਣੇ ਹੱਕ ਸੁਣਨ ਤੋਂ ਬਾਅਦ ਪੁਲਿਸ ਨੂੰ ਇਹ ਸੁਣਾਓ।",
+        "play_after_audio": "ਸਮਝ ਗਿਆ ਅਫ਼ਸਰ ਜੀ, ਮੈਂ ਮੰਨਾਂਗਾ, ਪਰ ਮੈਂ ਚੁੱਪ ਰਹਿਣ ਦਾ ਹੱਕ ਵਰਤਾਂਗਾ।",
+        "officer_script": "ਪੁਲਿਸ ਲਈ ਸਕ੍ਰਿਪਟ (ਅੰਗਰੇਜ਼ੀ ਵਿੱਚ):",
+        "officer_script_translated": "ਇਹ ਤੁਹਾਡੀ ਭਾਸ਼ਾ ਵਿੱਚ ਕੀ ਕਹਿੰਦਾ ਹੈ:",
         "record_officer": "🎤 ਪੁਲਿਸ ਦੀ ਆਵਾਜ਼ ਰਿਕਾਰਡ ਕਰੋ",
         "stop_recording": "⏹️ ਰਿਕਾਰਡਿੰਗ ਰੋਕੋ ਅਤੇ ਤਰਜਮਾ ਕਰੋ",
         "listen_to_advice": "🔊 ਸਲਾਹ ਸੁਣੋ",
@@ -7193,11 +7305,24 @@ UI_STRINGS = {
 
 }
 
+TRANSLATION_FLOW_DEFAULTS = {
+    "play_before_title": "1. Play Before Interaction",
+    "play_before_desc": "Play this to the officer before recording begins.",
+    "play_before_audio": "Officer, before we begin, I am using a translation app to avoid any language barriers. I am recording with your knowledge for safety and accuracy.",
+    "play_after_title": "3. Play After Understanding Rights",
+    "play_after_desc": "Play this to the officer after you hear your rights.",
+    "play_after_audio": "I understand, officer, and I will comply, but I will be using my right to remain silent.",
+    "officer_script": "Officer-facing script (English):",
+    "officer_script_translated": "What this says in your language:",
+}
+
 # Ensure all 14 languages exist and include all keys.
 for lang_name in LANGUAGE_MAP.keys():
     if lang_name not in UI_STRINGS:
         UI_STRINGS[lang_name] = copy.deepcopy(UI_STRINGS["English"])
     for key, value in UI_STRINGS["English"].items():
+        UI_STRINGS[lang_name].setdefault(key, value)
+    for key, value in TRANSLATION_FLOW_DEFAULTS.items():
         UI_STRINGS[lang_name].setdefault(key, value)
 
 # ============================================================================
@@ -7840,6 +7965,48 @@ def get_legal_advice_for_statement(officer_statement: str) -> str:
             "5. Document names, badge numbers, times"
         )
 
+
+def build_tts_audio_bytes(script_text: str, language_code: str):
+    """Generate in-memory MP3 audio for a script."""
+    try:
+        tts = gTTS(text=script_text, lang=language_code)
+        audio_buffer = io.BytesIO()
+        tts.write_to_fp(audio_buffer)
+        audio_buffer.seek(0)
+        return audio_buffer.read()
+    except Exception:
+        return None
+
+
+def translate_for_user(text: str, target_lang: str) -> str:
+    """Translate English text for the user's selected language when available."""
+    if target_lang == "en":
+        return text
+
+    translator = get_translator("en", target_lang)
+    if not translator:
+        return text
+
+    try:
+        return translator.translate(text)
+    except Exception:
+        return text
+
+
+def get_officer_followup_script(officer_statement: str) -> str:
+    """Return an officer-facing compliance statement based on the officer's words."""
+    statement_lower = officer_statement.lower()
+
+    if any(word in statement_lower for word in ["arrest", "custody", "hands up", "hand behind", "turn around"]):
+        return "I understand, officer, and I will comply, but I will be using my right to remain silent."
+    if any(word in statement_lower for word in ["search", "car", "vehicle", "bag", "pockets"]):
+        return "I understand, officer, and I will comply, but I do not consent to any search."
+    if any(word in statement_lower for word in ["license", "registration", "traffic", "stop", "pulled over"]):
+        return "I understand, officer, and I will comply by providing identification documents, but I do not consent to any search and I will remain silent."
+    if any(word in statement_lower for word in ["question", "answer", "talk", "speak", "tell me", "where were you"]):
+        return "I understand, officer, and I will comply, but I am using my right to remain silent and I want a lawyer."
+    return t('play_after_audio')
+
 def page_translation():
     """Real-time translation page."""
     st.markdown("""
@@ -7898,6 +8065,22 @@ def page_translation():
     
     with col1:
         st.markdown(f"## {t('officer_statement')}")
+        st.markdown(f"### {t('play_before_title')}")
+        st.caption(t('play_before_desc'))
+        st.text_area(
+            t('officer_script'),
+            value=t('play_before_audio'),
+            height=120,
+            disabled=True,
+            key="play_before_script_text"
+        )
+
+        before_audio_bytes = build_tts_audio_bytes(t('play_before_audio'), "en")
+        if before_audio_bytes:
+            st.audio(before_audio_bytes, format="audio/mp3")
+        else:
+            st.warning(t('audio_failed'))
+
         st.markdown(f"""
         <div class="translation-shell">
             <h3>{t('mic_recorder_title')}</h3>
@@ -7964,48 +8147,53 @@ def page_translation():
             
             # Generate legal advice based on officer statement
             legal_advice = get_legal_advice_for_statement(english_text)
-            
+            translated_advice = legal_advice
             if st.session_state.language != "English":
-                try:
-                    translator = get_translator("en", target_lang)
-                    if translator:
-                        # Translate the legal advice
-                        translated_advice = translator.translate(legal_advice)
-                        st.text_area(
-                            f"{t('your_rights')}:",
-                            value=translated_advice,
-                            height=250,
-                            disabled=True,
-                            key="translated_output"
-                        )
+                translated_advice = translate_for_user(legal_advice, target_lang)
 
-                        try:
-                            tts = gTTS(text=translated_advice, lang=target_lang)
-                            audio_buffer = io.BytesIO()
-                            tts.write_to_fp(audio_buffer)
-                            audio_buffer.seek(0)
-                            st.audio(audio_buffer.read(), format="audio/mp3")
-                        except Exception:
-                            st.warning(t('audio_failed'))
-                except:
-                    st.error(t('error'))
+            st.markdown("### 2. Play Advice")
+            st.text_area(
+                f"{t('your_rights')}:",
+                value=translated_advice,
+                height=250,
+                disabled=True,
+                key="translated_output"
+            )
+
+            advice_audio_bytes = build_tts_audio_bytes(
+                translated_advice,
+                target_lang if st.session_state.language != "English" else "en"
+            )
+            if advice_audio_bytes:
+                st.audio(advice_audio_bytes, format="audio/mp3")
             else:
-                st.text_area(
-                    f"{t('your_rights')}:",
-                    value=legal_advice,
-                    height=250,
-                    disabled=True,
-                    key="legal_advice_english"
-                )
-                
-                try:
-                    tts = gTTS(text=legal_advice, lang="en")
-                    audio_buffer = io.BytesIO()
-                    tts.write_to_fp(audio_buffer)
-                    audio_buffer.seek(0)
-                    st.audio(audio_buffer.read(), format="audio/mp3")
-                except Exception:
-                    st.warning(t('audio_failed'))
+                st.warning(t('audio_failed'))
+
+            officer_followup_script = get_officer_followup_script(english_text)
+            officer_followup_translated = translate_for_user(officer_followup_script, target_lang)
+
+            st.markdown(f"### {t('play_after_title')}")
+            st.caption(t('play_after_desc'))
+            st.text_area(
+                t('officer_script'),
+                value=officer_followup_script,
+                height=120,
+                disabled=True,
+                key="officer_followup_script"
+            )
+            st.text_area(
+                t('officer_script_translated'),
+                value=officer_followup_translated,
+                height=120,
+                disabled=True,
+                key="officer_followup_translated"
+            )
+
+            after_audio_bytes = build_tts_audio_bytes(officer_followup_script, "en")
+            if after_audio_bytes:
+                st.audio(after_audio_bytes, format="audio/mp3")
+            else:
+                st.warning(t('audio_failed'))
 
 def page_documents():
     """Legal document assistant page with OCR and extraction."""
