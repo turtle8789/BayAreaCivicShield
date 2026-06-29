@@ -7434,99 +7434,32 @@ def add_screen_reader_label(label: str):
 import requests
 import os
 
-GOOGLE_KEY = os.getenv("GOOGLE_GEOCODING_API_KEY")
+OPENCAGE_KEY = os.getenv("OPENCAGE_API_KEY")
 
 def geocode_address(address: str):
     if not address:
         return None
 
     url = (
-        "https://maps.googleapis.com/maps/api/geocode/json"
-        f"?address={address}&key={GOOGLE_KEY}"
+        "https://api.opencagedata.com/geocode/v1/json"
+        f"?q={address}&key={OPENCAGE_KEY}"
     )
 
     try:
         response = requests.get(url, timeout=10)
         data = response.json()
 
-        if data.get("status") != "OK":
-            return None
+        if data.get("results"):
+            loc = data["results"][0]["geometry"]
+            return (loc["lat"], loc["lng"])
 
-        location = data["results"][0]["geometry"]["location"]
-        return (location["lat"], location["lng"])
+        return None
 
     except Exception:
         return None
 
 
-    cleaned_address = re.sub(r"\s+", " ", address.replace("\n", " ")).strip(" ,")
-
-    candidate_queries = []
-
-    def add_candidate(query: str) -> None:
-        normalized_query = re.sub(r"\s+", " ", query).strip(" ,")
-        normalized_query = re.sub(r"\s+,", ",", normalized_query)
-        normalized_query = re.sub(r",\s*", ", ", normalized_query)
-        if normalized_query and normalized_query not in candidate_queries:
-            candidate_queries.append(normalized_query)
-
-    add_candidate(cleaned_address)
-
-    suite_stripped = re.sub(
-        r",?\s*\b(?:Suite|Ste\.?|Unit|Rm\.?|Room|Fl\.?|Floor|Bldg\.?|Building)\s+[A-Za-z0-9-]+\b",
-        "",
-        cleaned_address,
-        flags=re.IGNORECASE,
-    )
-    add_candidate(suite_stripped)
-
-    state_zip_match = re.search(r"\b([A-Z]{2})\s+(\d{5}(?:-\d{4})?)$", cleaned_address)
-    if state_zip_match:
-        prefix = cleaned_address[:state_zip_match.start()].strip(" ,")
-        state_code = state_zip_match.group(1)
-        postal_code = state_zip_match.group(2)
-        add_candidate(f"{prefix}, {state_code} {postal_code}")
-        add_candidate(f"{prefix}, {state_code} {postal_code}, USA")
-        if state_code == "CA":
-            add_candidate(f"{prefix}, California {postal_code}")
-            add_candidate(f"{prefix}, California, USA")
-    else:
-        add_candidate(f"{cleaned_address}, California, USA")
-
-    response_error = ""
-    for query in candidate_queries:
-        try:
-            response = requests.get(
-                "https://nominatim.openstreetmap.org/search",
-                params={"q": query, "format": "json", "limit": 1},
-                headers=DEFAULT_HTTP_HEADERS,
-                timeout=10,
-            )
-            response.raise_for_status()
-            results = response.json()
-        except Exception as exc:
-            response_error = str(exc)
-            continue
-
-        if results:
-            return float(results[0]["lat"]), float(results[0]["lon"])
-
-    try:
-        failed_attempt = {
-            "timestamp": datetime.utcnow().isoformat(timespec="seconds") + "Z",
-            "address": cleaned_address,
-            "attempted_queries": candidate_queries,
-            "error": response_error,
-        }
-        log_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "failed_geocoding_attempts.log")
-        with open(log_path, "a", encoding="utf-8") as log_file:
-            log_file.write(json.dumps(failed_attempt, ensure_ascii=True) + "\n")
-    except Exception:
-        pass
-
-    print("DEBUG GEOCODE FAILED:", cleaned_address, candidate_queries, response_error)
-    return None
-
+   
 
 def haversine_miles(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     """Compute great-circle distance in miles between two lat/lon pairs."""
