@@ -35,7 +35,7 @@ import copy
 import math
 from PIL import Image
 import qrcode
-from urllib.parse import quote_plus
+from urllib.parse import quote_plus, urljoin
 from urllib.request import Request, urlopen
 import requests
 from bs4 import BeautifulSoup
@@ -7431,28 +7431,101 @@ def add_screen_reader_label(label: str):
 # ============================================================================
 # LOCATION-BASED RESOURCE FINDER
 # ============================================================================
-@st.cache_data(show_spinner=False)
+import requests
+import os
+
+GOOGLE_KEY = os.getenv("GOOGLE_GEOCODING_API_KEY")
+
 def geocode_address(address: str):
-    """Geocode an address using OpenStreetMap Nominatim."""
-    if not address or not address.strip():
+    if not address:
         return None
 
-    encoded_address = quote_plus(address.strip())
-    request = Request(
-        f"https://nominatim.openstreetmap.org/search?q={encoded_address}&format=json&limit=1",
-        headers={"User-Agent": "CivicShieldPro/3.0 (Streamlit app)"}
+    url = (
+        "https://maps.googleapis.com/maps/api/geocode/json"
+        f"?address={address}&key={GOOGLE_KEY}"
     )
 
     try:
-        with urlopen(request, timeout=10) as response:
-            results = json.loads(response.read().decode("utf-8"))
+        response = requests.get(url, timeout=10)
+        data = response.json()
+
+        if data.get("status") != "OK":
+            return None
+
+        location = data["results"][0]["geometry"]["location"]
+        return (location["lat"], location["lng"])
+
     except Exception:
         return None
 
-    if not results:
-        return None
 
-    return float(results[0]["lat"]), float(results[0]["lon"])
+    cleaned_address = re.sub(r"\s+", " ", address.replace("\n", " ")).strip(" ,")
+
+    candidate_queries = []
+
+    def add_candidate(query: str) -> None:
+        normalized_query = re.sub(r"\s+", " ", query).strip(" ,")
+        normalized_query = re.sub(r"\s+,", ",", normalized_query)
+        normalized_query = re.sub(r",\s*", ", ", normalized_query)
+        if normalized_query and normalized_query not in candidate_queries:
+            candidate_queries.append(normalized_query)
+
+    add_candidate(cleaned_address)
+
+    suite_stripped = re.sub(
+        r",?\s*\b(?:Suite|Ste\.?|Unit|Rm\.?|Room|Fl\.?|Floor|Bldg\.?|Building)\s+[A-Za-z0-9-]+\b",
+        "",
+        cleaned_address,
+        flags=re.IGNORECASE,
+    )
+    add_candidate(suite_stripped)
+
+    state_zip_match = re.search(r"\b([A-Z]{2})\s+(\d{5}(?:-\d{4})?)$", cleaned_address)
+    if state_zip_match:
+        prefix = cleaned_address[:state_zip_match.start()].strip(" ,")
+        state_code = state_zip_match.group(1)
+        postal_code = state_zip_match.group(2)
+        add_candidate(f"{prefix}, {state_code} {postal_code}")
+        add_candidate(f"{prefix}, {state_code} {postal_code}, USA")
+        if state_code == "CA":
+            add_candidate(f"{prefix}, California {postal_code}")
+            add_candidate(f"{prefix}, California, USA")
+    else:
+        add_candidate(f"{cleaned_address}, California, USA")
+
+    response_error = ""
+    for query in candidate_queries:
+        try:
+            response = requests.get(
+                "https://nominatim.openstreetmap.org/search",
+                params={"q": query, "format": "json", "limit": 1},
+                headers=DEFAULT_HTTP_HEADERS,
+                timeout=10,
+            )
+            response.raise_for_status()
+            results = response.json()
+        except Exception as exc:
+            response_error = str(exc)
+            continue
+
+        if results:
+            return float(results[0]["lat"]), float(results[0]["lon"])
+
+    try:
+        failed_attempt = {
+            "timestamp": datetime.utcnow().isoformat(timespec="seconds") + "Z",
+            "address": cleaned_address,
+            "attempted_queries": candidate_queries,
+            "error": response_error,
+        }
+        log_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "failed_geocoding_attempts.log")
+        with open(log_path, "a", encoding="utf-8") as log_file:
+            log_file.write(json.dumps(failed_attempt, ensure_ascii=True) + "\n")
+    except Exception:
+        pass
+
+    print("DEBUG GEOCODE FAILED:", cleaned_address, candidate_queries, response_error)
+    return None
 
 
 def haversine_miles(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
@@ -7479,39 +7552,85 @@ def build_google_maps_search_url(address: str) -> str:
     """Build a Google Maps search URL for an address."""
     return f"https://www.google.com/maps/search/?api=1&query={quote_plus(address.strip())}"
 
+
+DEFAULT_HTTP_HEADERS = {"User-Agent": "CivicShieldPro/3.0"}
+
 def fetch_lawhelp_resources() -> list:
     """
     Fetch California legal aid resources dynamically from LawHelpCA directory.
     """
-    url = "https://www.lawhelpca.org/legal-aid"
+    base_url = "https://www.lawhelpca.org/find-legal-help/directory/area"
     try:
-        html = requests.get(url, timeout=10).text
+        response = requests.get(base_url, headers=DEFAULT_HTTP_HEADERS, timeout=10)
+        response.raise_for_status()
     except Exception:
         return []
 
-    soup = BeautifulSoup(html, "html.parser")
     resources = []
+    seen_urls = set()
 
-    for item in soup.select(".views-row"):
-        name_el = item.select_one(".title")
-        address_el = item.select_one(".address")
-        phone_el = item.select_one(".phone")
-        link_el = item.select_one("a")
+    soup = BeautifulSoup(response.text, "html.parser")
+    page_urls = [base_url]
+    for link in soup.select('a.page-link[href]'):
+        href = link.get("href", "")
+        if not href:
+            continue
 
-        name = name_el.get_text(strip=True) if name_el else ""
-        address = address_el.get_text(strip=True) if address_el else ""
-        phone = phone_el.get_text(strip=True) if phone_el else ""
-        website = link_el["href"] if link_el and link_el.has_attr("href") else ""
+        page_url = urljoin(base_url, href)
+        if page_url not in seen_urls:
+            seen_urls.add(page_url)
+            page_urls.append(page_url)
 
-        if name and address:
-            resources.append({
-                "name": name,
-                "category": "Legal Aid",
-                "address": address,
-                "phone": phone,
-                "website": website,
-                "hours": "",
-            })
+    for page_url in page_urls:
+        try:
+            page_response = requests.get(page_url, headers=DEFAULT_HTTP_HEADERS, timeout=10)
+            page_response.raise_for_status()
+        except Exception:
+            continue
+
+        page_soup = BeautifulSoup(page_response.text, "html.parser")
+
+        for item in page_soup.select(".card.organization"):
+            name_el = item.select_one(".card-title a")
+            address_el = item.select_one(".adr")
+            phone_el = item.select_one(".tel")
+            website_el = item.select_one(".web a[href]")
+
+            name = name_el.get_text(" ", strip=True) if name_el else ""
+            if address_el:
+                street_parts = [
+                    part.get_text(" ", strip=True)
+                    for part in address_el.select(".street-address, .extended-address")
+                ]
+                city = address_el.select_one(".locality")
+                region = address_el.select_one(".region")
+                postal = address_el.select_one(".postal-code")
+
+                street = " ".join(part for part in street_parts if part)
+                city_state_postal = " ".join(
+                    part
+                    for part in [
+                        city.get_text(" ", strip=True) if city else "",
+                        region.get_text(" ", strip=True).lstrip(",") if region else "",
+                        postal.get_text(" ", strip=True) if postal else "",
+                    ]
+                    if part
+                )
+                address = ", ".join(part for part in [street, city_state_postal] if part)
+            else:
+                address = ""
+            phone = phone_el.get_text(" ", strip=True) if phone_el else ""
+            website = website_el["href"].strip() if website_el else ""
+
+            if name and address:
+                resources.append({
+                    "name": name,
+                    "category": "Legal Aid",
+                    "address": address,
+                    "phone": phone,
+                    "website": website,
+                    "hours": "",
+                })
 
     return resources
 
@@ -7572,7 +7691,12 @@ def fetch_osm_resources(lat: float, lon: float, radius_meters: int = 5000) -> li
     """
 
     try:
-        response = requests.post("https://overpass-api.de/api/interpreter", data=query, timeout=15)
+        response = requests.post(
+            "https://overpass-api.de/api/interpreter",
+            data=query,
+            headers=DEFAULT_HTTP_HEADERS,
+            timeout=15,
+        )
         data = response.json()
     except Exception:
         return []
@@ -7672,6 +7796,12 @@ def find_resources_by_location(address: str, search_radius_miles: int = 5) -> li
     for resource in RESOURCES_DB:
         # Geocode each resource's address
         resource_coordinates = geocode_address(resource["address"])
+        print(
+            "DEBUG RESOURCE COORDS:",
+            resource.get("name", ""),
+            resource.get("address", ""),
+            resource_coordinates,
+        )
         if not resource_coordinates:
             continue
 
@@ -7684,6 +7814,7 @@ def find_resources_by_location(address: str, search_radius_miles: int = 5) -> li
             resource_latitude,
             resource_longitude
         )
+        print("DEBUG RESOURCE DISTANCE:", resource.get("name", ""), round(distance, 3))
 
         # Keep only resources within radius
         if distance <= search_radius_miles:
