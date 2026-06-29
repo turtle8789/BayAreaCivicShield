@@ -8778,7 +8778,50 @@ def page_know_your_rights():
                 "options": [t('explain_what_happened'), t('ask_for_lawyer'), t('refuse_give_name'), t('try_negotiate')],
                 "correct": 1,
                 "explanation": t('always_ask_lawyer')
-            }
+            },
+            {
+                "question": t('can_search_phone'),
+                "options": [t('yes_always'), t('only_with_consent_or_warrant'), t('only_if_arrested'), t('never')],
+                "correct": 1,
+                "explanation": t('police_need_warrant_or_consent')
+            },
+            {
+                "question": t('ask_if_free_to_leave'),
+                "options": [t('no_disrespectful'), t('yes_always'), t('only_traffic_stops'), t('only_if_not_handcuffed')],
+                "correct": 1,
+                "explanation": t('can_ask_if_free_to_go')
+            },
+            {
+                "question": t('if_police_knock'),
+                "options": [t('yes_always'), t('only_with_warrant'), t('only_if_ask_nicely'), t('yes_unless_alone')],
+                "correct": 1,
+                "explanation": t('police_need_warrant_or_consent_home')
+            },
+            {
+                "question": t('can_remain_silent'),
+                "options": [t('no_must_answer'), t('yes_right_remain_silent'), t('only_if_arrested'), t('only_if_lawyer_present')],
+                "correct": 1,
+                "explanation": t('right_remain_silent')
+            },
+            {
+                "question": t('can_stop_and_frisk'),
+                "options": [t('yes_anytime'), t('only_with_reasonable_suspicion'), t('only_if_with_friends'), t('only_at_night')],
+                "correct": 1,
+                "explanation": t('police_need_reasonable_suspicion')
+            },
+            {
+                "question": t('can_record_police'),
+                "options": [t('no_recording_illegal'), t('yes_as_long_no_interfere'), t('only_if_officer_agrees'), t('only_if_not_questioned')],
+                "correct": 1,
+                "explanation": t('can_record_police')
+            },
+            {
+                "question": t('if_arrested_what_say'),
+                "options": [t('explain_innocence'), t('argue_with_officer'), t('say_i_want_lawyer'), t('stay_silent_and_run')],
+                "correct": 2,
+                "explanation": t('right_say_i_want_lawyer')
+        }
+
         ]
         
         score = 0
