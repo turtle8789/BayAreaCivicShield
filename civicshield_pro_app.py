@@ -8783,6 +8783,8 @@ def page_know_your_rights():
         
         score = 0
         answered = 0
+        quiz_pct = None
+
         
         for i, q in enumerate(quiz_questions):
             st.markdown(f"### {t('question_number').format(number=i+1, question=q['question'])}")
@@ -8801,10 +8803,11 @@ def page_know_your_rights():
                     st.error(f"{t('quiz_incorrect')} {q['explanation']}")
             st.divider()
         
-            if quiz_pct:
+            if answered > 0:
                 quiz_pct = (score / len(quiz_questions)) * 100
                 st.progress(quiz_pct / 100)
                 st.metric(t('your_score'), f"{score}/{len(quiz_questions)}", f"{quiz_pct:.0f}%")
+
 
 def page_community_discussion():
     """Talk to Your Community - Safe community discussion space."""
