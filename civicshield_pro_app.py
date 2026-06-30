@@ -21,6 +21,8 @@ AUTHOR: Community Justice Initiative
 VERSION: 3.0.0
 """
 
+import resource
+
 import streamlit as st
 from deep_translator import GoogleTranslator
 from gtts import gTTS
@@ -8621,10 +8623,10 @@ def page_resources_near_you():
     st.markdown(f"# 📍 {t('location_title')}")
     st.markdown(f"_{t('nearby_subtitle')}_")
     st.divider()
-    
+
     # Resource search interface
     col1, col2, col3 = st.columns([2, 1, 1])
-    
+
     with col1:
         address = st.text_input(
             t('enter_address'),
@@ -8632,7 +8634,7 @@ def page_resources_near_you():
             key="resource_address"
         )
         add_screen_reader_label(f"{t('screen_reader_address_search')}: {address}")
-    
+
     with col2:
         radius = st.slider(
             t('search_radius_miles'),
@@ -8641,22 +8643,28 @@ def page_resources_near_you():
             value=5,
             key="search_radius_slider"
         )
-    
+
     with col3:
         search_button = st.button(f"🔍 {t('btn_search')}", use_container_width=True, key="find_resources_btn")
-    
+
     if search_button and address:
         # Show loading indicator
         with st.spinner(t('loading_resources')):
             resources = find_resources_by_location(address, radius)
-            
+
             # Apply category filter if selected
             if st.session_state.resource_category_filter:
-                resources = [r for r in resources if r['category'] == st.session_state.resource_category_filter]
-        
+                resources = [
+                    r for r in resources
+                    if r['category'] == st.session_state.resource_category_filter
+                ]
+
         if resources:
-            st.success(f"✅ {t('found_resources')}: {len(resources)} {t('resources_found')} {t('within_miles')} {radius}")
-            
+            st.success(
+                f"✅ {t('found_resources')}: {len(resources)} "
+                f"{t('resources_found')} {t('within_miles')} {radius}"
+            )
+
             # Display resources in modern cards
             for idx, resource in enumerate(resources):
                 with st.container():
@@ -8673,8 +8681,15 @@ def page_resources_near_you():
                         </div>
                     </div>
                     """, unsafe_allow_html=True)
-                    
-                    maps_url = build_google_maps_search_url(resource['address'])
+
+                    # Build Google Maps DIRECTIONS link
+                    maps_url = (
+                        f"https://www.google.com/maps/dir/?api=1"
+                        f"&origin={user_lat},{user_lng}"
+                        f"&destination={resource['lat']},{resource['lng']}"
+                    )
+
+                    # Directions button
                     if hasattr(st, "link_button"):
                         st.link_button(
                             f"🗺️ {t('get_directions')} - {resource['name']}",
@@ -8694,11 +8709,11 @@ def page_resources_near_you():
                         )
         else:
             st.warning(f"⚠️ {t('no_resources_found')}")
-    
+
     # Browse by Resource Type
     st.divider()
     st.markdown(f"### 📋 {t('Browse Resources')}")
-    
+
     resource_categories = [
         ("⚖️ Legal Aid", "Legal Aid"),
         ("🏢 Community Centers", "Community Center"),
@@ -8706,14 +8721,14 @@ def page_resources_near_you():
         ("👥 Immigration Support", "Immigration Support"),
         ("🏥 Emergency Shelters", "Emergency Shelter")
     ]
-    
+
     cols = st.columns(len(resource_categories))
     for idx, (label, category) in enumerate(resource_categories):
         with cols[idx]:
             if st.button(label, use_container_width=True, key=f"category_{category}"):
                 st.session_state.resource_category_filter = category
                 st.rerun()
-    
+
     # Show active filter
     if st.session_state.resource_category_filter:
         st.info(f"📁 {t('currently_filtering')}: **{st.session_state.resource_category_filter}**")
@@ -8721,9 +8736,11 @@ def page_resources_near_you():
             st.session_state.resource_category_filter = None
             st.rerun()
 
+
 def page_rights_near_me():
-    """Know Your Rights Near Me - location-based legal aid finder (legacy function - calls new unified page)."""
+    """Legacy function — simply calls the unified page."""
     page_resources_near_you()
+
 
 def page_know_your_rights():
     """Combined Rights Education and Interactive Quizzes - Unified Learning Center."""
