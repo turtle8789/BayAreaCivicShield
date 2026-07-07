@@ -7377,6 +7377,16 @@ def init_session_state():
         st.session_state.community_posts = load_community_posts()
     if "resource_category_filter" not in st.session_state:
         st.session_state.resource_category_filter = None
+    if "resource_search_results" not in st.session_state:
+        st.session_state.resource_search_results = []
+    if "resource_search_address" not in st.session_state:
+        st.session_state.resource_search_address = ""
+    if "resource_search_radius" not in st.session_state:
+        st.session_state.resource_search_radius = None
+    if "resource_search_completed" not in st.session_state:
+        st.session_state.resource_search_completed = False
+    if "resource_user_coordinates" not in st.session_state:
+        st.session_state.resource_user_coordinates = None
 
     # Public deployment features
     if "first_time_user" not in st.session_state:
@@ -7502,6 +7512,37 @@ def build_google_maps_search_url(address: str) -> str:
 
 DEFAULT_HTTP_HEADERS = {"User-Agent": "CivicShieldPro/3.0"}
 
+RESOURCE_CATEGORY_KEYWORDS = {
+    "Legal Aid": ("legal aid", "legal", "law", "attorney", "lawyer", "court"),
+    "Community Center": (
+        "community center",
+        "community resource",
+        "community service",
+        "community",
+        "social service",
+        "ngo",
+        "nonprofit",
+    ),
+    "Language Services": ("language", "translation", "interpretation", "interpreter", "bilingual"),
+    "Immigration Support": ("immigration", "immigrant", "refugee", "asylum", "citizenship", "visa"),
+    "Emergency Shelter": ("emergency shelter", "shelter", "housing", "homeless", "domestic violence"),
+}
+
+
+def normalize_resource_category(category: str) -> str:
+    """Map external resource categories onto the browse filters used by the UI."""
+    if not category:
+        return "Community Center"
+
+    normalized = category.strip()
+    lowered = normalized.lower()
+
+    for canonical, keywords in RESOURCE_CATEGORY_KEYWORDS.items():
+        if lowered == canonical.lower() or any(keyword in lowered for keyword in keywords):
+            return canonical
+
+    return normalized
+
 def fetch_lawhelp_resources() -> list:
     """
     Fetch California legal aid resources dynamically from LawHelpCA directory.
@@ -7614,7 +7655,7 @@ def fetch_211_resources(city: str) -> list:
         if name and address:
             resources.append({
                 "name": name,
-                "category": category or "Community Resource",
+                "category": normalize_resource_category(category or "Community Resource"),
                 "address": address,
                 "phone": phone or "",
                 "website": item.get("website", ""),
@@ -7694,7 +7735,7 @@ def fetch_211_resources(city: str) -> list:
         if name and address:
             resources.append({
                 "name": name,
-                "category": category or "Community Resource",
+                "category": normalize_resource_category(category or "Community Resource"),
                 "address": address,
                 "phone": phone or "",
                 "website": item.get("website", ""),
@@ -7709,20 +7750,28 @@ def find_resources_by_location(address: str, search_radius_miles: int = 5) -> li
     Find nearby resources based on address.
     """
 
+    def debug_resource_batch(label: str, items: list) -> None:
+        print(f"DEBUG {label} COUNT:", len(items))
+        print(f"DEBUG {label} FIRST 2:", items[:2])
+
     # 1. LawHelpCA legal aid
     lawhelp = fetch_lawhelp_resources()
+    debug_resource_batch("LAWHELP", lawhelp)
 
     # 2. 211 California community resources
     city_only = address.split(",")[0]
     resources_211 = fetch_211_resources(city_only)
+    debug_resource_batch("211", resources_211)
 
     # 3. OSM community centers (requires user coordinates)
     user_coordinates = geocode_address(address)
+    st.session_state.resource_user_coordinates = user_coordinates
     print("DEBUG USER COORDS:", user_coordinates)
     osm_resources = []
     if user_coordinates:
         user_lat, user_lon = user_coordinates
         osm_resources = fetch_osm_resources(user_lat, user_lon)
+    debug_resource_batch("OSM", osm_resources)
 
     # Merge all three sources
     RESOURCES_DB = lawhelp + resources_211 + osm_resources
@@ -8624,7 +8673,7 @@ def page_resources_near_you():
     st.markdown(f"_{t('nearby_subtitle')}_")
     st.divider()
 
-    # Resource search interface
+    # Search interface
     col1, col2, col3 = st.columns([2, 1, 1])
 
     with col1:
@@ -8647,52 +8696,94 @@ def page_resources_near_you():
     with col3:
         search_button = st.button(f"🔍 {t('btn_search')}", use_container_width=True, key="find_resources_btn")
 
-    if search_button and address:
-        # Show loading indicator
+    resources = []
+    address = address.strip()
+    has_address = bool(address)
+    user_lat = None
+    user_lng = None
+    stored_user_coordinates = st.session_state.get("resource_user_coordinates")
+    if (
+        stored_user_coordinates
+        and len(stored_user_coordinates) == 2
+        and st.session_state.resource_search_address == address
+    ):
+        user_lat, user_lng = stored_user_coordinates
+    cached_results_available = (
+        st.session_state.resource_search_completed
+        and st.session_state.resource_search_address == address
+        and st.session_state.resource_search_radius == radius
+    )
+    should_run_search = False
+
+    if search_button and not has_address:
+        st.warning(t('enter_address'))
+    elif search_button:
+        should_run_search = True
+    elif st.session_state.resource_category_filter and has_address and not cached_results_available:
+        should_run_search = True
+
+    if should_run_search:
         with st.spinner(t('loading_resources')):
             resources = find_resources_by_location(address, radius)
+        st.session_state.resource_search_results = resources
+        st.session_state.resource_search_address = address
+        st.session_state.resource_search_radius = radius
+        st.session_state.resource_search_completed = True
+        stored_user_coordinates = st.session_state.get("resource_user_coordinates")
+        if stored_user_coordinates and len(stored_user_coordinates) == 2:
+            user_lat, user_lng = stored_user_coordinates
+    elif cached_results_available:
+        resources = st.session_state.resource_search_results
 
-            # Apply category filter if selected
-            if st.session_state.resource_category_filter:
-                resources = [
-                    r for r in resources
-                    if r['category'] == st.session_state.resource_category_filter
-                ]
+    if st.session_state.resource_category_filter:
+        resources = [
+            r for r in resources
+            if normalize_resource_category(r.get('category', '')) == st.session_state.resource_category_filter
+        ]
 
+    should_show_results = should_run_search or cached_results_available
+
+    if should_show_results:
         if resources:
             st.success(
                 f"✅ {t('found_resources')}: {len(resources)} "
                 f"{t('resources_found')} {t('within_miles')} {radius}"
             )
 
-            # Display resources in modern cards
-            for idx, resource in enumerate(resources):
+            # Display resource cards
+            for resource in resources:
                 with st.container():
                     st.markdown(f"""
                     <div class="dashboard-card">
                         <div class="card-icon">📍</div>
-                        <div class="card-title">{resource['name']}</div>
+                        <div class="card-title">{resource.get('name', t('unknown_resource'))}</div>
                         <div class="card-description">
-                            <p><strong>{t('distance_away')}:</strong> {resource['distance']} {t('miles_unit')}</p>
-                            <p><strong>{t('resource_address')}:</strong> {resource['address']}</p>
-                            <p><strong>{t('resource_phone')}:</strong> {resource['phone']}</p>
-                            <p><strong>{t('resource_hours')}:</strong> {resource['hours']}</p>
-                            <p><strong>{t('resource_website')}:</strong> {resource['website']}</p>
+                            <p><strong>{t('distance_away')}:</strong> {resource.get('distance', '?')} {t('miles_unit')}</p>
+                            <p><strong>{t('resource_address')}:</strong> {resource.get('address', t('unknown_address'))}</p>
+                            <p><strong>{t('resource_phone')}:</strong> {resource.get('phone', t('unknown_phone'))}</p>
+                            <p><strong>{t('resource_hours')}:</strong> {resource.get('hours', t('unknown_hours'))}</p>
+                            <p><strong>{t('resource_website')}:</strong> {resource.get('website', t('unknown_website'))}</p>
                         </div>
                     </div>
                     """, unsafe_allow_html=True)
 
-                    # Build Google Maps DIRECTIONS link
-                    maps_url = (
-                        f"https://www.google.com/maps/dir/?api=1"
-                        f"&origin={user_lat},{user_lng}"
-                        f"&destination={resource['lat']},{resource['lng']}"
-                    )
+                    destination_lat = resource.get('latitude', resource.get('lat'))
+                    destination_lon = resource.get('longitude', resource.get('lng'))
+                    maps_url = build_google_maps_search_url(resource.get('address', ''))
+                    if destination_lat is not None and destination_lon is not None:
+                        origin = quote_plus(address)
+                        if user_lat is not None and user_lng is not None:
+                            origin = f"{user_lat},{user_lng}"
+                        maps_url = (
+                            "https://www.google.com/maps/dir/?api=1"
+                            f"&origin={origin}"
+                            f"&destination={destination_lat},{destination_lon}"
+                        )
 
                     # Directions button
                     if hasattr(st, "link_button"):
                         st.link_button(
-                            f"🗺️ {t('get_directions')} - {resource['name']}",
+                            f"🗺️ {t('get_directions')} - {resource.get('name')}",
                             maps_url,
                             use_container_width=True
                         )
@@ -8701,7 +8792,7 @@ def page_resources_near_you():
                             f"""
                             <a href="{maps_url}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
                                 <button style="width: 100%; padding: 8px; background-color: #4285F4; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                                    🗺️ {t('get_directions')} - {resource['name']}
+                                    🗺️ {t('get_directions')} - {resource.get('name')}
                                 </button>
                             </a>
                             """,
@@ -8712,14 +8803,14 @@ def page_resources_near_you():
 
     # Browse by Resource Type
     st.divider()
-    st.markdown(f"### 📋 {t('Browse Resources')}")
+    st.markdown(f"### 📋 {t('browse_resources')}")
 
     resource_categories = [
-        ("⚖️ Legal Aid", "Legal Aid"),
-        ("🏢 Community Centers", "Community Center"),
-        ("🗣️ Language Services", "Language Services"),
-        ("👥 Immigration Support", "Immigration Support"),
-        ("🏥 Emergency Shelters", "Emergency Shelter")
+        (f"⚖️ {t('category_legal_aid')}", "Legal Aid"),
+        (f"🏢 {t('category_community_center')}", "Community Center"),
+        (f"🗣️ {t('category_language_services')}", "Language Services"),
+        (f"👥 {t('category_immigration_support')}", "Immigration Support"),
+        (f"🏥 {t('category_emergency_shelter')}", "Emergency Shelter")
     ]
 
     cols = st.columns(len(resource_categories))
