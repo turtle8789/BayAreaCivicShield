@@ -35,7 +35,9 @@ import io
 import re
 import copy
 import math
-from PIL import Image
+from html import escape
+from importlib import import_module
+from PIL import Image, ImageOps
 import qrcode
 from urllib.parse import quote_plus, urljoin
 from urllib.request import Request, urlopen
@@ -55,6 +57,17 @@ try:
     PDF_AVAILABLE = True
 except ImportError:
     PDF_AVAILABLE = False
+
+PdfReader = None
+try:
+    PdfReader = import_module("pypdf").PdfReader
+    PDF_TEXT_AVAILABLE = True
+except ImportError:
+    try:
+        PdfReader = import_module("PyPDF2").PdfReader
+        PDF_TEXT_AVAILABLE = True
+    except ImportError:
+        PDF_TEXT_AVAILABLE = False
 
 # ============================================================================
 # PAGE CONFIGURATION & THEMING
@@ -7525,23 +7538,244 @@ RESOURCE_CATEGORY_KEYWORDS = {
     ),
     "Language Services": ("language", "translation", "interpretation", "interpreter", "bilingual"),
     "Immigration Support": ("immigration", "immigrant", "refugee", "asylum", "citizenship", "visa"),
-    "Emergency Shelter": ("emergency shelter", "shelter", "housing", "homeless", "domestic violence"),
+    "Emergency Shelter": (
+        "emergency shelter",
+        "emergency service",
+        "emergency",
+        "shelter",
+        "housing",
+        "homeless",
+        "domestic violence",
+        "hotline",
+        "crisis",
+    ),
 }
 
 
-def normalize_resource_category(category: str) -> str:
-    """Map external resource categories onto the browse filters used by the UI."""
-    if not category:
+def clean_resource_text(value) -> str:
+    """Collapse resource fields into a readable single string."""
+    if value is None:
+        return ""
+
+    if isinstance(value, dict):
+        ordered_keys = (
+            "label",
+            "value",
+            "name",
+            "text",
+            "number",
+            "phone",
+            "url",
+            "website",
+        )
+        parts = [clean_resource_text(value.get(key)) for key in ordered_keys if value.get(key)]
+        if parts:
+            return " | ".join(part for part in parts if part)
+        return " | ".join(
+            clean_resource_text(part)
+            for part in value.values()
+            if clean_resource_text(part)
+        )
+
+    if isinstance(value, (list, tuple, set)):
+        parts = [clean_resource_text(part) for part in value]
+        return " | ".join(part for part in parts if part)
+
+    return re.sub(r'\s+', ' ', str(value)).strip()
+
+
+def text_looks_like_coordinates(value: str) -> bool:
+    """Detect plain latitude/longitude strings so they are not shown as addresses."""
+    return bool(re.fullmatch(r'-?\d+(?:\.\d+)?\s*,\s*-?\d+(?:\.\d+)?', clean_resource_text(value)))
+
+
+def coerce_coordinate(value):
+    """Convert potential coordinate values to floats when possible."""
+    try:
+        if value in (None, ""):
+            return None
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def normalize_resource_website(value) -> str:
+    """Return a displayable absolute website URL when possible."""
+    website = clean_resource_text(value)
+    if not website:
+        return ""
+    if website.startswith(("http://", "https://", "mailto:")):
+        return website
+    return f"https://{website.lstrip('/')}"
+
+
+def normalize_resource_address(value) -> str:
+    """Build a human-readable address from free text or structured address objects."""
+    if isinstance(value, dict):
+        street = " ".join(
+            part
+            for part in [
+                clean_resource_text(value.get("street") or value.get("street1") or value.get("address1") or value.get("line1")),
+                clean_resource_text(value.get("street2") or value.get("address2") or value.get("line2")),
+            ]
+            if part
+        )
+        locality_parts = [
+            clean_resource_text(value.get("city") or value.get("locality") or value.get("town") or value.get("village")),
+            clean_resource_text(value.get("state") or value.get("region") or value.get("province")),
+            clean_resource_text(value.get("postal_code") or value.get("postcode") or value.get("zip")),
+        ]
+        locality = " ".join(part for part in locality_parts if part)
+        address = ", ".join(part for part in [street, locality] if part)
+        return "" if text_looks_like_coordinates(address) else address
+
+    address = clean_resource_text(value)
+    return "" if text_looks_like_coordinates(address) else address
+
+
+def build_osm_address(tags: dict, latitude: float, longitude: float) -> str:
+    """Prefer OSM tag addresses; only fall back to reverse geocoding when needed."""
+    line_one = " ".join(
+        part
+        for part in [
+            clean_resource_text(tags.get("addr:housenumber")),
+            clean_resource_text(tags.get("addr:street")),
+        ]
+        if part
+    )
+    locality = ", ".join(
+        part
+        for part in [
+            clean_resource_text(tags.get("addr:city") or tags.get("addr:town") or tags.get("addr:village") or tags.get("addr:suburb")),
+            clean_resource_text(tags.get("addr:state")),
+            clean_resource_text(tags.get("addr:postcode")),
+        ]
+        if part
+    )
+    tagged_address = ", ".join(part for part in [line_one, locality] if part)
+    if tagged_address:
+        return tagged_address
+
+    if latitude is not None and longitude is not None:
+        reverse_address = reverse_geocode(latitude, longitude)
+        if reverse_address and not text_looks_like_coordinates(reverse_address):
+            return reverse_address
+
+    nearby_area = ", ".join(
+        part
+        for part in [
+            clean_resource_text(tags.get("addr:suburb") or tags.get("addr:city") or tags.get("addr:town") or tags.get("addr:village")),
+            clean_resource_text(tags.get("addr:state") or tags.get("is_in:state")),
+        ]
+        if part
+    )
+    if nearby_area:
+        return f"Near {nearby_area}"
+
+    return "Address unavailable"
+
+
+def normalize_resource_category(category: str, resource_name: str = "", details: str = "") -> str:
+    """Map source categories and descriptions onto the canonical browse filters."""
+    searchable_text = " ".join(
+        part for part in [clean_resource_text(category), clean_resource_text(resource_name), clean_resource_text(details)] if part
+    ).lower()
+    if not searchable_text:
         return "Community Center"
 
-    normalized = category.strip()
-    lowered = normalized.lower()
-
     for canonical, keywords in RESOURCE_CATEGORY_KEYWORDS.items():
-        if lowered == canonical.lower() or any(keyword in lowered for keyword in keywords):
+        if canonical.lower() in searchable_text or any(keyword in searchable_text for keyword in keywords):
             return canonical
 
-    return normalized
+    return "Community Center"
+
+
+def normalize_resource_record(raw_resource: dict, fallback_category: str = "Community Center", fallback_address: str = "Address unavailable") -> dict:
+    """Return a canonical resource record used by search, browse filters, and cards."""
+    latitude = coerce_coordinate(raw_resource.get("latitude", raw_resource.get("lat")))
+    longitude = coerce_coordinate(raw_resource.get("longitude", raw_resource.get("lng", raw_resource.get("lon"))))
+    tags = raw_resource.get("tags", {}) if isinstance(raw_resource.get("tags", {}), dict) else {}
+
+    address = normalize_resource_address(
+        raw_resource.get("address")
+        or raw_resource.get("location")
+        or raw_resource.get("physical_address")
+        or raw_resource.get("formatted_address")
+    )
+    if not address and tags:
+        address = build_osm_address(tags, latitude, longitude)
+    if not address:
+        address = fallback_address
+
+    name = clean_resource_text(raw_resource.get("name") or raw_resource.get("organization") or raw_resource.get("title"))
+    details = clean_resource_text(
+        raw_resource.get("services")
+        or raw_resource.get("description")
+        or raw_resource.get("summary")
+        or raw_resource.get("taxonomy")
+    )
+    category_seed = clean_resource_text(raw_resource.get("category") or raw_resource.get("service_category") or fallback_category)
+
+    return {
+        "name": name,
+        "category": normalize_resource_category(category_seed, name, details),
+        "address": address,
+        "phone": clean_resource_text(raw_resource.get("phone") or raw_resource.get("phones") or raw_resource.get("telephone")),
+        "hours": clean_resource_text(raw_resource.get("hours") or raw_resource.get("schedule") or raw_resource.get("availability")),
+        "website": normalize_resource_website(raw_resource.get("website") or raw_resource.get("url") or raw_resource.get("site") or raw_resource.get("websites")),
+        "latitude": latitude,
+        "longitude": longitude,
+    }
+
+
+def dedupe_resources(resources: list) -> list:
+    """Remove duplicate resources after normalization."""
+    seen = set()
+    deduped = []
+
+    for resource in resources:
+        key = (
+            resource.get("name", "").lower(),
+            resource.get("address", "").lower(),
+            resource.get("phone", "").lower(),
+        )
+        if not resource.get("name") or key in seen:
+            continue
+        seen.add(key)
+        deduped.append(resource)
+
+    return deduped
+
+
+def build_curated_browse_resources() -> list:
+    """Provide browseable fallback resources when the user has not run a location search."""
+    category_map = {
+        "Legal Aid Organizations": "Legal Aid",
+        "Emergency Services": "Emergency Shelter",
+        "Immigration Legal Services": "Immigration Support",
+    }
+    resources = []
+
+    for source_category, items in COMMUNITY_RESOURCES.items():
+        canonical_category = category_map.get(source_category, "Community Center")
+        for item in items:
+            resources.append(
+                normalize_resource_record(
+                    {
+                        "name": item.get("name"),
+                        "category": canonical_category,
+                        "address": "Statewide phone / online service",
+                        "phone": item.get("phone", ""),
+                        "website": item.get("website", ""),
+                        "hours": "",
+                        "description": item.get("services", ""),
+                    },
+                    fallback_category=canonical_category,
+                    fallback_address="Statewide phone / online service",
+                )
+            )
+
+    return dedupe_resources(resources)
 
 def fetch_lawhelp_resources() -> list:
     """
@@ -7555,7 +7789,7 @@ def fetch_lawhelp_resources() -> list:
         return []
 
     resources = []
-    seen_urls = set()
+    seen_urls = {base_url}
 
     soup = BeautifulSoup(response.text, "html.parser")
     page_urls = [base_url]
@@ -7610,17 +7844,24 @@ def fetch_lawhelp_resources() -> list:
             phone = phone_el.get_text(" ", strip=True) if phone_el else ""
             website = website_el["href"].strip() if website_el else ""
 
-            if name and address:
-                resources.append({
-                    "name": name,
-                    "category": "Legal Aid",
-                    "address": address,
-                    "phone": phone,
-                    "website": website,
-                    "hours": "",
-                })
+            if name:
+                resources.append(
+                    normalize_resource_record(
+                        {
+                            "name": name,
+                            "category": "Legal Aid",
+                            "address": address,
+                            "phone": phone,
+                            "website": website,
+                            "hours": "",
+                            "latitude": None,
+                            "longitude": None,
+                        },
+                        fallback_category="Legal Aid",
+                    )
+                )
 
-    return resources
+    return dedupe_resources(resources)
 
 def reverse_geocode(lat: float, lon: float) -> str:
     """
@@ -7632,7 +7873,7 @@ def reverse_geocode(lat: float, lon: float) -> str:
         data = response.json()
         return data.get("display_name", f"{lat}, {lon}")
     except Exception:
-        return f"{lat}, {lon}"
+        return "Address unavailable"
     
 def fetch_211_resources(city: str) -> list:
     """
@@ -7640,29 +7881,34 @@ def fetch_211_resources(city: str) -> list:
     """
     url = f"https://api.211ca.org/search?city={quote_plus(city)}"
     try:
-        response = requests.get(url, timeout=10)
+        response = requests.get(url, headers=DEFAULT_HTTP_HEADERS, timeout=10)
         data = response.json()
     except Exception:
         return []
 
     resources = []
-    for item in data.get("results", []):
-        name = item.get("name")
-        address = item.get("address")
-        phone = item.get("phone")
-        category = item.get("category")
+    results = data.get("results", []) if isinstance(data, dict) else data if isinstance(data, list) else []
+    for item in results:
+        if not isinstance(item, dict):
+            continue
 
-        if name and address:
-            resources.append({
-                "name": name,
-                "category": normalize_resource_category(category or "Community Resource"),
-                "address": address,
-                "phone": phone or "",
-                "website": item.get("website", ""),
-                "hours": item.get("hours", "")
-            })
+        resources.append(
+            normalize_resource_record(
+                {
+                    "name": item.get("name") or item.get("organization") or item.get("title"),
+                    "category": item.get("category") or item.get("service_category") or item.get("taxonomy") or "Community Resource",
+                    "address": item.get("address") or item.get("physical_address") or item.get("location"),
+                    "phone": item.get("phone") or item.get("phones") or item.get("contact_phone"),
+                    "website": item.get("website") or item.get("url") or item.get("websites"),
+                    "hours": item.get("hours") or item.get("schedule") or item.get("availability"),
+                    "latitude": item.get("latitude") or item.get("lat"),
+                    "longitude": item.get("longitude") or item.get("lng") or item.get("lon"),
+                    "description": item.get("description") or item.get("summary"),
+                }
+            )
+        )
 
-    return resources
+    return dedupe_resources(resources)
 
 def fetch_osm_resources(lat: float, lon: float, radius_meters: int = 5000) -> list:
     """
@@ -7691,58 +7937,47 @@ def fetch_osm_resources(lat: float, lon: float, radius_meters: int = 5000) -> li
 
     resources = []
     for element in data.get("elements", []):
-        name = element.get("tags", {}).get("name")
+        tags = element.get("tags", {})
+        name = tags.get("name")
         if not name:
             continue
 
         lat2 = element.get("lat")
         lon2 = element.get("lon")
 
-        # Reverse geocode to get a real address
-        address = reverse_geocode(lat2, lon2)
+        resources.append(
+            normalize_resource_record(
+                {
+                    "name": name,
+                    "category": tags.get("social_facility") or tags.get("amenity") or tags.get("office") or "Community Center",
+                    "address": build_osm_address(tags, lat2, lon2),
+                    "phone": tags.get("contact:phone") or tags.get("phone"),
+                    "website": tags.get("contact:website") or tags.get("website") or tags.get("url"),
+                    "hours": tags.get("opening_hours"),
+                    "latitude": lat2,
+                    "longitude": lon2,
+                    "description": tags.get("description") or tags.get("social_facility:for"),
+                    "tags": tags,
+                }
+            )
+        )
 
-        resources.append({
-            "name": name,
-            "category": "Community Center",
-            "address": address,
-            "phone": "",
-            "website": "",
-            "hours": "",
-            "latitude": lat2,
-            "longitude": lon2
-        })
+    return dedupe_resources(resources)
 
-    return resources
 
-def fetch_211_resources(city: str) -> list:
-    """
-    Fetch community resources from 211 California API.
-    """
-    url = f"https://api.211ca.org/search?city={quote_plus(city)}"
-    try:
-        response = requests.get(url, timeout=10)
-        data = response.json()
-    except Exception:
-        return []
+def build_resource_catalog(search_city: str = "", user_coordinates=None) -> list:
+    """Assemble a canonical resource catalog for both search results and browse mode."""
+    catalog = build_curated_browse_resources()
+    catalog.extend(fetch_lawhelp_resources())
 
-    resources = []
-    for item in data.get("results", []):
-        name = item.get("name")
-        address = item.get("address")
-        phone = item.get("phone")
-        category = item.get("category")
+    if search_city:
+        catalog.extend(fetch_211_resources(search_city))
 
-        if name and address:
-            resources.append({
-                "name": name,
-                "category": normalize_resource_category(category or "Community Resource"),
-                "address": address,
-                "phone": phone or "",
-                "website": item.get("website", ""),
-                "hours": item.get("hours", "")
-            })
+    if user_coordinates and len(user_coordinates) == 2:
+        user_latitude, user_longitude = user_coordinates
+        catalog.extend(fetch_osm_resources(user_latitude, user_longitude))
 
-    return resources
+    return dedupe_resources(catalog)
 
 
 def find_resources_by_location(address: str, search_radius_miles: int = 5) -> list:
@@ -7754,30 +7989,13 @@ def find_resources_by_location(address: str, search_radius_miles: int = 5) -> li
         print(f"DEBUG {label} COUNT:", len(items))
         print(f"DEBUG {label} FIRST 2:", items[:2])
 
-    # 1. LawHelpCA legal aid
-    lawhelp = fetch_lawhelp_resources()
-    debug_resource_batch("LAWHELP", lawhelp)
-
-    # 2. 211 California community resources
-    city_only = address.split(",")[0]
-    resources_211 = fetch_211_resources(city_only)
-    debug_resource_batch("211", resources_211)
-
-    # 3. OSM community centers (requires user coordinates)
     user_coordinates = geocode_address(address)
     st.session_state.resource_user_coordinates = user_coordinates
     print("DEBUG USER COORDS:", user_coordinates)
-    osm_resources = []
-    if user_coordinates:
-        user_lat, user_lon = user_coordinates
-        osm_resources = fetch_osm_resources(user_lat, user_lon)
-    debug_resource_batch("OSM", osm_resources)
 
-    # Merge all three sources
-    RESOURCES_DB = lawhelp + resources_211 + osm_resources
-    print("LAWHELP:", len(lawhelp))
-    print("211:", len(resources_211))
-    print("OSM:", len(osm_resources))
+    city_only = address.split(",")[0].strip()
+    RESOURCES_DB = build_resource_catalog(city_only, user_coordinates)
+    debug_resource_batch("RESOURCES_DB", RESOURCES_DB)
     print("TOTAL:", len(RESOURCES_DB))
 
 
@@ -7790,18 +8008,19 @@ def find_resources_by_location(address: str, search_radius_miles: int = 5) -> li
 
     # Filter resources by distance
     for resource in RESOURCES_DB:
-        # Geocode each resource's address
-        resource_coordinates = geocode_address(resource["address"])
-        print(
-            "DEBUG RESOURCE COORDS:",
-            resource.get("name", ""),
-            resource.get("address", ""),
-            resource_coordinates,
-        )
-        if not resource_coordinates:
-            continue
-
-        resource_latitude, resource_longitude = resource_coordinates
+        resource_latitude = resource.get("latitude")
+        resource_longitude = resource.get("longitude")
+        if resource_latitude is None or resource_longitude is None:
+            resource_coordinates = geocode_address(resource.get("address", ""))
+            print(
+                "DEBUG RESOURCE COORDS:",
+                resource.get("name", ""),
+                resource.get("address", ""),
+                resource_coordinates,
+            )
+            if not resource_coordinates:
+                continue
+            resource_latitude, resource_longitude = resource_coordinates
 
         # Compute distance
         distance = haversine_miles(
@@ -7824,59 +8043,224 @@ def find_resources_by_location(address: str, search_radius_miles: int = 5) -> li
     return sorted(nearby_resources, key=lambda x: x["distance"])
 
 
+def render_resource_card(resource: dict, origin_address: str = "", user_lat=None, user_lng=None) -> None:
+    """Render a normalized resource card with readable fallbacks and directions when possible."""
+    name = resource.get("name") or t('unknown_resource')
+    category = resource.get("category") or "Community Center"
+    address_value = resource.get("address") or t('unknown_address')
+    phone_value = resource.get("phone") or t('unknown_phone')
+    hours_value = resource.get("hours") or t('unknown_hours')
+    website_value = resource.get("website") or ""
+    distance_value = resource.get("distance")
+    website_markup = escape(t('unknown_website'))
+    if website_value:
+        safe_url = escape(website_value, quote=True)
+        safe_label = escape(website_value)
+        website_markup = f'<a href="{safe_url}" target="_blank" rel="noopener noreferrer">{safe_label}</a>'
+
+    distance_markup = ""
+    if distance_value is not None:
+        distance_markup = f"<p><strong>{escape(t('distance_away'))}:</strong> {escape(str(distance_value))} {escape(t('miles_unit'))}</p>"
+
+    st.markdown(
+        f"""
+        <div class="dashboard-card">
+            <div class="card-icon">📍</div>
+            <div class="card-title">{escape(name)}</div>
+            <div class="card-description">
+                <p><strong>Category:</strong> {escape(category)}</p>
+                {distance_markup}
+                <p><strong>{escape(t('resource_address'))}:</strong> {escape(address_value)}</p>
+                <p><strong>{escape(t('resource_phone'))}:</strong> {escape(phone_value)}</p>
+                <p><strong>{escape(t('resource_hours'))}:</strong> {escape(hours_value)}</p>
+                <p><strong>{escape(t('resource_website'))}:</strong> {website_markup}</p>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    destination_lat = resource.get('latitude')
+    destination_lon = resource.get('longitude')
+    maps_url = ""
+    if destination_lat is not None and destination_lon is not None:
+        origin = quote_plus(origin_address) if origin_address else ""
+        if user_lat is not None and user_lng is not None:
+            origin = f"{user_lat},{user_lng}"
+        maps_url = (
+            "https://www.google.com/maps/dir/?api=1"
+            f"&origin={origin}"
+            f"&destination={destination_lat},{destination_lon}"
+        )
+    elif address_value and address_value not in {t('unknown_address'), 'Address unavailable', 'Statewide phone / online service'}:
+        maps_url = build_google_maps_search_url(address_value)
+
+    if not maps_url:
+        return
+
+    if hasattr(st, "link_button"):
+        st.link_button(
+            f"🗺️ {t('get_directions')} - {name}",
+            maps_url,
+            use_container_width=True,
+        )
+    else:
+        st.markdown(
+            f"""
+            <a href="{escape(maps_url, quote=True)}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+                <button style="width: 100%; padding: 8px; background-color: #4285F4; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    🗺️ {escape(t('get_directions'))} - {escape(name)}
+                </button>
+            </a>
+            """,
+            unsafe_allow_html=True,
+        )
+
+
 
 def extract_deadline_and_dates(text: str) -> dict:
     """
-    Extract deadlines and important dates from legal text.
-    Uses pattern matching for common legal date formats.
+    Extract important dates, actions, deadlines, and penalties from legal text.
     """
-    import re
-    from datetime import datetime
-    
+    normalized_text = text or ""
+    lines = [re.sub(r'\s+', ' ', line).strip() for line in normalized_text.splitlines()]
+    lines = [line for line in lines if line]
+
     results = {
         "dates": [],
+        "actions": [],
         "deadlines": [],
         "penalties": []
     }
-    
-    # Date patterns: MM/DD/YYYY, DD/MM/YYYY, Month DD, YYYY
+
     date_patterns = [
-        r'\d{1,2}/\d{1,2}/\d{4}',
-        r'\d{1,2}-\d{1,2}-\d{4}',
-        r'(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s+\d{4}'
+        r'\b\d{1,2}/\d{1,2}/\d{2,4}\b',
+        r'\b\d{1,2}-\d{1,2}-\d{2,4}\b',
+        r'\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s+\d{4}\b'
     ]
-    
+
     for pattern in date_patterns:
-        matches = re.findall(pattern, text)
-        results["dates"].extend(matches)
-    
-    # Deadline keywords
-    deadline_keywords = [
-        r'must\s+(?:respond|reply|appear|pay|submit)(?:\s+(?:by|before|on|within))?.*?(?::\s*)([^.;,]*)',
-        r'(?:deadline|due\s+date)(?:\s+is)?(?:\s+)?([^.;,]*)',
-        r'respond\s+(?:by|within|before).*?(?::\s*)([^.;,]*)'
-    ]
-    
-    for pattern in deadline_keywords:
-        matches = re.findall(pattern, text, re.IGNORECASE)
-        results["deadlines"].extend(matches)
-    
-    # Penalty keywords
-    penalty_keywords = [
-        r'(?:penalty|fine|multa|penalidad)(?:\s+of)?(?:\s+\$)?([^.;,]*)',
-        r'(?:if\s+(?:you|not|fail))[^.]*?(?:penalty|fine|consequence).*?([^.;,]*)',
-    ]
-    
-    for pattern in penalty_keywords:
-        matches = re.findall(pattern, text, re.IGNORECASE)
-        results["penalties"].extend(matches)
-    
-    # Remove duplicates and clean up
-    results["dates"] = list(set(results["dates"]))
-    results["deadlines"] = list(set([d.strip() for d in results["deadlines"] if d.strip()]))
-    results["penalties"] = list(set([p.strip() for p in results["penalties"] if p.strip()]))
-    
+        results["dates"].extend(re.findall(pattern, normalized_text, re.IGNORECASE))
+
+    action_heading_pattern = re.compile(r'^(required\s+actions?|next\s+steps?|what\s+you\s+need\s+to\s+do)\s*:?', re.IGNORECASE)
+    section_heading_pattern = re.compile(r'^[A-Z][A-Z\s&/]+:?$')
+    section_heading_prefix_pattern = re.compile(r'^[A-Z][A-Z\s&/]+:\s*')
+    action_line_pattern = re.compile(
+        r'^(?:\d+[.)]\s*|[-*]\s*)?(?:bring|submit|file|pay|appear|respond|reply|contact|provide|complete|send|attend|serve|call|mail|deliver)\b',
+        re.IGNORECASE
+    )
+    deadline_line_pattern = re.compile(
+        r'\b(?:deadline|due|must|required\s+to|respond\s+by|reply\s+by|appear\s+on|appear\s+by|pay\s+by|submit\s+by|file\s+by|court\s+date|hearing)\b',
+        re.IGNORECASE
+    )
+    penalty_line_pattern = re.compile(
+        r'\b(?:penalt(?:y|ies)|fine|fines|warning|warnings|warrant|arrest|failure\s+to|consequence(?:s)?)\b',
+        re.IGNORECASE
+    )
+
+    in_action_section = False
+    for line in lines:
+        if action_heading_pattern.match(line):
+            in_action_section = True
+            heading_remainder = re.sub(action_heading_pattern, '', line).strip(' :-')
+            if heading_remainder:
+                results["actions"].append(heading_remainder)
+            continue
+
+        if in_action_section and (
+            section_heading_pattern.match(line)
+            or (
+                section_heading_prefix_pattern.match(line)
+                and not action_heading_pattern.match(line)
+            )
+        ):
+            in_action_section = False
+
+        if in_action_section:
+            cleaned_action = re.sub(r'^(?:\d+[.)]\s*|[-*]\s*)', '', line).strip()
+            if cleaned_action:
+                results["actions"].append(cleaned_action)
+            continue
+
+        if action_line_pattern.search(line) or re.search(r'\b(?:you\s+must|you\s+are\s+required\s+to|please)\b', line, re.IGNORECASE):
+            results["actions"].append(re.sub(r'^(?:\d+[.)]\s*|[-*]\s*)', '', line).strip())
+
+        if deadline_line_pattern.search(line):
+            results["deadlines"].append(line)
+
+        if penalty_line_pattern.search(line):
+            results["penalties"].append(re.sub(r'^(?:penalt(?:y|ies)|fine|warning)s?\s*:?\s*', '', line, flags=re.IGNORECASE).strip())
+
+    def dedupe(items):
+        seen = set()
+        ordered = []
+        for item in items:
+            cleaned = re.sub(r'\s+', ' ', str(item)).strip(' .:-')
+            key = cleaned.lower()
+            if cleaned and key not in seen:
+                seen.add(key)
+                ordered.append(cleaned)
+        return ordered
+
+    results["dates"] = dedupe(results["dates"])
+    results["actions"] = dedupe(results["actions"])
+    results["deadlines"] = dedupe(results["deadlines"])
+    results["penalties"] = dedupe(results["penalties"])
+
     return results
+
+
+def run_ocr_on_image(image: Image.Image) -> str:
+    """Run OCR on a PIL image when Tesseract is available."""
+    if not TESSERACT_AVAILABLE:
+        return ""
+
+    prepared_image = ImageOps.autocontrast(image.convert("L"))
+    return pytesseract.image_to_string(prepared_image, config="--psm 6")
+
+
+def extract_text_from_pdf_bytes(file_bytes: bytes) -> tuple[str, str]:
+    """Extract text from a PDF using embedded text first, then OCR as a fallback."""
+    if PDF_TEXT_AVAILABLE:
+        try:
+            reader = PdfReader(io.BytesIO(file_bytes))
+            extracted_pages = [page.extract_text() or "" for page in reader.pages]
+            extracted_text = "\n".join(page for page in extracted_pages if page.strip()).strip()
+            if extracted_text:
+                return extracted_text, "embedded PDF text"
+        except Exception:
+            pass
+
+    if PDF_AVAILABLE and TESSERACT_AVAILABLE:
+        try:
+            pdf_images = convert_from_bytes(file_bytes)
+            extracted_pages = [run_ocr_on_image(image) for image in pdf_images]
+            extracted_text = "\n".join(page for page in extracted_pages if page.strip()).strip()
+            if extracted_text:
+                return extracted_text, "PDF OCR"
+        except Exception:
+            pass
+
+    return "", ""
+
+
+def extract_text_from_uploaded_document(uploaded_file) -> tuple[str, str]:
+    """Extract text from uploaded PDFs and image files."""
+    file_bytes = uploaded_file.getvalue()
+    file_name = (uploaded_file.name or "").lower()
+    file_type = (uploaded_file.type or "").lower()
+
+    if file_name.endswith(".pdf") or "pdf" in file_type:
+        return extract_text_from_pdf_bytes(file_bytes)
+
+    if file_type.startswith("image/") or file_name.endswith((".png", ".jpg", ".jpeg")):
+        try:
+            image = Image.open(io.BytesIO(file_bytes))
+            return run_ocr_on_image(image).strip(), "image OCR"
+        except Exception:
+            return "", ""
+
+    return "", ""
 
 # ============================================================================
 # PERSISTENT STORAGE FUNCTIONS
@@ -8563,29 +8947,23 @@ def page_documents():
             with col3:
                 st.metric(t('status_ready'), t('status_ready'))
             
-            # Mock document extraction (in production, use Tesseract OCR)
             if st.button(t('extract_information'), use_container_width=True, key="extract_doc"):
                 with st.spinner(t('extracting_info')):
-                    # Mock extraction - sample legal text
-                    sample_text = """
-                    NOTICE TO APPEAR IN COURT
-                    
-                    You are required to appear in court on March 15, 2025 at 9:00 AM.
-                    Location: San Francisco Superior Court, 400 McAllister St.
-                    
-                    REQUIRED ACTIONS:
-                    1. Bring valid photo ID
-                    2. Bring proof of residence
-                    3. Pay the citation fee of $250 by March 10, 2025
-                    
-                    PENALTIES: Failure to appear may result in a warrant for your arrest.
-                    
-                    Case Number: 2024-CV-123456
-                    Court Clerk: Department of Superior Court
-                    """
-                    
-                    # Extract information
-                    extracted = extract_deadline_and_dates(sample_text)
+                    extracted_text, extraction_method = extract_text_from_uploaded_document(uploaded_file)
+
+                    if not extracted_text:
+                        if uploaded_file.type.startswith("image/") and not TESSERACT_AVAILABLE:
+                            st.error("OCR is not available for image uploads in this environment. Install Tesseract and pytesseract to process PNG and JPG files.")
+                        elif uploaded_file.type == "application/pdf" and not (PDF_TEXT_AVAILABLE or (PDF_AVAILABLE and TESSERACT_AVAILABLE)):
+                            st.error("PDF text extraction is not available in this environment. Install pypdf for embedded text, or add pdf2image and Tesseract for OCR-based PDF extraction.")
+                        else:
+                            st.error("No text could be extracted from this document. Try a clearer image or a text-based PDF.")
+                        return
+
+                    extracted = extract_deadline_and_dates(extracted_text)
+
+                    if extraction_method:
+                        st.caption(f"Extraction method: {extraction_method}")
                     
                     # Display results
                     col1, col2 = st.columns(2)
@@ -8599,9 +8977,9 @@ def page_documents():
                             st.info(t('no_dates_found'))
                         
                         st.markdown(f"### {t('required_actions')}")
-                        if extracted["deadlines"]:
-                            for deadline in extracted["deadlines"]:
-                                st.markdown(f"• {deadline}")
+                        if extracted["actions"]:
+                            for action in extracted["actions"]:
+                                st.markdown(f"• {action}")
                         else:
                             st.info(t('no_deadlines_found'))
                     
@@ -8635,6 +9013,9 @@ DATES FOUND:
 
 DEADLINES:
 {chr(10).join(extracted['deadlines']) if extracted['deadlines'] else 'None'}
+
+REQUIRED ACTIONS:
+{chr(10).join(extracted['actions']) if extracted['actions'] else 'None'}
 
 PENALTIES:
 {chr(10).join(extracted['penalties']) if extracted['penalties'] else 'None'}
@@ -8697,6 +9078,7 @@ def page_resources_near_you():
         search_button = st.button(f"🔍 {t('btn_search')}", use_container_width=True, key="find_resources_btn")
 
     resources = []
+    display_resources = []
     address = address.strip()
     has_address = bool(address)
     user_lat = None
@@ -8735,69 +9117,36 @@ def page_resources_near_you():
     elif cached_results_available:
         resources = st.session_state.resource_search_results
 
-    if st.session_state.resource_category_filter:
-        resources = [
-            r for r in resources
-            if normalize_resource_category(r.get('category', '')) == st.session_state.resource_category_filter
-        ]
-
     should_show_results = should_run_search or cached_results_available
 
-    if should_show_results:
-        if resources:
+    if st.session_state.resource_category_filter:
+        display_resources = [
+            resource for resource in resources
+            if resource.get('category') == st.session_state.resource_category_filter
+        ]
+
+        if not display_resources and not should_show_results:
+            browse_catalog = build_resource_catalog(address.split(",")[0].strip() if has_address else "")
+            display_resources = [
+                resource for resource in browse_catalog
+                if resource.get('category') == st.session_state.resource_category_filter
+            ]
+    else:
+        display_resources = resources
+
+    if should_show_results or (st.session_state.resource_category_filter and display_resources):
+        if display_resources:
             st.success(
-                f"✅ {t('found_resources')}: {len(resources)} "
+                f"✅ {t('found_resources')}: {len(display_resources)} "
                 f"{t('resources_found')} {t('within_miles')} {radius}"
+                if should_show_results else
+                f"✅ {t('found_resources')}: {len(display_resources)}"
             )
 
             # Display resource cards
-            for resource in resources:
+            for resource in display_resources:
                 with st.container():
-                    st.markdown(f"""
-                    <div class="dashboard-card">
-                        <div class="card-icon">📍</div>
-                        <div class="card-title">{resource.get('name', t('unknown_resource'))}</div>
-                        <div class="card-description">
-                            <p><strong>{t('distance_away')}:</strong> {resource.get('distance', '?')} {t('miles_unit')}</p>
-                            <p><strong>{t('resource_address')}:</strong> {resource.get('address', t('unknown_address'))}</p>
-                            <p><strong>{t('resource_phone')}:</strong> {resource.get('phone', t('unknown_phone'))}</p>
-                            <p><strong>{t('resource_hours')}:</strong> {resource.get('hours', t('unknown_hours'))}</p>
-                            <p><strong>{t('resource_website')}:</strong> {resource.get('website', t('unknown_website'))}</p>
-                        </div>
-                    </div>
-                    """, unsafe_allow_html=True)
-
-                    destination_lat = resource.get('latitude', resource.get('lat'))
-                    destination_lon = resource.get('longitude', resource.get('lng'))
-                    maps_url = build_google_maps_search_url(resource.get('address', ''))
-                    if destination_lat is not None and destination_lon is not None:
-                        origin = quote_plus(address)
-                        if user_lat is not None and user_lng is not None:
-                            origin = f"{user_lat},{user_lng}"
-                        maps_url = (
-                            "https://www.google.com/maps/dir/?api=1"
-                            f"&origin={origin}"
-                            f"&destination={destination_lat},{destination_lon}"
-                        )
-
-                    # Directions button
-                    if hasattr(st, "link_button"):
-                        st.link_button(
-                            f"🗺️ {t('get_directions')} - {resource.get('name')}",
-                            maps_url,
-                            use_container_width=True
-                        )
-                    else:
-                        st.markdown(
-                            f"""
-                            <a href="{maps_url}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
-                                <button style="width: 100%; padding: 8px; background-color: #4285F4; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                                    🗺️ {t('get_directions')} - {resource.get('name')}
-                                </button>
-                            </a>
-                            """,
-                            unsafe_allow_html=True
-                        )
+                    render_resource_card(resource, address, user_lat, user_lng)
         else:
             st.warning(f"⚠️ {t('no_resources_found')}")
 
