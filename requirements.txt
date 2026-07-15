@@ -68,3 +68,5 @@ python-dotenv==1.0.0
 # ============================================================================
 # Python 3.8 or higher required
 # Recommended: Python 3.9, 3.10, or 3.11
+pytesseract
+Pillow
