@@ -44,7 +44,20 @@ from urllib.request import Request, urlopen
 import requests
 from bs4 import BeautifulSoup
 import pytesseract
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+import platform
+
+# Set Linux Tesseract path for Streamlit Cloud
+if platform.system() == "Linux":
+    pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
+
+# Check if Tesseract is actually available
+try:
+    _ = pytesseract.get_tesseract_version()
+    TESSERACT_AVAILABLE = True
+except Exception:
+    TESSERACT_AVAILABLE = False
+
+
 
 
 
