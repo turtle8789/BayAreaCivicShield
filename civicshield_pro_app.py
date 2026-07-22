@@ -43,6 +43,9 @@ from urllib.parse import quote_plus, urljoin
 from urllib.request import Request, urlopen
 import requests
 from bs4 import BeautifulSoup
+import pytesseract
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+
 
 
 # Optional imports with graceful fallback
@@ -8210,16 +8213,29 @@ def extract_deadline_and_dates(text: str) -> dict:
     return results
 
 
-def run_ocr_on_image(image: Image.Image) -> str:
-    """Run OCR on a PIL image when Tesseract is available."""
+def run_ocr_on_image(image: Image.Image) -> tuple[str, str | None]:
+    """Run OCR on a PIL image and report whether OCR was unavailable or failed."""
     if not TESSERACT_AVAILABLE:
-        return ""
+        return "", "ocr_unavailable"
 
-    prepared_image = ImageOps.autocontrast(image.convert("L"))
-    return pytesseract.image_to_string(prepared_image, config="--psm 6")
+    prepared_image = ImageOps.exif_transpose(image)
+    prepared_image = ImageOps.autocontrast(prepared_image.convert("L"))
+
+    try:
+        extracted_text = pytesseract.image_to_string(prepared_image, lang="eng", config="--psm 6")
+    except Exception as exc:
+        if "tesseract" in str(exc).lower() and "not found" in str(exc).lower():
+            return "", "ocr_unavailable"
+        return "", "ocr_failed"
+
+    cleaned_text = extracted_text.strip()
+    if not cleaned_text:
+        return "", "no_text"
+
+    return cleaned_text, None
 
 
-def extract_text_from_pdf_bytes(file_bytes: bytes) -> tuple[str, str]:
+def extract_text_from_pdf_bytes(file_bytes: bytes) -> tuple[str, str, str | None]:
     """Extract text from a PDF using embedded text first, then OCR as a fallback."""
     if PDF_TEXT_AVAILABLE:
         try:
@@ -8227,24 +8243,40 @@ def extract_text_from_pdf_bytes(file_bytes: bytes) -> tuple[str, str]:
             extracted_pages = [page.extract_text() or "" for page in reader.pages]
             extracted_text = "\n".join(page for page in extracted_pages if page.strip()).strip()
             if extracted_text:
-                return extracted_text, "embedded PDF text"
+                return extracted_text, "embedded PDF text", None
         except Exception:
             pass
 
     if PDF_AVAILABLE and TESSERACT_AVAILABLE:
         try:
             pdf_images = convert_from_bytes(file_bytes)
-            extracted_pages = [run_ocr_on_image(image) for image in pdf_images]
+            extracted_pages = []
+            ocr_status = "no_text"
+            for image in pdf_images:
+                page_text, page_status = run_ocr_on_image(image)
+                if page_text:
+                    extracted_pages.append(page_text)
+                if page_status in {"ocr_failed", "ocr_unavailable"}:
+                    ocr_status = page_status
+                    break
+                if page_status is None:
+                    ocr_status = None
+
             extracted_text = "\n".join(page for page in extracted_pages if page.strip()).strip()
             if extracted_text:
-                return extracted_text, "PDF OCR"
+                return extracted_text, "PDF OCR", None
         except Exception:
-            pass
+            return "", "", "ocr_failed"
 
-    return "", ""
+        return "", "", ocr_status
+
+    if PDF_TEXT_AVAILABLE:
+        return "", "", "no_text"
+
+    return "", "", "pdf_unavailable"
 
 
-def extract_text_from_uploaded_document(uploaded_file) -> tuple[str, str]:
+def extract_text_from_uploaded_document(uploaded_file) -> tuple[str, str, str | None]:
     """Extract text from uploaded PDFs and image files."""
     file_bytes = uploaded_file.getvalue()
     file_name = (uploaded_file.name or "").lower()
@@ -8256,11 +8288,12 @@ def extract_text_from_uploaded_document(uploaded_file) -> tuple[str, str]:
     if file_type.startswith("image/") or file_name.endswith((".png", ".jpg", ".jpeg")):
         try:
             image = Image.open(io.BytesIO(file_bytes))
-            return run_ocr_on_image(image).strip(), "image OCR"
+            extracted_text, extraction_error = run_ocr_on_image(image)
+            return extracted_text, "image OCR", extraction_error
         except Exception:
-            return "", ""
+            return "", "", "ocr_failed"
 
-    return "", ""
+    return "", "", "unsupported_file"
 
 # ============================================================================
 # PERSISTENT STORAGE FUNCTIONS
@@ -8949,13 +8982,17 @@ def page_documents():
             
             if st.button(t('extract_information'), use_container_width=True, key="extract_doc"):
                 with st.spinner(t('extracting_info')):
-                    extracted_text, extraction_method = extract_text_from_uploaded_document(uploaded_file)
+                    extracted_text, extraction_method, extraction_error = extract_text_from_uploaded_document(uploaded_file)
 
                     if not extracted_text:
-                        if uploaded_file.type.startswith("image/") and not TESSERACT_AVAILABLE:
+                        if extraction_error == "ocr_unavailable" and uploaded_file.type.startswith("image/"):
                             st.error("OCR is not available for image uploads in this environment. Install Tesseract and pytesseract to process PNG and JPG files.")
-                        elif uploaded_file.type == "application/pdf" and not (PDF_TEXT_AVAILABLE or (PDF_AVAILABLE and TESSERACT_AVAILABLE)):
+                        elif extraction_error == "pdf_unavailable":
                             st.error("PDF text extraction is not available in this environment. Install pypdf for embedded text, or add pdf2image and Tesseract for OCR-based PDF extraction.")
+                        elif extraction_error == "no_text":
+                            st.warning("OCR completed, but no readable text was found in this document. Try a clearer image or a higher-resolution scan.")
+                        elif extraction_error == "ocr_failed":
+                            st.error("OCR failed while processing this document. Try again with a clearer image or verify your Tesseract installation.")
                         else:
                             st.error("No text could be extracted from this document. Try a clearer image or a text-based PDF.")
                         return

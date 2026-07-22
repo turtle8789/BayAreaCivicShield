@@ -1,0 +1,1415 @@
+{
+  "coords": null,
+  "fetch_lawhelp_resources": [
+    {
+      "name": "Access, Inc.",
+      "category": "Legal Aid",
+      "address": "2612 Daniel Ave, San Diego  CA 92111",
+      "phone": "(858) 560 - 0871",
+      "website": "https://www.access2jobs.org/",
+      "hours": ""
+    },
+    {
+      "name": "Affordable Housing Advocates",
+      "category": "Legal Aid",
+      "address": "427 C Street Suite 304, San Diego  CA 92101",
+      "phone": "(619) 233-8441",
+      "website": "http://affordablehousingadvocates.org",
+      "hours": ""
+    },
+    {
+      "name": "AIDS Legal Referral Panel - San Francisco Office",
+      "category": "Legal Aid",
+      "address": "1663 Mission Street Suite 720, San Francisco  CA 94103",
+      "phone": "(415) 701-1100",
+      "website": "http://alrp.org",
+      "hours": ""
+    },
+    {
+      "name": "Alameda County Lawyer Referral Service",
+      "category": "Legal Aid",
+      "address": "Oakland  CA 94607",
+      "phone": "(510) 302 - 2222 ext. 4",
+      "website": "https://www.acbanet.org/need-a-lawyer/",
+      "hours": ""
+    },
+    {
+      "name": "Alameda County Public Defender: Clean Slate Clinic",
+      "category": "Legal Aid",
+      "address": "545 4th Street Suite 400, Oakland  CA 94612",
+      "phone": "510-268-7400",
+      "website": "https://publicdefender.acgov.org/CleanSlate.page",
+      "hours": ""
+    },
+    {
+      "name": "Alameda County Self-Help",
+      "category": "Legal Aid",
+      "address": "2233 Shore Line Drive, Alameda  CA 94501",
+      "phone": "(510) 891-6005",
+      "website": "https://www.alameda.courts.ca.gov/system/files/general/self-help-flyer-rev91522.pdf",
+      "hours": ""
+    },
+    {
+      "name": "Alameda Small Claims Court",
+      "category": "Legal Aid",
+      "address": "1225 Fallon Street, Oakland  CA 94601",
+      "phone": "510-891-6000",
+      "website": "https://www.alameda.courts.ca.gov/divisions/small-claims",
+      "hours": ""
+    },
+    {
+      "name": "All for the Family Legal Clinic, Inc.",
+      "category": "Legal Aid",
+      "address": "3137 Castro Valey Blvd #210, Castro Valley  CA 94546",
+      "phone": "(510) 999 - 7732",
+      "website": "http://allforthefamilylegalclinic.org",
+      "hours": ""
+    },
+    {
+      "name": "Alliance for Children's Rights",
+      "category": "Legal Aid",
+      "address": "4525 Wilshire Blvd Ste. 150, Los Angeles  CA 90010",
+      "phone": "213-368-6010 ext. 155",
+      "website": "https://allianceforchildrensrights.org/",
+      "hours": ""
+    },
+    {
+      "name": "Al Otro Lado, Inc.",
+      "category": "Legal Aid",
+      "address": "511 E. San Ysidro Blvd. #333, San Ysidro  CA 92173",
+      "phone": "(323) 238-9935",
+      "website": "https://www.alotrolado.org/",
+      "hours": ""
+    },
+    {
+      "name": "Alpine County Self Help Center",
+      "category": "Legal Aid",
+      "address": "14777 State Route 89, Markleeville  CA 96120",
+      "phone": "(530) 694 - 2113",
+      "website": "https://www.alpine.courts.ca.gov/selfhelp/index.htm",
+      "hours": ""
+    },
+    {
+      "name": "Alpine Small Claims Court",
+      "category": "Legal Aid",
+      "address": "14777 State Route 89, Markleeville  CA 96120",
+      "phone": "(530) 694-2113",
+      "website": "https://www.alpine.courts.ca.gov/divisions/civil/small-claims",
+      "hours": ""
+    },
+    {
+      "name": "Amador County Office of the Family Law Facilitator and Self-Help Center",
+      "category": "Legal Aid",
+      "address": "500 Argonaut Lane, Jackson  CA 95642",
+      "phone": "(209) 257-2627",
+      "website": "http://amadorcourt.org/sh-localResources.aspx",
+      "hours": ""
+    },
+    {
+      "name": "Amador County Self-Help Legal Services",
+      "category": "Legal Aid",
+      "address": "500 Argonaut Lane, Jackson  CA 95642",
+      "phone": "(209) 754 - 1443",
+      "website": "http://amadorcourt.org/sh-localResources.aspx",
+      "hours": ""
+    },
+    {
+      "name": "Arab Resource and Organizing Center",
+      "category": "Legal Aid",
+      "address": "522 Valencia St, San Francisco  CA 94110",
+      "phone": "(415) 861 - 7444",
+      "website": "http://araborganizing.org",
+      "hours": ""
+    },
+    {
+      "name": "Asian Americans Advancing Justice - Asian Law Caucus",
+      "category": "Legal Aid",
+      "address": "55 Columbus Ave, San Francisco  CA 94111",
+      "phone": "(415) 896 - 1701",
+      "website": "http://www.advancingjustice-alc.org",
+      "hours": ""
+    },
+    {
+      "name": "Access, Inc.",
+      "category": "Legal Aid",
+      "address": "2612 Daniel Ave, San Diego  CA 92111",
+      "phone": "(858) 560 - 0871",
+      "website": "https://www.access2jobs.org/",
+      "hours": ""
+    },
+    {
+      "name": "Affordable Housing Advocates",
+      "category": "Legal Aid",
+      "address": "427 C Street Suite 304, San Diego  CA 92101",
+      "phone": "(619) 233-8441",
+      "website": "http://affordablehousingadvocates.org",
+      "hours": ""
+    },
+    {
+      "name": "AIDS Legal Referral Panel - San Francisco Office",
+      "category": "Legal Aid",
+      "address": "1663 Mission Street Suite 720, San Francisco  CA 94103",
+      "phone": "(415) 701-1100",
+      "website": "http://alrp.org",
+      "hours": ""
+    },
+    {
+      "name": "Alameda County Lawyer Referral Service",
+      "category": "Legal Aid",
+      "address": "Oakland  CA 94607",
+      "phone": "(510) 302 - 2222 ext. 4",
+      "website": "https://www.acbanet.org/need-a-lawyer/",
+      "hours": ""
+    },
+    {
+      "name": "Alameda County Public Defender: Clean Slate Clinic",
+      "category": "Legal Aid",
+      "address": "545 4th Street Suite 400, Oakland  CA 94612",
+      "phone": "510-268-7400",
+      "website": "https://publicdefender.acgov.org/CleanSlate.page",
+      "hours": ""
+    },
+    {
+      "name": "Alameda County Self-Help",
+      "category": "Legal Aid",
+      "address": "2233 Shore Line Drive, Alameda  CA 94501",
+      "phone": "(510) 891-6005",
+      "website": "https://www.alameda.courts.ca.gov/system/files/general/self-help-flyer-rev91522.pdf",
+      "hours": ""
+    },
+    {
+      "name": "Alameda Small Claims Court",
+      "category": "Legal Aid",
+      "address": "1225 Fallon Street, Oakland  CA 94601",
+      "phone": "510-891-6000",
+      "website": "https://www.alameda.courts.ca.gov/divisions/small-claims",
+      "hours": ""
+    },
+    {
+      "name": "All for the Family Legal Clinic, Inc.",
+      "category": "Legal Aid",
+      "address": "3137 Castro Valey Blvd #210, Castro Valley  CA 94546",
+      "phone": "(510) 999 - 7732",
+      "website": "http://allforthefamilylegalclinic.org",
+      "hours": ""
+    },
+    {
+      "name": "Alliance for Children's Rights",
+      "category": "Legal Aid",
+      "address": "4525 Wilshire Blvd Ste. 150, Los Angeles  CA 90010",
+      "phone": "213-368-6010 ext. 155",
+      "website": "https://allianceforchildrensrights.org/",
+      "hours": ""
+    },
+    {
+      "name": "Al Otro Lado, Inc.",
+      "category": "Legal Aid",
+      "address": "511 E. San Ysidro Blvd. #333, San Ysidro  CA 92173",
+      "phone": "(323) 238-9935",
+      "website": "https://www.alotrolado.org/",
+      "hours": ""
+    },
+    {
+      "name": "Alpine County Self Help Center",
+      "category": "Legal Aid",
+      "address": "14777 State Route 89, Markleeville  CA 96120",
+      "phone": "(530) 694 - 2113",
+      "website": "https://www.alpine.courts.ca.gov/selfhelp/index.htm",
+      "hours": ""
+    },
+    {
+      "name": "Alpine Small Claims Court",
+      "category": "Legal Aid",
+      "address": "14777 State Route 89, Markleeville  CA 96120",
+      "phone": "(530) 694-2113",
+      "website": "https://www.alpine.courts.ca.gov/divisions/civil/small-claims",
+      "hours": ""
+    },
+    {
+      "name": "Amador County Office of the Family Law Facilitator and Self-Help Center",
+      "category": "Legal Aid",
+      "address": "500 Argonaut Lane, Jackson  CA 95642",
+      "phone": "(209) 257-2627",
+      "website": "http://amadorcourt.org/sh-localResources.aspx",
+      "hours": ""
+    },
+    {
+      "name": "Amador County Self-Help Legal Services",
+      "category": "Legal Aid",
+      "address": "500 Argonaut Lane, Jackson  CA 95642",
+      "phone": "(209) 754 - 1443",
+      "website": "http://amadorcourt.org/sh-localResources.aspx",
+      "hours": ""
+    },
+    {
+      "name": "Arab Resource and Organizing Center",
+      "category": "Legal Aid",
+      "address": "522 Valencia St, San Francisco  CA 94110",
+      "phone": "(415) 861 - 7444",
+      "website": "http://araborganizing.org",
+      "hours": ""
+    },
+    {
+      "name": "Asian Americans Advancing Justice - Asian Law Caucus",
+      "category": "Legal Aid",
+      "address": "55 Columbus Ave, San Francisco  CA 94111",
+      "phone": "(415) 896 - 1701",
+      "website": "http://www.advancingjustice-alc.org",
+      "hours": ""
+    },
+    {
+      "name": "Asian Americans Advancing Justice - Los Angeles",
+      "category": "Legal Aid",
+      "address": "1145 Wilshire Blvd 2nd Floor, Los Angeles  CA 90017",
+      "phone": "888-349-9695",
+      "website": "http://advancingjustice-la.org",
+      "hours": ""
+    },
+    {
+      "name": "Asian Americans Advancing Justice Southern California",
+      "category": "Legal Aid",
+      "address": "1145 Wilshire Blvd, Los Angeles  CA 90017",
+      "phone": "213-977-7500",
+      "website": "https://ajsocal.org/",
+      "hours": ""
+    },
+    {
+      "name": "Asian Law Alliance",
+      "category": "Legal Aid",
+      "address": "991 West Hedding Street Suite 202, San Jose  CA 95126",
+      "phone": "(408) 287 - 9710",
+      "website": "http://www.asianlawalliance.org",
+      "hours": ""
+    },
+    {
+      "name": "Asian Pacific Islander Legal Outreach - Oakland",
+      "category": "Legal Aid",
+      "address": "310 8th Street Suite #308, Oakland  CA 94607",
+      "phone": "(510) 251 - 2846",
+      "website": "http://www.apilegaloutreach.org",
+      "hours": ""
+    },
+    {
+      "name": "Asian Pacific Islander Legal Outreach - San Francisco",
+      "category": "Legal Aid",
+      "address": "1121 Mission Street, San Francisco  CA 94103",
+      "phone": "(415) 567 - 6255",
+      "website": "http://apilegaloutreach.org",
+      "hours": ""
+    },
+    {
+      "name": "Attorney Referral Service of the San Fernando Valley Bar Association",
+      "category": "Legal Aid",
+      "address": "20750 Ventura Blvd Suite 140, Woodland Hills  CA 91364",
+      "phone": "818-431-2671",
+      "website": "http://www.sfvbareferral.com",
+      "hours": ""
+    },
+    {
+      "name": "1000Attorneys.com",
+      "category": "Legal Aid",
+      "address": "Los Angeles  CA 90028",
+      "phone": "1-661-310-7999",
+      "website": "http://www.1000attorneys.com",
+      "hours": ""
+    },
+    {
+      "name": "Attorney Search Network",
+      "category": "Legal Aid",
+      "address": "15021 Ventura Boulevard Suite #800, Sherman Oaks  CA 91403",
+      "phone": "(800) 215-1190",
+      "website": "https://www.attorneysearchnetwork.com/",
+      "hours": ""
+    },
+    {
+      "name": "Bankruptcy Pro Se/Pro Bono Services - Alameda County and Contra Costa County",
+      "category": "Legal Aid",
+      "address": "Oakland  CA 94612",
+      "phone": "(510) 302 - 2222 ext. 4",
+      "website": "http://www.canb.uscourts.gov/pro-se-pro-bono-services",
+      "hours": ""
+    },
+    {
+      "name": "Bankruptcy Pro Se/Pro Bono Services - San Francisco County",
+      "category": "Legal Aid",
+      "address": "San Francisco  CA 94104",
+      "phone": "415-989-1616",
+      "website": "http://www.canb.uscourts.gov/pro-se-pro-bono-services",
+      "hours": ""
+    },
+    {
+      "name": "Bankruptcy Pro Se/Pro Bono Services - Santa Clara County and San Mateo County",
+      "category": "Legal Aid",
+      "address": "San Jose  CA 95113",
+      "phone": "408-998-5298 x 311",
+      "website": "http://www.canb.uscourts.gov/pro-se-pro-bono-services",
+      "hours": ""
+    },
+    {
+      "name": "Bankruptcy Self-Help Center",
+      "category": "Legal Aid",
+      "address": "325 West F Street, San Diego  CA 92101",
+      "phone": "",
+      "website": "https://www.lassd.org/bankruptcy-self-help-center/",
+      "hours": ""
+    },
+    {
+      "name": "Banning Self-Help Information Center",
+      "category": "Legal Aid",
+      "address": "311 E. Ramsey Street, Banning  CA 92220",
+      "phone": "",
+      "website": "https://www.riverside.courts.ca.gov/self-help",
+      "hours": ""
+    },
+    {
+      "name": "Bar Association of San Francisco Lawyer Referral & Information Service",
+      "category": "Legal Aid",
+      "address": "San Francisco  CA 94111",
+      "phone": "(415) 989 - 1616",
+      "website": "http://www.sfbar.org/lawyerreferrals/requestalawyer-online.aspx",
+      "hours": ""
+    },
+    {
+      "name": "BASTA, Inc. - Los Angeles",
+      "category": "Legal Aid",
+      "address": "1545 Wilshire Blvd Suite 600, Los Angeles  CA 90017",
+      "phone": "(213) 736 - 5050",
+      "website": "http://basta.org",
+      "hours": ""
+    },
+    {
+      "name": "Bay Area Legal Aid - Alameda County Regional Office",
+      "category": "Legal Aid",
+      "address": "1735 Telegraph Avenue, Oakland  CA 94612",
+      "phone": "(510) 663-4744",
+      "website": "https://baylegal.org/resources/alameda-county-office/",
+      "hours": ""
+    },
+    {
+      "name": "Bay Area Legal Aid - Contra Costa County Regional Office",
+      "category": "Legal Aid",
+      "address": "1025 MacDonald Avenue, Richmond  CA 94801",
+      "phone": "(510) 233-9954",
+      "website": "https://baylegal.org/resources/contra-costa-county-office/",
+      "hours": ""
+    },
+    {
+      "name": "Bay Area Legal Aid - Marin Regional Office",
+      "category": "Legal Aid",
+      "address": "30 North San Pedro Rd Suite 250, San Rafael  CA 94903",
+      "phone": "(415) 354-6360",
+      "website": "https://www.baylegal.org/locations-2/marin-county",
+      "hours": ""
+    },
+    {
+      "name": "Bay Area Legal Aid - Napa Regional Office",
+      "category": "Legal Aid",
+      "address": "1250 Main St. Suite 210, Box 18,, Napa  CA 94559",
+      "phone": "(707) 259-0579",
+      "website": "https://baylegal.org/resources/napa-county-office/",
+      "hours": ""
+    },
+    {
+      "name": "Bay Area Legal Aid - San Francisco Regional Office",
+      "category": "Legal Aid",
+      "address": "1800 Market Street 3rd Floor, San Francisco  CA 94102",
+      "phone": "(415) 982-1300",
+      "website": "https://baylegal.org/get-help/find-an-office/san-francisco-county/",
+      "hours": ""
+    },
+    {
+      "name": "Bay Area Legal Aid - San Mateo County Regional Office",
+      "category": "Legal Aid",
+      "address": "1048 El Camino Real Suite A, Redwood City  CA 94063",
+      "phone": "(650) 358-0745",
+      "website": "https://baylegal.org/get-help/find-an-office/san-mateo-county/",
+      "hours": ""
+    },
+    {
+      "name": "Bay Area Legal Aid - Santa Clara Regional Office",
+      "category": "Legal Aid",
+      "address": "4 North Second Street Suite 600, San Jose  CA 95113",
+      "phone": "(408) 283-3700",
+      "website": "https://baylegal.org/resources/santa-clara-county-office/",
+      "hours": ""
+    },
+    {
+      "name": "Bay Area Legal Aid's Health Consumer Center",
+      "category": "Legal Aid",
+      "address": "1735 Telegraph Avenue, Oakland  CA 94612",
+      "phone": "(855) 693-7285",
+      "website": "https://baylegal.org/legal-areas/health-care-access/",
+      "hours": ""
+    },
+    {
+      "name": "Bet Tzedek Legal Services",
+      "category": "Legal Aid",
+      "address": "3250 Wilshire Blvd. 13th Floor, Los Angeles  CA 90010",
+      "phone": "323-939-0506",
+      "website": "https://bettzedek.org/",
+      "hours": ""
+    },
+    {
+      "name": "Blythe Self-Help Information Center",
+      "category": "Legal Aid",
+      "address": "265 N Broadway, Blythe  CA 92225",
+      "phone": "760.393.2617",
+      "website": "https://www.riverside.courts.ca.gov/self-help",
+      "hours": ""
+    },
+    {
+      "name": "Butte County Court Self Help Center",
+      "category": "Legal Aid",
+      "address": "One Court St. Room 100, Oroville  CA 95940",
+      "phone": "530-532-7015",
+      "website": "https://www.butte.courts.ca.gov/self-help",
+      "hours": ""
+    },
+    {
+      "name": "Butte County Small Claims Legal Advisor",
+      "category": "Legal Aid",
+      "address": "Oroville  CA 95965",
+      "phone": "(530) 532-7015",
+      "website": "https://www.butte.courts.ca.gov/self-help",
+      "hours": ""
+    },
+    {
+      "name": "Calaveras County Family Law Facilitator",
+      "category": "Legal Aid",
+      "address": "400 Government Center Drive, San Andreas  CA 95249",
+      "phone": "(209) 754 - 1443",
+      "website": "http://www.calaveras.courts.ca.gov/self-help/family-law-facilitator",
+      "hours": ""
+    },
+    {
+      "name": "Calaveras County Self-Help Center",
+      "category": "Legal Aid",
+      "address": "400 Government Center Drive, San Andreas  CA 95249",
+      "phone": "(209) 754-1443",
+      "website": "http://www.calaveras.courts.ca.gov/self-help/self-help-center",
+      "hours": ""
+    },
+    {
+      "name": "Calaveras County Small Claims Court",
+      "category": "Legal Aid",
+      "address": "400 Government Center Drive, San Andreas  CA 95249",
+      "phone": "(209) 754-9800",
+      "website": "https://www.calaveras.courts.ca.gov/divisions/small-claims-division",
+      "hours": ""
+    },
+    {
+      "name": "California Advocates for Nursing Home Reform",
+      "category": "Legal Aid",
+      "address": "1803 6th Street, Berkeley  CA 94710",
+      "phone": "(415) 974 - 5171",
+      "website": "http://canhr.org",
+      "hours": ""
+    },
+    {
+      "name": "California Center for Movement Legal Services",
+      "category": "Legal Aid",
+      "address": "428 13th Street 8th Floor, Oakland  CA 94612",
+      "phone": "",
+      "website": "https://www.movementlegal.org/",
+      "hours": ""
+    },
+    {
+      "name": "California Civil Rights Department",
+      "category": "Legal Aid",
+      "address": "2218 Kausen Drive Suite 100, Elk Grove  CA 95758",
+      "phone": "800-884-1684",
+      "website": "https://calcivilrights.ca.gov/aboutcrd/",
+      "hours": ""
+    },
+    {
+      "name": "California Collaborative for Immigrant Justice",
+      "category": "Legal Aid",
+      "address": "1999 Harrison St. Suite 1800, Oakland  CA 94612",
+      "phone": "415-933-4922",
+      "website": "https://www.ccijustice.org/",
+      "hours": ""
+    },
+    {
+      "name": "California Human Development Corporation (Santa Rosa Office)",
+      "category": "Legal Aid",
+      "address": "3315 Airway Dr, Santa Rosa  CA 95403",
+      "phone": "707-523-1155",
+      "website": "http://californiahumandevelopment.org",
+      "hours": ""
+    },
+    {
+      "name": "California Immigration Project",
+      "category": "Legal Aid",
+      "address": "2210 K Street Suite 101, Sacramento  CA 95816",
+      "phone": "",
+      "website": "https://calimm.org/",
+      "hours": ""
+    },
+    {
+      "name": "California Indian Legal Services - Escondido",
+      "category": "Legal Aid",
+      "address": "609 S Escondido Blvd, Escondido  CA 92025",
+      "phone": "(760) 746-8941",
+      "website": "http://calindian.org",
+      "hours": ""
+    },
+    {
+      "name": "California Indian Legal Services - McKinleyville",
+      "category": "Legal Aid",
+      "address": "2355 Central Avenue Suite C, McKinleyville  CA 95519",
+      "phone": "(707) 443-8397",
+      "website": "http://calindian.org",
+      "hours": ""
+    },
+    {
+      "name": "California Indian Legal Services - Northern Office",
+      "category": "Legal Aid",
+      "address": "2355 Central Avenue Suite C, McKinleyville  CA 95519",
+      "phone": "(707) 443-8397",
+      "website": "https://www.calindian.org/northern-office/",
+      "hours": ""
+    },
+    {
+      "name": "California Indian Legal Services - Sacramento",
+      "category": "Legal Aid",
+      "address": "117 J Street Suite 201, Sacramento  CA 95814",
+      "phone": "(916) 978-0960",
+      "website": "http://calindian.org",
+      "hours": ""
+    },
+    {
+      "name": "California Rural Legal Assistance, Inc. - Coachella",
+      "category": "Legal Aid",
+      "address": "1460 6th Street, Coachella  CA 92236",
+      "phone": "(760) 398 - 7261",
+      "website": "http://crla.org",
+      "hours": ""
+    },
+    {
+      "name": "California Rural Legal Assistance, Inc.- Delano",
+      "category": "Legal Aid",
+      "address": "622 High Street, Delano  CA 93215",
+      "phone": "(661) 725 - 4350",
+      "website": "http://crla.org",
+      "hours": ""
+    },
+    {
+      "name": "California Rural Legal Assistance, Inc. - El Centro",
+      "category": "Legal Aid",
+      "address": "449 Broadway St, El Centro  CA 92243",
+      "phone": "(760) 353-0220",
+      "website": "https://crla.org/locations/el-centro",
+      "hours": ""
+    },
+    {
+      "name": "California Rural Legal Assistance, Inc. - Fresno",
+      "category": "Legal Aid",
+      "address": "3747 E Shields Ave, Fresno  CA 93721",
+      "phone": "(559) 441 - 8721",
+      "website": "http://www.crla.org/",
+      "hours": ""
+    },
+    {
+      "name": "California Rural Legal Assistance, Inc - Lamont",
+      "category": "Legal Aid",
+      "address": "10200 Main Avenue, Lamont  CA 93241",
+      "phone": "(661) 854-3839",
+      "website": "http://crla.org/",
+      "hours": ""
+    },
+    {
+      "name": "California Rural Legal Assistance, Inc. - Madera",
+      "category": "Legal Aid",
+      "address": "126 North B Street, Madera  CA 93638",
+      "phone": "559-674-5671",
+      "website": "http://www.crla.org",
+      "hours": ""
+    },
+    {
+      "name": "California Rural Legal Assistance, Inc. - Modesto",
+      "category": "Legal Aid",
+      "address": "1020 15th Street Suite 20, Modesto  CA 95354",
+      "phone": "209-577-3811",
+      "website": "http://crla.org",
+      "hours": ""
+    },
+    {
+      "name": "California Rural Legal Assistance, Inc - Oxnard",
+      "category": "Legal Aid",
+      "address": "338 South A Street, Oxnard  CA 93030",
+      "phone": "(805) 486 - 1068",
+      "website": "http://crla.org",
+      "hours": ""
+    },
+    {
+      "name": "California Rural Legal Assistance, Inc.- Salinas",
+      "category": "Legal Aid",
+      "address": "3 Williams Road, Salinas  CA 93905",
+      "phone": "(831) 757-5221",
+      "website": "https://crla.org/locations/salinas",
+      "hours": ""
+    },
+    {
+      "name": "California Rural Legal Assistance, Inc. - Santa Barbara",
+      "category": "Legal Aid",
+      "address": "22 N Milpas Street Suite F, Santa Barbara  CA 93103",
+      "phone": "(805) 963 - 5982",
+      "website": "http://crla.org",
+      "hours": ""
+    },
+    {
+      "name": "California Rural Legal Assistance, Inc. - Santa Clara",
+      "category": "Legal Aid",
+      "address": "1740 17th Avenue, Santa Cruz  CA 95062",
+      "phone": "(831) 724 - 2253",
+      "website": "http://crla.org",
+      "hours": ""
+    },
+    {
+      "name": "California Rural Legal Assistance, Inc.- Santa Maria",
+      "category": "Legal Aid",
+      "address": "2050 South Broadway Suite G, Santa Maria  CA 93454",
+      "phone": "(805) 922 - 4564",
+      "website": "http://crla.org",
+      "hours": ""
+    },
+    {
+      "name": "California Rural Legal Assistance, Inc. - Stockton",
+      "category": "Legal Aid",
+      "address": "9 S. El Dorado Street, Stockton  CA 95202",
+      "phone": "209-946-0605",
+      "website": "http://crla.org",
+      "hours": ""
+    },
+    {
+      "name": "California Rural Legal Assistance, Inc.- Vista",
+      "category": "Legal Aid",
+      "address": "640 Civic Center Drive #108, Vista  CA 92084",
+      "phone": "(760) 966 - 0511",
+      "website": "http://crla.org",
+      "hours": ""
+    },
+    {
+      "name": "California Rural Legal Assistance, Inc. - Watsonville",
+      "category": "Legal Aid",
+      "address": "21 Carr Street, Watsonville  CA 95076",
+      "phone": "(831) 724 - 2253",
+      "website": "http://crla.org",
+      "hours": ""
+    },
+    {
+      "name": "California Women's Law Center",
+      "category": "Legal Aid",
+      "address": "360 North Pacific Coast Hwy. Suite 2070, El Segundo  CA 90245",
+      "phone": "323-951-1041",
+      "website": "https://www.cwlc.org/",
+      "hours": ""
+    },
+    {
+      "name": "Canal Alliance",
+      "category": "Legal Aid",
+      "address": "91 Larkspur Street, San Rafael  CA 94901",
+      "phone": "(415) 454 - 2640",
+      "website": "https://www.canalalliance.org/get-started/",
+      "hours": ""
+    },
+    {
+      "name": "Capital Pro Bono",
+      "category": "Legal Aid",
+      "address": "1321 Howe Avenue, Suite 101, Sacramento  CA 95825",
+      "phone": "916-551-2102",
+      "website": "https://capitalprobono.org/",
+      "hours": ""
+    },
+    {
+      "name": "Carecen Central American Resource Center SF",
+      "category": "Legal Aid",
+      "address": "117 Market St., San Francisco  CA 94103",
+      "phone": "415-642-4400",
+      "website": "https://carecensf.org/",
+      "hours": ""
+    },
+    {
+      "name": "Casa Cornelia Law Center",
+      "category": "Legal Aid",
+      "address": "525 B Street Suite 1800, San Diego  CA 92101",
+      "phone": "619-231-7788",
+      "website": "http://casacornelia.org",
+      "hours": ""
+    },
+    {
+      "name": "Catholic Charities Diocese of Fresno - Bakersfield",
+      "category": "Legal Aid",
+      "address": "825 Chester Avenue, Bakersfield  CA 93301",
+      "phone": "(661) 281-2130",
+      "website": "https://catholiccharitiesca.org/agency/catholic-charities-diocese-of-fresno/#services-offered",
+      "hours": ""
+    },
+    {
+      "name": "Catholic Charities Diocese of Fresno - Fresno Headquarters",
+      "category": "Legal Aid",
+      "address": "149 North Fulton Street, Fresno  CA 93701",
+      "phone": "(559) 237-0851",
+      "website": "https://catholiccharitiesca.org/location/fresno-headquarters/",
+      "hours": ""
+    },
+    {
+      "name": "Catholic Charities Diocese of Fresno - Merced Office",
+      "category": "Legal Aid",
+      "address": "336 W. Main Street #1, Merced  CA 95340",
+      "phone": "(209) 383-2494",
+      "website": "https://catholiccharitiesca.org/agency/catholic-charities-diocese-of-fresno/",
+      "hours": ""
+    },
+    {
+      "name": "Catholic Charities of Los Angeles - Esperanza Immigrant Rights Project",
+      "category": "Legal Aid",
+      "address": "1530 James Wood Blvd, Los Angeles  CA 90015",
+      "phone": "(213) 251 - 3505",
+      "website": "http://esperanza-la.org",
+      "hours": ""
+    },
+    {
+      "name": "Catholic Charities of Los Angeles - Immigration & Refugee Services (Los Angeles Office)",
+      "category": "Legal Aid",
+      "address": "1531 James M Wood Blvd, Los Angeles  CA 90015",
+      "phone": "(213) 251 - 3411",
+      "website": "https://catholiccharitiesla.org/immigration-services/",
+      "hours": ""
+    },
+    {
+      "name": "Catholic Charities of Los Angeles - St. Margaret Center (Inglewood Office)",
+      "category": "Legal Aid",
+      "address": "10217 Inglewood Ave, Lennox  CA 90304",
+      "phone": "(310) 672-2208",
+      "website": "http://catholiccharitiesla.org",
+      "hours": ""
+    },
+    {
+      "name": "Catholic Charities of Monterey - Immigration & Citizenship (Salinas Office)",
+      "category": "Legal Aid",
+      "address": "1705 2nd Ave, Salinas  CA 93905",
+      "phone": "(831) 422 - 0602",
+      "website": "https://catholiccharitiesdom.org/contact-us/",
+      "hours": ""
+    },
+    {
+      "name": "Catholic Charities of Monterey - Support Services: Immigration & Citizenship (San Luis Obispo Office)",
+      "category": "Legal Aid",
+      "address": "3220 South Higuera Street Suite 225, San Luis Obispo  CA 93401",
+      "phone": "(805) 541 - 9110",
+      "website": "https://catholiccharitiesdom.org/",
+      "hours": ""
+    },
+    {
+      "name": "Catholic Charities of Monterey - Support Services: Immigration & Citizenship (Watsonville Office)",
+      "category": "Legal Aid",
+      "address": "656 Main Street, Watsonville  CA 95076",
+      "phone": "(831) 722 - 2675 ext. 4235",
+      "website": "https://catholiccharitiesdom.org/contact-us/",
+      "hours": ""
+    },
+    {
+      "name": "Catholic Charities of Orange County - Immigration, Citizenship Program",
+      "category": "Legal Aid",
+      "address": "1820 E 17th St, Santa Ana  CA 92705",
+      "phone": "(714) 347 - 9610",
+      "website": "https://ccoc.org/programs/human-services/immigration-citizenship-services",
+      "hours": ""
+    },
+    {
+      "name": "Catholic Charities of Sacramento, Inc. - Sacramento Food Bank & Family Services Immigration Legal Services",
+      "category": "Legal Aid",
+      "address": "1951 Bell Avenue, Sacramento  CA 95838",
+      "phone": "(916) 456-1980",
+      "website": "https://www.sacramentofoodbank.org/",
+      "hours": ""
+    },
+    {
+      "name": "Catholic Charities of San Bernardino - Refugee & Immigration Services (Moreno Valley Office)",
+      "category": "Legal Aid",
+      "address": "23623 Sunnymead Blvd Suite E, Moreno Valley  CA 92553",
+      "phone": "(909) 388-1239",
+      "website": "https://ccsbriv.org/",
+      "hours": ""
+    },
+    {
+      "name": "Catholic Charities of San Bernardino - Refugee & Immigration Services (San Bernardino Office)",
+      "category": "Legal Aid",
+      "address": "1859 Western Avenue, San Bernardino  CA 92405",
+      "phone": "909-880-3625",
+      "website": "https://ccsbriv.org/",
+      "hours": ""
+    },
+    {
+      "name": "Catholic Charities of San Diego - Immigrant Services (El Centro Office)",
+      "category": "Legal Aid",
+      "address": "250 W Orange Avenue, El Centro  CA 92243",
+      "phone": "(760) 370-3914",
+      "website": "https://www.ccdsd.org/immigrant-services",
+      "hours": ""
+    },
+    {
+      "name": "Catholic Charities of San Diego - Immigrant Services (San Diego Office)",
+      "category": "Legal Aid",
+      "address": "4575 B Mission Gorge Place, San Diego  CA 92120",
+      "phone": "(619) 287 - 1270",
+      "website": "https://www.ccdsd.org/immigrant-services",
+      "hours": ""
+    },
+    {
+      "name": "Catholic Charities of Santa Clara County - Immigration Legal Services",
+      "category": "Legal Aid",
+      "address": "2625 Zanker Road Suite 201, San Jose  CA 95134",
+      "phone": "(408) 468-0100",
+      "website": "https://www.ccscc.org/immigration-legal-services?locale=en",
+      "hours": ""
+    },
+    {
+      "name": "Catholic Charities of Santa Rosa - Immigration Program",
+      "category": "Legal Aid",
+      "address": "987 Airway Ct, Santa Rosa  CA 95403",
+      "phone": "707.578.6000",
+      "website": "https://www.srcharities.org/",
+      "hours": ""
+    },
+    {
+      "name": "Catholic Charities of Stockton - Immigration Legal Services",
+      "category": "Legal Aid",
+      "address": "1106 N. El Dorado St, Stockton  CA 95202",
+      "phone": "(209) 444-5900",
+      "website": "https://www.ccstockton.org/programs-services",
+      "hours": ""
+    },
+    {
+      "name": "Catholic Charities of the East Bay - Richmond",
+      "category": "Legal Aid",
+      "address": "217 Harbour Way, Richmond  CA 94804",
+      "phone": "510.234.5110",
+      "website": "https://www.cceb.org/immigration-legal-services/",
+      "hours": ""
+    },
+    {
+      "name": "Catholic Charities - Refugee & Immigrant Services (San Francisco Office)",
+      "category": "Legal Aid",
+      "address": "990 Eddy Street, San Francisco  CA 94109",
+      "phone": "415-972-1200",
+      "website": "http://catholiccharitiessf.org",
+      "hours": ""
+    },
+    {
+      "name": "Catholic Charities - Refugee & Immigrant Services (San Mateo Office)",
+      "category": "Legal Aid",
+      "address": "36 37th Avenue, San Mateo  CA 94403",
+      "phone": "(650) 295 - 2160",
+      "website": "https://catholiccharitiessf.org/",
+      "hours": ""
+    },
+    {
+      "name": "Catholic Social Services of Solano County (Vallejo Office)",
+      "category": "Legal Aid",
+      "address": "125 Corporate Place Suite A, Vallejo  CA 94590",
+      "phone": "(707) 644 - 8909",
+      "website": "https://www.ccyoso.org/",
+      "hours": ""
+    },
+    {
+      "name": "Center for Access to QDROs",
+      "category": "Legal Aid",
+      "address": "Riverside  CA 92501",
+      "phone": "(909) 686-1154",
+      "website": "https://qdrocenter.org/",
+      "hours": ""
+    },
+    {
+      "name": "Center for Employment Training - Immigration and Citizenship Program",
+      "category": "Legal Aid",
+      "address": "701 Vine St #115, San Jose  CA 95110",
+      "phone": "(408) 534 - 5451",
+      "website": "https://www.cet-icp.org/",
+      "hours": ""
+    },
+    {
+      "name": "Center for Gender & Refugee Studies - California",
+      "category": "Legal Aid",
+      "address": "200 McAllister St, San Francisco  CA 94102",
+      "phone": "(415) 565-4877",
+      "website": "https://cgrs.uclawsf.edu/about/cgrs-california",
+      "hours": ""
+    },
+    {
+      "name": "Center for Health Care Rights",
+      "category": "Legal Aid",
+      "address": "4601 Wilshire Boulevard Suite 160, Los Angeles  CA 90010",
+      "phone": "213-383-4519;",
+      "website": "https://healthcarerights.org/",
+      "hours": ""
+    },
+    {
+      "name": "Center for Workers' Rights",
+      "category": "Legal Aid",
+      "address": "2741 Fruitridge Road Suite 5, Sacramento  CA 95820",
+      "phone": "916-905-5857",
+      "website": "https://www.rightscenter.org/",
+      "hours": ""
+    },
+    {
+      "name": "Central American Resource Center (CARECEN) Los Angeles",
+      "category": "Legal Aid",
+      "address": "2845 West Seventh Street, Los Angeles  CA 90005",
+      "phone": "213-385-7800, ext. 136",
+      "website": "https://www.carecen-la.org/legal_services",
+      "hours": ""
+    },
+    {
+      "name": "Central American Resource Center (CARECEN) San Francisco",
+      "category": "Legal Aid",
+      "address": "3101 Mission St Suite 101, San Francisco  CA 94110",
+      "phone": "(415) 642 - 4400",
+      "website": "https://carecensf.org/programs/immigration-legal-program/",
+      "hours": ""
+    },
+    {
+      "name": "Central California Legal Services, Inc.",
+      "category": "Legal Aid",
+      "address": "2115 Kern Street Suite 200, Fresno  CA 93721",
+      "phone": "",
+      "website": "http://centralcallegal.org",
+      "hours": ""
+    },
+    {
+      "name": "Central California Legal Services - Merced",
+      "category": "Legal Aid",
+      "address": "1640 \"N\" Street, Suite 200, Merced  CA 95340",
+      "phone": "",
+      "website": "http://centralcallegal.org",
+      "hours": ""
+    },
+    {
+      "name": "Central California Legal Services - Visalia Office",
+      "category": "Legal Aid",
+      "address": "2025 W Feemster Avenue, Visalia  CA 93277",
+      "phone": "",
+      "website": "http://centralcallegal.org",
+      "hours": ""
+    },
+    {
+      "name": "Centro de Ayuda Legal para Inmigrantes (CALI)",
+      "category": "Legal Aid",
+      "address": "1125 Benton St, Santa Clara  CA 95050",
+      "phone": "(650) 938 - 4041",
+      "website": "http://cali-immigration.org",
+      "hours": ""
+    },
+    {
+      "name": "Centro Legal de la Raza",
+      "category": "Legal Aid",
+      "address": "3400 E. 12th St.,, Oakland  CA 94601",
+      "phone": "(510) 437 - 1554",
+      "website": "http://centrolegal.org",
+      "hours": ""
+    },
+    {
+      "name": "Chatsworth Family Law Facilitator",
+      "category": "Legal Aid",
+      "address": "9425 Penfield Ave Room 3101, Chatsworth  CA 91311",
+      "phone": "(818) 407 - 2274",
+      "website": "http://www.lacourt.org/division/familylaw/FL0115.aspx",
+      "hours": ""
+    },
+    {
+      "name": "Child Care Law Center",
+      "category": "Legal Aid",
+      "address": "Berkeley  CA 94701",
+      "phone": "415-558-8005",
+      "website": "https://www.childcarelaw.org/",
+      "hours": ""
+    },
+    {
+      "name": "Chula Vista Family Law Facilitator",
+      "category": "Legal Aid",
+      "address": "500 Third Avenue Room 300 (3rd floor), Chula Vista  CA 91910",
+      "phone": "(619) 746-6097",
+      "website": "https://flf.sdcourt.ca.gov/",
+      "hours": ""
+    },
+    {
+      "name": "Coalition for Humane Immigrant Rights of Los Angeles",
+      "category": "Legal Aid",
+      "address": "2533 West 3rd St Suite 101, Los Angeles  CA 90057",
+      "phone": "213-353-1333",
+      "website": "https://www.chirla.org/legal-immigration-services",
+      "hours": ""
+    },
+    {
+      "name": "Coalition to Abolish Slavery & Trafficking",
+      "category": "Legal Aid",
+      "address": "3580 Wilshire Blvd, #900-37, Los Angeles  CA 90070",
+      "phone": "213-365-1906",
+      "website": "http://castla.org",
+      "hours": ""
+    },
+    {
+      "name": "Coastside Hope",
+      "category": "Legal Aid",
+      "address": "248 Main St Suite 200, Half Moon Bay  CA 94019",
+      "phone": "(650) 726 - 9071",
+      "website": "http://coastsidehope.org/",
+      "hours": ""
+    },
+    {
+      "name": "Coloval",
+      "category": "Legal Aid",
+      "address": "6300 Wilshire Blvd Suite 1420, Los Angeles  CA 90048",
+      "phone": "866-322-8827",
+      "website": "https://www.primeattorneys.com/",
+      "hours": ""
+    },
+    {
+      "name": "Colusa County Small Claims Court",
+      "category": "Legal Aid",
+      "address": "547 Market Street, Courthouse Annex, Colusa  CA 95932",
+      "phone": "(530) 458-0598",
+      "website": "https://www.colusa.courts.ca.gov/divisions/small-claims",
+      "hours": ""
+    },
+    {
+      "name": "Colusa County Superior Court Family Law Facilitator",
+      "category": "Legal Aid",
+      "address": "547 Market Street Courthouse Annex, Colusa  CA 95932",
+      "phone": "(530) 458-0598",
+      "website": "http://www.colusa.courts.ca.gov/family.asp",
+      "hours": ""
+    },
+    {
+      "name": "Colusa County Superior Court Self-Help Center",
+      "category": "Legal Aid",
+      "address": "547 Market Street Courthouse Annex, Colusa  CA 95932",
+      "phone": "(530) 458 - 0598",
+      "website": "http://www.colusa.courts.ca.gov/self_help.asp",
+      "hours": ""
+    },
+    {
+      "name": "Community Lawyers Inc.",
+      "category": "Legal Aid",
+      "address": "216 East Compton Boulevard, Compton  CA 90221",
+      "phone": "310-635-8181",
+      "website": "",
+      "hours": ""
+    },
+    {
+      "name": "Community Legal Aid SoCal",
+      "category": "Legal Aid",
+      "address": "2101 N. Tustin Ave., Santa Ana  CA 92705",
+      "phone": "714-571-5200",
+      "website": "https://www.communitylegalsocal.org/",
+      "hours": ""
+    },
+    {
+      "name": "Community Legal Services in East Palo Alto",
+      "category": "Legal Aid",
+      "address": "1861 Bay Road, East Palo Alto  CA 94303",
+      "phone": "(650) 326 - 6440",
+      "website": "http://clsepa.org",
+      "hours": ""
+    },
+    {
+      "name": "Community Legal Services - McGeorge School of Law",
+      "category": "Legal Aid",
+      "address": "2925 34th St., Sacramento  CA 95817",
+      "phone": "(916) 340 - 6080",
+      "website": "https://law.pacific.edu/law/legal-clinics/community-legal-services",
+      "hours": ""
+    },
+    {
+      "name": "Community Overcoming Relationship Abuse (CORA)",
+      "category": "Legal Aid",
+      "address": "2211 Palm Avenue, San Mateo  CA 94403",
+      "phone": "(800) 300-1080",
+      "website": "http://corasupport.org",
+      "hours": ""
+    },
+    {
+      "name": "Compton Self-Help Center",
+      "category": "Legal Aid",
+      "address": "200 W Compton Blvd Room 200F, Compton  CA 90220",
+      "phone": "213-830-0845",
+      "website": "http://www.lacourt.org/selfhelp/resourcesandassistance/SH_RA001.aspx",
+      "hours": ""
+    },
+    {
+      "name": "Contra Costa County Bar Association Moderate Means Program",
+      "category": "Legal Aid",
+      "address": "2300 Clayton Road #520, Concord  CA 94520",
+      "phone": "(925) 686-6900",
+      "website": "http://www.cccba.org/community/find-a-lawyer/index.php",
+      "hours": ""
+    },
+    {
+      "name": "Contra Costa County Family Law Facilitator",
+      "category": "Legal Aid",
+      "address": "751 Pine Street Self-Help Desk, Martinez  CA 94553",
+      "phone": "(925) 608-1000",
+      "website": "http://www.cc-courts.org/family/flf.aspx",
+      "hours": ""
+    },
+    {
+      "name": "Contra Costa County Small Claims Advisor",
+      "category": "Legal Aid",
+      "address": "725 Court Street, Martinez  CA 94553",
+      "phone": "",
+      "website": "http://www.cc-courts.org/small-claims/small-claims.aspx",
+      "hours": ""
+    },
+    {
+      "name": "Contra Costa Public Defender: Clean Slate",
+      "category": "Legal Aid",
+      "address": "800 Ferry Street, Martinez  CA 94553",
+      "phone": "(925) 608-9600",
+      "website": "https://www.cocopublicdefenders.org/clean-slate",
+      "hours": ""
+    },
+    {
+      "name": "Contra Costa Senior Legal Services",
+      "category": "Legal Aid",
+      "address": "2702 Clayton Rd Ste 202, Concord  CA 94519",
+      "phone": "(925) 609 - 7900",
+      "website": "http://www.ccsls.org",
+      "hours": ""
+    },
+    {
+      "name": "Council on American-Islamic Relations - Immigrants' Rights Center",
+      "category": "Legal Aid",
+      "address": "2180 West Crescent Ave Suite F, Anaheim  CA 92801",
+      "phone": "(714) 776-1847",
+      "website": "https://ca.cair.com/",
+      "hours": ""
+    },
+    {
+      "name": "Del Norte County Self-Help Center",
+      "category": "Legal Aid",
+      "address": "450 H Street Room 209, Crescent City  CA 95531",
+      "phone": "(707) 465-8634",
+      "website": "https://www.delnorte.courts.ca.gov/self-help",
+      "hours": ""
+    },
+    {
+      "name": "Del Norte County Small Claims Court",
+      "category": "Legal Aid",
+      "address": "450 H Street, Room 209, Crescent City  CA 95531",
+      "phone": "(707) 464-8115",
+      "website": "https://www.delnorte.courts.ca.gov/divisions/civil-division",
+      "hours": ""
+    },
+    {
+      "name": "Disability Rights California - Bay Area",
+      "category": "Legal Aid",
+      "address": "1000 Broadway, Suite 395, Oakland  CA 94612",
+      "phone": "1-510-267-1200",
+      "website": "http://www.disabilityrightsca.org",
+      "hours": ""
+    },
+    {
+      "name": "Disability Rights California - California Office of Patients' Rights",
+      "category": "Legal Aid",
+      "address": "1831 K Street, Sacramento  CA 95811",
+      "phone": "1-916-504-5800",
+      "website": "https://www.disabilityrightsca.org/what-we-do/programs/california-office-of-patients-rights-copr",
+      "hours": ""
+    },
+    {
+      "name": "Disability Rights California - Fresno",
+      "category": "Legal Aid",
+      "address": "567 West Shaw Avenue Suite C-3, Fresno  CA 93704",
+      "phone": "1-559-476-2000",
+      "website": "http://www.disabilityrightsca.org",
+      "hours": ""
+    },
+    {
+      "name": "Disability Rights California - Los Angeles",
+      "category": "Legal Aid",
+      "address": "350 South Bixel Street, Suite 290, Los Angeles  CA 90017",
+      "phone": "1-213-213-8000",
+      "website": "http://www.disabilityrightsca.org",
+      "hours": ""
+    },
+    {
+      "name": "Disability Rights California - Office of Clients' Rights Advocacy",
+      "category": "Legal Aid",
+      "address": "1831 K Street, Sacramento  CA 95811",
+      "phone": "(800) 776-5746",
+      "website": "https://www.disabilityrightsca.org/what-we-do/programs/office-of-clients-rights-advocacy-ocra",
+      "hours": ""
+    },
+    {
+      "name": "Disability Rights California - San Diego",
+      "category": "Legal Aid",
+      "address": "530 B Street Suite 400, San Diego  CA 92101",
+      "phone": "1-619-239-7861",
+      "website": "http://www.disabilityrightsca.org",
+      "hours": ""
+    },
+    {
+      "name": "Disability Rights Education & Defense Fund (DREDF)",
+      "category": "Legal Aid",
+      "address": "3075 Adeline Street Suite 210, Berkeley  CA 94703",
+      "phone": "(510) 644 - 2555",
+      "website": "http://www.dredf.org",
+      "hours": ""
+    },
+    {
+      "name": "Disability Rights Legal Center",
+      "category": "Legal Aid",
+      "address": "700 S. Flower Street Suite 1000, Los Angeles  CA 90017",
+      "phone": "213.736.1031",
+      "website": "https://thedrlc.org/",
+      "hours": ""
+    },
+    {
+      "name": "Disability Rights Legal Center - Cancer Legal Resource Center",
+      "category": "Legal Aid",
+      "address": "1001 Wilshire Blvd. Suite B Suite 100,, Los Angeles  CA 90017",
+      "phone": "213.736.1031",
+      "website": "https://thedrlc.org/cancer/",
+      "hours": ""
+    },
+    {
+      "name": "Dolores Street Community Services Deportation Defense and Legal Advocacy Program",
+      "category": "Legal Aid",
+      "address": "938 Valencia Street, San Francisco  CA 94110",
+      "phone": "(415) 282 - 6209  ext. *129",
+      "website": "https://www.sfdeportdefense.org/immigrant-legal-services/",
+      "hours": ""
+    },
+    {
+      "name": "East Bay Community Law Center",
+      "category": "Legal Aid",
+      "address": "2921 Adeline Street, Berkeley  CA 94703",
+      "phone": "(510) 548 - 4040",
+      "website": "http://ebclc.org",
+      "hours": ""
+    },
+    {
+      "name": "East Bay Sanctuary Covenant",
+      "category": "Legal Aid",
+      "address": "2362 Bancroft Way, Berkeley  CA 94704",
+      "phone": "(510) 540 - 5296",
+      "website": "http://eastbaysanctuary.org",
+      "hours": ""
+    },
+    {
+      "name": "El Concilio - Council for the Spanish Speaking Immigration Legal Services",
+      "category": "Legal Aid",
+      "address": "445 North San Joaquin Street, Stockton  CA 95202",
+      "phone": "(209) 644 - 2600",
+      "website": "https://www.elconcilio.org/services/immigration-services/",
+      "hours": ""
+    },
+    {
+      "name": "El Concilio Family Services",
+      "category": "Legal Aid",
+      "address": "301 South C Street, Oxnard  CA 93030",
+      "phone": "(805) 486 - 9777",
+      "website": "http://elconciliofs.org/",
+      "hours": ""
+    },
+    {
+      "name": "Elder Law & Advocacy - Senior Legal Services Imperial County",
+      "category": "Legal Aid",
+      "address": "939 W. Main Street, Box 19 Basement, El Cerrito  CA 94530",
+      "phone": "(760) 353-0223",
+      "website": "https://elaca.org/",
+      "hours": ""
+    },
+    {
+      "name": "Elder Law & Advocacy - Senior Legal Services - San Diego",
+      "category": "Legal Aid",
+      "address": "5151 Murphy Canyon Road Suite 110, San Diego  CA 92123",
+      "phone": "(858) 565 - 1392",
+      "website": "https://elaca.org/",
+      "hours": ""
+    },
+    {
+      "name": "Elder Law and Disability Rights Center",
+      "category": "Legal Aid",
+      "address": "1535 E 17th St., Ste. 110, Santa Ana  CA 92705",
+      "phone": "(714) 617-5353",
+      "website": "https://eldrcenter.org/",
+      "hours": ""
+    },
+    {
+      "name": "El Dorado County Family Law Facilitator",
+      "category": "Legal Aid",
+      "address": "495 Main Street, Placerville  CA 95667",
+      "phone": "(530) 621 - 6433",
+      "website": "http://www.eldoradocourt.org/selfhelp/workshops-clinics.html",
+      "hours": ""
+    },
+    {
+      "name": "El Dorado County Self-Help Services",
+      "category": "Legal Aid",
+      "address": "495 Main Street, Placerville  CA 95667",
+      "phone": "",
+      "website": "https://www.eldorado.courts.ca.gov/self-help",
+      "hours": ""
+    },
+    {
+      "name": "El Dorado County Small Claims Court",
+      "category": "Legal Aid",
+      "address": "3321 Cameron Park Drive, Cameron Park  CA 95682",
+      "phone": "(530) 621-5098",
+      "website": "https://www.eldorado.courts.ca.gov/divisions/small-claims",
+      "hours": ""
+    },
+    {
+      "name": "El Rescate",
+      "category": "Legal Aid",
+      "address": "1605 W. Olympic Blvd. Suite 516, Los Angeles  CA 90057",
+      "phone": "(213) 387 - 3284",
+      "website": "http://www.elrescate.org/",
+      "hours": ""
+    },
+    {
+      "name": "Employee Rights Center - Immigration Program",
+      "category": "Legal Aid",
+      "address": "4161 Home Avenue, Suite 201, San Diego  CA 92105",
+      "phone": "(619) 521 - 1372",
+      "website": "https://weberc.net/immigration/",
+      "hours": ""
+    },
+    {
+      "name": "Episcopal Diocese of Los Angeles - Interfaith Refugee & Immigration Service",
+      "category": "Legal Aid",
+      "address": "3621 Brunswick Ave., Los Angeles  CA 90039",
+      "phone": "(323) 667 - 0489",
+      "website": "http://iris-la.org",
+      "hours": ""
+    },
+    {
+      "name": "Equal Rights Advocates",
+      "category": "Legal Aid",
+      "address": "1170 Market Street Suite 700, San Francisco  CA 94102",
+      "phone": "(415) 621 - 0672",
+      "website": "http://equalrights.org",
+      "hours": ""
+    },
+    {
+      "name": "Eviction Defense Collaborative",
+      "category": "Legal Aid",
+      "address": "976 Mission St., San Francisco  CA 94103",
+      "phone": "(415) 659-9184",
+      "website": "http://evictiondefense.org",
+      "hours": ""
+    },
+    {
+      "name": "Family & Children's Law Center",
+      "category": "Legal Aid",
+      "address": "1401 Los Gamos Drive Suite 200, San Rafael  CA 94903",
+      "phone": "(415) 492 - 9230",
+      "website": "http://www.faclc.org",
+      "hours": ""
+    }
+  ],
+  "fetch_211_resources": [],
+  "fetch_osm_resources": []
+}
