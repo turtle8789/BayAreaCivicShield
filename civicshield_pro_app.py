@@ -62,11 +62,7 @@ except Exception:
 
 
 # Optional imports with graceful fallback
-try:
-    import pytesseract
-    TESSERACT_AVAILABLE = True
-except ImportError:
-    TESSERACT_AVAILABLE = False
+
 
 try:
     from pdf2image import convert_from_bytes
