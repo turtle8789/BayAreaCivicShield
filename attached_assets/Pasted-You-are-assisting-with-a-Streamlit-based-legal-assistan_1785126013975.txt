@@ -1,0 +1,105 @@
+You are assisting with a Streamlit-based legal assistance app called CivicShield Pro. The app has multiple features: OCR extraction, legal document translation, resource finder (“Find Rights Near You”), deadline extraction, and QR code generation. The project runs on both Windows (local dev) and Linux (Streamlit Cloud). I need you to apply fixes directly to the codebase, especially the main file: civicshield_pro_app.py.
+
+IMPORTANT:
+- DO NOT modify the UI translation system.
+- DO NOT modify translate_for_user().
+- DO NOT modify UI_STRINGS or the dictionary-based translation system.
+- DO NOT modify get_translator().
+The UI translator works perfectly and must remain untouched.
+
+====================================================
+APP GOAL
+====================================================
+
+The app should:
+1. Let users upload legal documents (PDF or image).
+2. Extract text using OCR or embedded PDF text.
+3. Translate the extracted text into the user’s selected language.
+4. Extract deadlines, actions, dates, and penalties from the document.
+5. Show nearby legal resources (“Find Rights Near You”) based on user location.
+6. Generate QR codes for sharing extracted information.
+7. Translate the UI into multiple languages (this part already works).
+
+Fix anything broken. Stabilize anything fragile. Clean up anything duplicated.
+
+====================================================
+1. FIX LEGAL DOCUMENT TRANSLATION
+====================================================
+
+Add:
+
+def translate_extracted_text(extracted_text: str, target_lang: str) -> str:
+    if not extracted_text or extracted_text.strip() == "":
+        return "No text found to translate."
+    try:
+        return GoogleTranslator(source="auto", target=target_lang).translate(extracted_text)
+    except Exception as e:
+        return f"Translation failed: {e}"
+
+Replace translate_for_user(extracted_text, lang) with translate_extracted_text(extracted_text, lang).
+
+====================================================
+2. FIX OCR → TRANSLATION PIPELINE
+====================================================
+
+Use extract_text_from_uploaded_document(uploaded_file).
+Pass extracted text into translate_extracted_text().
+
+====================================================
+3. FIX LANGUAGE PROBLEMS
+====================================================
+
+Ensure all UI text goes through t(key) or translate_for_user().
+Ensure every page respects st.session_state["language"].
+Remove leftover hardcoded English strings.
+
+DO NOT modify the translator itself.
+
+====================================================
+4. FIX “FIND RIGHTS NEAR YOU”
+====================================================
+
+Pre-geocode resources at startup.
+Add fallback geocoding.
+Increase radius to 25 miles.
+Add debug logging.
+
+====================================================
+5. FIX DEADLINE & ACTION EXTRACTION
+====================================================
+
+Improve regex.
+Detect “within X days”.
+Detect uppercase headers.
+Merge fragmented OCR lines.
+Add debug logging.
+
+====================================================
+6. FIX QR CODE GENERATION
+====================================================
+
+Ensure qrcode.make() output is displayed.
+Remove placeholder text.
+
+====================================================
+7. FIX IMPORT ERRORS ON WINDOWS
+====================================================
+
+Wrap “import resource” in try/except.
+
+====================================================
+8. GENERAL CLEANUP
+====================================================
+
+Remove duplicate imports.
+Stabilize Tesseract path logic.
+Ensure UI translator is untouched.
+Fix broken features.
+Stabilize fragile code.
+
+====================================================
+APPLY ALL PATCHES DIRECTLY
+====================================================
+
+Do not just generate code. Actually modify the files.
+After applying all patches, summarize what changed.
