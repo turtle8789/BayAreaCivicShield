@@ -244,7 +244,7 @@ export default function SettingsScreen() {
           />
         </View>
 
-        {/* ── Guided Tour ── */}
+        {/* ── Guided Tour & QR ── */}
         <Text style={styles.sectionLabel} accessibilityRole="header">Tour & Help</Text>
         <View style={styles.card}>
           <SettingsRow
@@ -252,6 +252,13 @@ export default function SettingsScreen() {
             label="Guided Tour"
             description="Step-by-step walkthrough of every feature"
             onPress={() => { router.back(); setTimeout(() => router.push('/tour'), 300); }}
+          />
+          <View style={styles.divider} />
+          <SettingsRow
+            icon="grid"
+            label="Expo Go QR Code"
+            description="Scan to preview this app on your phone"
+            onPress={() => { router.back(); setTimeout(() => router.push('/qrcode-screen'), 300); }}
           />
         </View>
 

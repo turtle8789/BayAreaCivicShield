@@ -1,36 +1,39 @@
 import React from 'react';
-import { Platform, StyleSheet, useColorScheme, View } from 'react-native';
+import { Platform, StyleSheet, Text, useColorScheme, View } from 'react-native';
 import { useColors } from '@/hooks/useColors';
+import { useT } from '@/hooks/useTranslation';
 import { Feather } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { isLiquidGlassAvailable } from 'expo-glass-effect';
 import { Tabs } from 'expo-router';
-import { Icon, Label, NativeTabs } from 'expo-router/unstable-native-tabs';
+import { Icon, NativeTabs } from 'expo-router/unstable-native-tabs';
 import { SymbolView } from 'expo-symbols';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+// NativeTabLayout uses plain Text for labels so we can translate them
 function NativeTabLayout() {
+  const { t } = useT();
   return (
     <NativeTabs>
       <NativeTabs.Trigger name="index">
         <Icon sf={{ default: 'house', selected: 'house.fill' }} />
-        <Label>Home</Label>
+        <Text>{t('nav.home')}</Text>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="docs">
         <Icon sf={{ default: 'doc.text', selected: 'doc.text.fill' }} />
-        <Label>Docs</Label>
+        <Text>{t('nav.docs')}</Text>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="translate">
         <Icon sf={{ default: 'globe', selected: 'globe.fill' }} />
-        <Label>Translate</Label>
+        <Text>{t('nav.translate')}</Text>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="rights">
         <Icon sf={{ default: 'book', selected: 'book.fill' }} />
-        <Label>Rights</Label>
+        <Text>{t('nav.rights')}</Text>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="resources">
         <Icon sf={{ default: 'phone', selected: 'phone.fill' }} />
-        <Label>Resources</Label>
+        <Text>{t('nav.resources')}</Text>
       </NativeTabs.Trigger>
     </NativeTabs>
   );
@@ -38,6 +41,7 @@ function NativeTabLayout() {
 
 function ClassicTabLayout() {
   const colors = useColors();
+  const { t } = useT();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
   const isIOS = Platform.OS === 'ios';
@@ -68,10 +72,7 @@ function ClassicTabLayout() {
             />
           ) : isWeb ? (
             <View
-              style={[
-                StyleSheet.absoluteFill,
-                { backgroundColor: colors.background },
-              ]}
+              style={[StyleSheet.absoluteFill, { backgroundColor: colors.background }]}
             />
           ) : null,
         tabBarLabelStyle: {
@@ -83,61 +84,41 @@ function ClassicTabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
+          title: t('nav.home'),
           tabBarIcon: ({ color }) =>
-            isIOS ? (
-              <SymbolView name="house" tintColor={color} size={22} />
-            ) : (
-              <Feather name="home" size={22} color={color} />
-            ),
+            isIOS ? <SymbolView name="house" tintColor={color} size={22} /> : <Feather name="home" size={22} color={color} />,
         }}
       />
       <Tabs.Screen
         name="docs"
         options={{
-          title: 'Docs',
+          title: t('nav.docs'),
           tabBarIcon: ({ color }) =>
-            isIOS ? (
-              <SymbolView name="doc.text" tintColor={color} size={22} />
-            ) : (
-              <Feather name="file-text" size={22} color={color} />
-            ),
+            isIOS ? <SymbolView name="doc.text" tintColor={color} size={22} /> : <Feather name="file-text" size={22} color={color} />,
         }}
       />
       <Tabs.Screen
         name="translate"
         options={{
-          title: 'Translate',
+          title: t('nav.translate'),
           tabBarIcon: ({ color }) =>
-            isIOS ? (
-              <SymbolView name="globe" tintColor={color} size={22} />
-            ) : (
-              <Feather name="globe" size={22} color={color} />
-            ),
+            isIOS ? <SymbolView name="globe" tintColor={color} size={22} /> : <Feather name="globe" size={22} color={color} />,
         }}
       />
       <Tabs.Screen
         name="rights"
         options={{
-          title: 'Rights',
+          title: t('nav.rights'),
           tabBarIcon: ({ color }) =>
-            isIOS ? (
-              <SymbolView name="book" tintColor={color} size={22} />
-            ) : (
-              <Feather name="book-open" size={22} color={color} />
-            ),
+            isIOS ? <SymbolView name="book" tintColor={color} size={22} /> : <Feather name="book-open" size={22} color={color} />,
         }}
       />
       <Tabs.Screen
         name="resources"
         options={{
-          title: 'Resources',
+          title: t('nav.resources'),
           tabBarIcon: ({ color }) =>
-            isIOS ? (
-              <SymbolView name="phone" tintColor={color} size={22} />
-            ) : (
-              <Feather name="phone-call" size={22} color={color} />
-            ),
+            isIOS ? <SymbolView name="phone" tintColor={color} size={22} /> : <Feather name="phone-call" size={22} color={color} />,
         }}
       />
     </Tabs>

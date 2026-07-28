@@ -18,7 +18,7 @@ export const RIGHTS_CATEGORIES: RightsCategory[] = [
   {
     id: 'traffic',
     title: 'Traffic Stops',
-    icon: 'car',
+    icon: 'navigation',
     color: '#C97C5D',
     rights: [
       'You must show your license, registration, and proof of insurance.',

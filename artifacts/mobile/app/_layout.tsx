@@ -27,8 +27,9 @@ function RootLayoutNav() {
       <Stack.Screen name="log-list"      options={{ headerShown: false }} />
       <Stack.Screen name="settings"      options={{ headerShown: false, presentation: 'modal' }} />
       <Stack.Screen name="tour"          options={{ headerShown: false, presentation: 'modal' }} />
-      <Stack.Screen name="forum"         options={{ headerShown: false }} />
+      <Stack.Screen name="forum"           options={{ headerShown: false }} />
       <Stack.Screen name="resource-hub"  options={{ headerShown: false }} />
+      <Stack.Screen name="qrcode-screen" options={{ headerShown: false }} />
     </Stack>
   );
 }

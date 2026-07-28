@@ -57,6 +57,7 @@
   },
   "dependencies": {
     "expo-clipboard": "^8.0.8",
-    "expo-speech-recognition": "^56.0.1"
+    "expo-speech-recognition": "^56.0.1",
+    "react-native-qrcode-svg": "^6.3.21"
   }
 }
