@@ -479,7 +479,7 @@ export default function ResourcesScreen() {
     tabBtnText:        { fontSize: 13, fontFamily: 'Inter_500Medium', color: colors.mutedForeground },
     tabBtnTextActive:  { color: colors.primary, fontFamily: 'Inter_600SemiBold' },
     scroll:            { flex: 1 },
-    scrollContent:     { padding: 16, paddingBottom: Platform.OS === 'web' ? 34 : 100 },
+    scrollContent:     { padding: 16, paddingBottom: Platform.OS === 'web' ? 34 : 100, flexGrow: 1 },
     emergencyCard:     { backgroundColor: '#E05252', borderRadius: colors.radius, padding: 16, marginBottom: 16, flexDirection: 'row', alignItems: 'center', gap: 12 },
   });
 

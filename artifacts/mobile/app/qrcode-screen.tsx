@@ -77,7 +77,7 @@ export default function QRCodeScreen() {
         </Text>
       </View>
 
-      <ScrollView contentContainerStyle={{ padding: 24, alignItems: 'center' }}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 24, alignItems: 'center', flexGrow: 1 }}>
 
         {/* Subtitle */}
         <Text style={{ fontSize: 14, fontFamily: 'Inter_400Regular', color: colors.mutedForeground, textAlign: 'center', lineHeight: 21, marginBottom: 28 }}>

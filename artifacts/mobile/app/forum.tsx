@@ -164,7 +164,7 @@ function PostDetail({
         </View>
 
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-          <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 100 }} keyboardShouldPersistTaps="handled">
+          <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, paddingBottom: 100, flexGrow: 1 }} keyboardShouldPersistTaps="handled">
             <Text style={{ fontSize: fs(20), fontFamily: 'Inter_700Bold', color: colors.foreground, lineHeight: 27, marginBottom: 8 }}>
               {post.title}
             </Text>
@@ -292,7 +292,7 @@ function NewPostModal({
         </View>
 
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-          <ScrollView contentContainerStyle={{ padding: 16, gap: 12 }} keyboardShouldPersistTaps="handled">
+          <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, gap: 12, flexGrow: 1 }} keyboardShouldPersistTaps="handled">
             {/* Category */}
             <Text style={{ fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase', letterSpacing: 0.7, marginBottom: 4 }}>Category</Text>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 4 }}>
@@ -408,7 +408,7 @@ export default function ForumScreen() {
     filterText: { fontSize: fs(13), fontFamily: 'Inter_500Medium', color: colors.mutedForeground },
     filterTextActive: { color: colors.primary, fontFamily: 'Inter_600SemiBold' },
     scroll: { flex: 1 },
-    scrollContent: { padding: 16, paddingBottom: Platform.OS === 'web' ? 80 : 110 },
+    scrollContent: { padding: 16, paddingBottom: Platform.OS === 'web' ? 80 : 110, flexGrow: 1 },
     disclaimer: { backgroundColor: colors.muted, borderRadius: colors.radius, padding: 12, marginTop: 8 },
     disclaimerText: { fontSize: fs(11), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, lineHeight: 16 },
     emptyState: { alignItems: 'center', paddingVertical: 40, gap: 10 },

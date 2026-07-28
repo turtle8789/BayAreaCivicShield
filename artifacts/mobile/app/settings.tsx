@@ -109,7 +109,7 @@ export default function SettingsScreen() {
     },
     headerTitle: { flex: 1, fontSize: fs(20), fontFamily: 'Inter_700Bold', color: colors.foreground },
     scroll: { flex: 1 },
-    scrollContent: { paddingBottom: Platform.OS === 'web' ? 34 : 60 },
+    scrollContent: { paddingBottom: Platform.OS === 'web' ? 34 : 60, flexGrow: 1 },
     sectionLabel: {
       fontSize: fs(11), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground,
       textTransform: 'uppercase', letterSpacing: 0.8,

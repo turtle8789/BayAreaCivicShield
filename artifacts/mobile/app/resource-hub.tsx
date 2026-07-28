@@ -78,7 +78,7 @@ export default function ResourceHubScreen() {
     filterText: { fontSize: fs(12), fontFamily: 'Inter_500Medium', color: colors.mutedForeground },
     filterTextActive: { color: colors.primary, fontFamily: 'Inter_600SemiBold' },
     scroll:     { flex: 1 },
-    scrollContent: { padding: 16, paddingBottom: Platform.OS === 'web' ? 80 : 110 },
+    scrollContent: { padding: 16, paddingBottom: Platform.OS === 'web' ? 80 : 110, flexGrow: 1 },
     card:       { backgroundColor: colors.card, borderRadius: colors.radius, borderWidth: 1, borderColor: colors.border, marginBottom: 10, padding: 14 },
     cardTop:    { flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 8 },
     cardName:   { flex: 1, fontSize: fs(15), fontFamily: 'Inter_600SemiBold', color: colors.foreground, lineHeight: 21 },

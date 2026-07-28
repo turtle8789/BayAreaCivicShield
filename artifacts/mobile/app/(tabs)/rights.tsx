@@ -76,7 +76,7 @@ function RightsDetail({ category, onBack }: { category: RightsCategory; onBack: 
           {category.title}
         </Text>
       </View>
-      <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: Platform.OS === 'web' ? 34 : 24 }}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20, paddingBottom: Platform.OS === 'web' ? 34 : 24, flexGrow: 1 }}>
         {category.rights.map((right, i) => (
           <View key={i} style={{ flexDirection: 'row', gap: 12, marginBottom: 16 }}>
             <View style={{ width: 8, height: 8, borderRadius: 4, marginTop: 7, backgroundColor: category.color }} />
@@ -144,7 +144,7 @@ function QuizScreen({ onBack }: { onBack: () => void }) {
     header:           { paddingTop: topPad + 12, paddingHorizontal: 20, paddingBottom: 16, borderBottomWidth: 1, borderBottomColor: colors.border, flexDirection: 'row', alignItems: 'center', gap: 12 },
     headerTitle:      { flex: 1, fontSize: 20, fontFamily: 'Inter_700Bold', color: colors.foreground },
     progressText:     { fontSize: 14, fontFamily: 'Inter_500Medium', color: colors.mutedForeground },
-    scrollContent:    { padding: 20, paddingBottom: Platform.OS === 'web' ? 34 : 24 },
+    scrollContent:    { padding: 20, paddingBottom: Platform.OS === 'web' ? 34 : 24, flexGrow: 1 },
     progressBar:      { height: 5, backgroundColor: colors.muted, borderRadius: 3, marginBottom: 24 },
     progressFill:     { height: 5, backgroundColor: colors.primary, borderRadius: 3 },
     question:         { fontSize: 18, fontFamily: 'Inter_600SemiBold', color: colors.foreground, lineHeight: 26, marginBottom: 20 },
@@ -210,7 +210,7 @@ function QuizScreen({ onBack }: { onBack: () => void }) {
         <Text style={styles.progressText}>{currentIdx + 1}/{total}</Text>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Progress bar */}
         <View style={styles.progressBar}>
           <View style={[styles.progressFill, { width: `${progress * 100}%` as never }]} />
@@ -341,7 +341,8 @@ export default function RightsScreen() {
       </View>
 
       <ScrollView
-        contentContainerStyle={{ padding: 16, paddingBottom: Platform.OS === 'web' ? 34 : 24 }}
+        style={{ flex: 1 }}
+        contentContainerStyle={{ padding: 16, paddingBottom: Platform.OS === 'web' ? 34 : 24, flexGrow: 1 }}
         showsVerticalScrollIndicator={false}
       >
         {/* Quiz banner */}

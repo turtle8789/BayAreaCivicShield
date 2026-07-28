@@ -340,7 +340,7 @@ export default function DocsScreen() {
     subTabText: { fontSize: fs(14), fontFamily: 'Inter_500Medium', color: colors.mutedForeground },
     subTabTextActive: { color: colors.primary, fontFamily: 'Inter_600SemiBold' },
     scroll: { flex: 1 },
-    scrollContent: { padding: 16, paddingBottom: Platform.OS === 'web' ? 34 : 100 },
+    scrollContent: { padding: 16, paddingBottom: Platform.OS === 'web' ? 34 : 100, flexGrow: 1 },
     card: { backgroundColor: colors.card, borderRadius: colors.radius, borderWidth: 1, borderColor: colors.border, marginBottom: 12, overflow: 'hidden' },
     cardHeader: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, paddingTop: 12, marginBottom: 4, gap: 6 },
     cardLabel: { flex: 1, fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase', letterSpacing: 0.6 },

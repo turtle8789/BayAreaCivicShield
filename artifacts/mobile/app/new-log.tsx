@@ -98,6 +98,7 @@ export default function NewLogScreen() {
     scrollContent: {
       padding: 20,
       paddingBottom: Platform.OS === 'web' ? 34 : 40,
+      flexGrow: 1,
     },
     sectionLabel: {
       fontSize: 13,
