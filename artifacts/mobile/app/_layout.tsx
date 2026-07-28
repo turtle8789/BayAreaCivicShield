@@ -15,7 +15,6 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { AppProvider } from '@/context/AppContext';
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient();
@@ -34,6 +33,10 @@ function RootLayoutNav() {
       />
       <Stack.Screen
         name="settings"
+        options={{ headerShown: false, presentation: 'modal' }}
+      />
+      <Stack.Screen
+        name="tour"
         options={{ headerShown: false, presentation: 'modal' }}
       />
     </Stack>

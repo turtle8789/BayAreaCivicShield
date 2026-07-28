@@ -1,0 +1,1 @@
+- [CivicShield Pro architecture](civicshield-architecture.md) — Expo mobile-only app, no backend; all persistence via AsyncStorage; five context keys.
