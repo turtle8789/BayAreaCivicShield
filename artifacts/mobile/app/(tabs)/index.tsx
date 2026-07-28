@@ -17,40 +17,50 @@ import { LanguagePicker } from '@/components/LanguagePicker';
 import { useApp } from '@/context/AppContext';
 import { useColors } from '@/hooks/useColors';
 
+const HOME_DISCLAIMER =
+  '⚠️ Legal Disclaimer: CivicShield Pro provides general legal information and community-shared content for educational purposes only — not legal advice. Laws vary by jurisdiction and individual circumstances. Always consult a licensed attorney before making legal decisions. CivicShield Pro is not liable for actions taken based on this app\'s content.';
+
 export default function HomeScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
-  const { language, setLanguage, encounters, savedDeadlines, removeDeadline, clearDeadlines, fs } = useApp();
+  const {
+    language, setLanguage,
+    encounters,
+    savedDeadlines, removeDeadline, clearDeadlines,
+    forumPosts,
+    fs,
+  } = useApp();
   const [showLangPicker, setShowLangPicker] = useState(false);
 
-  const topPad = Platform.OS === 'web' ? 67 : insets.top;
+  const topPad    = Platform.OS === 'web' ? 67 : insets.top;
   const bottomPad = Platform.OS === 'web' ? 80 : insets.bottom + 80;
 
+  // ── Feature cards — every capability in the app ───────────────────────────
   const features = [
     {
       title: '📄 Document Analyzer',
-      description: 'Scan or paste legal text to extract deadlines, dates & penalties. Save to dashboard.',
+      description: 'Scan or paste legal text. Extract deadlines, dates & penalties. Save to dashboard.',
       iconName: 'file-text',
       accentColor: '#C9A050',
       route: '/(tabs)/docs',
     },
     {
       title: '🌐 Real-Time Translation',
-      description: 'Translate text or voice into 14 languages. Tap 🎤 to speak — works on iOS, Android & web.',
+      description: 'Translate text or voice into 14 languages. Tap 🎤 to speak — iOS, Android & web.',
       iconName: 'globe',
       accentColor: '#C97B8E',
       route: '/(tabs)/translate',
     },
     {
       title: '📚 Know Your Rights',
-      description: 'Civil rights for traffic stops, police encounters, arrests, immigration & more.',
+      description: 'Civil rights for traffic stops, arrests, immigration, home searches & more.',
       iconName: 'book-open',
       accentColor: '#A07888',
       route: '/(tabs)/rights',
     },
     {
       title: '📍 Find Legal Resources',
-      description: 'Locate nearby legal aid, hotlines & support organizations sorted by distance.',
+      description: 'Legal aid, hotlines & support organizations sorted by distance from you.',
       iconName: 'map-pin',
       accentColor: '#C9A050',
       route: '/(tabs)/resources',
@@ -61,6 +71,20 @@ export default function HomeScreen() {
       iconName: 'phone-call',
       accentColor: '#E05252',
       route: '/(tabs)/resources',
+    },
+    {
+      title: '💬 Community Forum',
+      description: `${forumPosts.length > 0 ? `${forumPosts.length} posts by you + ` : ''}7 community discussions — share experiences, ask questions, get advice.`,
+      iconName: 'message-circle',
+      accentColor: '#9B7EC9',
+      route: '/forum',
+    },
+    {
+      title: '📚 Resource Hub',
+      description: '25+ curated free legal aid links, civil rights orgs, housing, immigration & employment.',
+      iconName: 'book',
+      accentColor: '#5A9E6F',
+      route: '/resource-hub',
     },
     {
       title: '🗂️ Encounter Log',
@@ -76,161 +100,55 @@ export default function HomeScreen() {
   const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
     header: {
-      paddingTop: topPad + 8,
-      paddingHorizontal: 20,
-      paddingBottom: 12,
-      borderBottomWidth: 1,
-      borderBottomColor: colors.border,
+      paddingTop: topPad + 8, paddingHorizontal: 20, paddingBottom: 12,
+      borderBottomWidth: 1, borderBottomColor: colors.border,
       backgroundColor: colors.background,
     },
-    headerRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-    },
-    logoRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-    logoImage: { width: 40, height: 40, borderRadius: 8 },
-    appName: {
-      fontSize: fs(22),
-      fontFamily: 'Inter_700Bold',
-      color: colors.primary,
-      letterSpacing: -0.4,
-    },
-    tagline: {
-      fontSize: fs(12),
-      fontFamily: 'Inter_400Regular',
-      color: colors.mutedForeground,
-      marginTop: 1,
-    },
-    headerActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-    langBtn: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: colors.muted,
-      borderRadius: 20,
-      paddingHorizontal: 11,
-      paddingVertical: 6,
-      gap: 5,
-    },
-    langBtnText: {
-      fontSize: fs(12),
-      fontFamily: 'Inter_500Medium',
-      color: colors.foreground,
-    },
-    iconBtn: {
-      width: 34,
-      height: 34,
-      borderRadius: 17,
-      backgroundColor: colors.muted,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    scroll: { flex: 1 },
-    scrollContent: {
-      padding: 16,
-      paddingBottom: bottomPad,
-      flexGrow: 1,
-    },
+    headerRow:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+    logoRow:      { flexDirection: 'row', alignItems: 'center', gap: 10 },
+    logoImage:    { width: 40, height: 40, borderRadius: 8 },
+    appName:      { fontSize: fs(22), fontFamily: 'Inter_700Bold', color: colors.primary, letterSpacing: -0.4 },
+    tagline:      { fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginTop: 1 },
+    headerActions:{ flexDirection: 'row', alignItems: 'center', gap: 8 },
+    langBtn:      { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.muted, borderRadius: 20, paddingHorizontal: 11, paddingVertical: 6, gap: 5 },
+    langBtnText:  { fontSize: fs(12), fontFamily: 'Inter_500Medium', color: colors.foreground },
+    iconBtn:      { width: 34, height: 34, borderRadius: 17, backgroundColor: colors.muted, alignItems: 'center', justifyContent: 'center' },
+    // Settings row below the logo — more prominent
+    settingsRow:  { flexDirection: 'row', gap: 8, marginTop: 10 },
+    settingsChip: { flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: colors.muted, borderRadius: 20, paddingHorizontal: 11, paddingVertical: 6 },
+    settingsChipText: { fontSize: fs(12), fontFamily: 'Inter_500Medium', color: colors.mutedForeground },
 
-    // Deadline dashboard
-    deadlineSectionHeader: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      marginBottom: 8,
-    },
-    deadlineSectionTitle: {
-      fontSize: fs(12),
-      fontFamily: 'Inter_600SemiBold',
-      color: '#C9A050',
-      textTransform: 'uppercase',
-      letterSpacing: 0.8,
-    },
-    clearAllBtn: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-    clearAllText: {
-      fontSize: fs(12),
-      fontFamily: 'Inter_400Regular',
-      color: colors.mutedForeground,
-    },
-    deadlineCard: {
-      backgroundColor: '#C9A050' + '12',
-      borderRadius: colors.radius,
-      borderWidth: 1,
-      borderColor: '#C9A050' + '40',
-      padding: 12,
-      marginBottom: 8,
-      flexDirection: 'row',
-      alignItems: 'flex-start',
-      gap: 10,
-    },
-    deadlineText: {
-      flex: 1,
-      fontSize: fs(13),
-      fontFamily: 'Inter_500Medium',
-      color: colors.foreground,
-      lineHeight: 18,
-    },
-    deadlineSource: {
-      fontSize: fs(11),
-      fontFamily: 'Inter_400Regular',
-      color: colors.mutedForeground,
-      marginTop: 2,
-    },
+    scroll:        { flex: 1 },
+    scrollContent: { padding: 16, paddingBottom: bottomPad, flexGrow: 1 },
 
-    // Emergency banner
-    emergencyBanner: {
-      backgroundColor: '#E05252',
-      borderRadius: colors.radius,
-      flexDirection: 'row',
-      alignItems: 'center',
-      padding: 14,
-      marginBottom: 14,
-      gap: 10,
-    },
-    emergencyText: {
-      flex: 1,
-      fontSize: fs(14),
-      fontFamily: 'Inter_600SemiBold',
-      color: '#FFFFFF',
-    },
-    emergencyNumber: {
-      fontSize: fs(20),
-      fontFamily: 'Inter_700Bold',
-      color: '#FFFFFF',
-    },
+    // Deadlines
+    deadlineSectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },
+    deadlineSectionTitle:  { fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: '#C9A050', textTransform: 'uppercase', letterSpacing: 0.8 },
+    clearAllBtn:  { flexDirection: 'row', alignItems: 'center', gap: 4 },
+    clearAllText: { fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.mutedForeground },
+    deadlineCard: { backgroundColor: '#C9A050' + '12', borderRadius: colors.radius, borderWidth: 1, borderColor: '#C9A050' + '40', padding: 12, marginBottom: 8, flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
+    deadlineText: { flex: 1, fontSize: fs(13), fontFamily: 'Inter_500Medium', color: colors.foreground, lineHeight: 18 },
+    deadlineSource:{ fontSize: fs(11), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginTop: 2 },
 
-    // Tour button
-    tourBtn: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 8,
-      backgroundColor: '#C9A050' + '18',
-      borderRadius: colors.radius,
-      borderWidth: 1,
-      borderColor: '#C9A050' + '40',
-      padding: 12,
-      marginBottom: 14,
-    },
-    tourBtnText: {
-      flex: 1,
-      fontSize: fs(13),
-      fontFamily: 'Inter_500Medium',
-      color: '#C9A050',
-    },
+    // Emergency
+    emergencyBanner: { backgroundColor: '#E05252', borderRadius: colors.radius, flexDirection: 'row', alignItems: 'center', padding: 14, marginBottom: 14, gap: 10 },
+    emergencyText:   { flex: 1, fontSize: fs(14), fontFamily: 'Inter_600SemiBold', color: '#FFFFFF' },
+    emergencyNumber: { fontSize: fs(20), fontFamily: 'Inter_700Bold', color: '#FFFFFF' },
 
-    sectionTitle: {
-      fontSize: fs(12),
-      fontFamily: 'Inter_600SemiBold',
-      color: colors.mutedForeground,
-      textTransform: 'uppercase',
-      letterSpacing: 0.8,
-      marginBottom: 12,
-    },
+    // Tour
+    tourBtn:     { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#C9A050' + '18', borderRadius: colors.radius, borderWidth: 1, borderColor: '#C9A050' + '40', padding: 12, marginBottom: 14 },
+    tourBtnText: { flex: 1, fontSize: fs(13), fontFamily: 'Inter_500Medium', color: '#C9A050' },
+
+    sectionTitle: { fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 12 },
+
+    // Legal disclaimer
+    disclaimer:    { backgroundColor: colors.muted, borderRadius: colors.radius, padding: 14, marginTop: 8 },
+    disclaimerText:{ fontSize: fs(11), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, lineHeight: 17 },
   });
 
   return (
     <View style={styles.container}>
-      {/* Header */}
+      {/* ── Header ── */}
       <View style={styles.header}>
         <View style={styles.headerRow}>
           <View style={styles.logoRow}>
@@ -241,32 +159,51 @@ export default function HomeScreen() {
               accessibilityLabel="CivicShield Pro logo"
             />
             <View>
-              <Text style={styles.appName} accessibilityRole="header">
-                CivicShield Pro
-              </Text>
+              <Text style={styles.appName} accessibilityRole="header">CivicShield Pro</Text>
               <Text style={styles.tagline}>Know your rights. Stay protected.</Text>
             </View>
           </View>
-          <View style={styles.headerActions}>
-            <Pressable
-              style={styles.langBtn}
-              onPress={() => setShowLangPicker(true)}
-              accessibilityLabel={`Language: ${language.nativeName}`}
-              accessibilityRole="button"
-            >
-              <Feather name="globe" size={13} color={colors.primary} />
-              <Text style={styles.langBtnText}>{language.nativeName}</Text>
-              <Feather name="chevron-down" size={11} color={colors.mutedForeground} />
-            </Pressable>
-            <Pressable
-              style={styles.iconBtn}
-              onPress={() => router.push('/settings')}
-              accessibilityLabel="Settings"
-              accessibilityRole="button"
-            >
-              <Feather name="settings" size={16} color={colors.mutedForeground} />
-            </Pressable>
-          </View>
+          <Pressable
+            style={styles.langBtn}
+            onPress={() => setShowLangPicker(true)}
+            accessibilityLabel={`Language: ${language.nativeName}`}
+            accessibilityRole="button"
+          >
+            <Feather name="globe" size={13} color={colors.primary} />
+            <Text style={styles.langBtnText}>{language.nativeName}</Text>
+            <Feather name="chevron-down" size={11} color={colors.mutedForeground} />
+          </Pressable>
+        </View>
+
+        {/* Quick-access row — Settings + Accessibility prominent */}
+        <View style={styles.settingsRow}>
+          <Pressable
+            style={styles.settingsChip}
+            onPress={() => router.push('/settings')}
+            accessibilityLabel="Settings"
+            accessibilityRole="button"
+          >
+            <Feather name="settings" size={13} color={colors.mutedForeground} />
+            <Text style={styles.settingsChipText}>Settings</Text>
+          </Pressable>
+          <Pressable
+            style={styles.settingsChip}
+            onPress={() => router.push('/settings')}
+            accessibilityLabel="Accessibility settings"
+            accessibilityRole="button"
+          >
+            <Feather name="eye" size={13} color={colors.mutedForeground} />
+            <Text style={styles.settingsChipText}>Accessibility</Text>
+          </Pressable>
+          <Pressable
+            style={styles.settingsChip}
+            onPress={() => router.push('/tour')}
+            accessibilityLabel="Guided tour"
+            accessibilityRole="button"
+          >
+            <Feather name="compass" size={13} color="#C9A050" />
+            <Text style={[styles.settingsChipText, { color: '#C9A050' }]}>Tour</Text>
+          </Pressable>
         </View>
       </View>
 
@@ -288,10 +225,7 @@ export default function HomeScreen() {
               </View>
               <Pressable
                 style={styles.clearAllBtn}
-                onPress={() => {
-                  clearDeadlines();
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                }}
+                onPress={() => { clearDeadlines(); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
                 accessibilityLabel="Clear all saved deadlines"
                 accessibilityRole="button"
               >
@@ -300,33 +234,17 @@ export default function HomeScreen() {
               </Pressable>
             </View>
             {savedDeadlines.map((d) => (
-              <View
-                key={d.id}
-                style={styles.deadlineCard}
-                accessibilityLabel={`Saved deadline: ${d.text}`}
-              >
-                <Feather
-                  name="alert-circle"
-                  size={16}
-                  color="#C9A050"
-                  style={{ marginTop: 1 }}
-                />
+              <View key={d.id} style={styles.deadlineCard} accessibilityLabel={`Saved deadline: ${d.text}`}>
+                <Feather name="alert-circle" size={16} color="#C9A050" style={{ marginTop: 1 }} />
                 <View style={{ flex: 1 }}>
                   <Text style={styles.deadlineText}>{d.text}</Text>
                   <Text style={styles.deadlineSource}>
-                    {d.source} ·{' '}
-                    {new Date(d.savedAt).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                    })}
+                    {d.source} · {new Date(d.savedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                   </Text>
                 </View>
                 <Pressable
-                  onPress={() => {
-                    removeDeadline(d.id);
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  }}
-                  accessibilityLabel="Dismiss this deadline"
+                  onPress={() => { removeDeadline(d.id); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
+                  accessibilityLabel="Dismiss deadline"
                   accessibilityRole="button"
                   hitSlop={8}
                 >
@@ -341,7 +259,7 @@ export default function HomeScreen() {
         <Pressable
           style={styles.emergencyBanner}
           onPress={() => router.push('/(tabs)/resources')}
-          accessibilityLabel="Emergency services — call 911"
+          accessibilityLabel="Emergency — call 911"
           accessibilityRole="button"
         >
           <Feather name="alert-triangle" size={20} color="#FFFFFF" />
@@ -349,24 +267,8 @@ export default function HomeScreen() {
           <Text style={styles.emergencyNumber}>911</Text>
         </Pressable>
 
-        {/* ── Guided Tour button ── */}
-        <Pressable
-          style={styles.tourBtn}
-          onPress={() => router.push('/tour')}
-          accessibilityLabel="Start guided tour"
-          accessibilityRole="button"
-        >
-          <Feather name="compass" size={18} color="#C9A050" />
-          <Text style={styles.tourBtnText}>
-            🎓 Guided Tour — learn how to use CivicShield Pro
-          </Text>
-          <Feather name="chevron-right" size={16} color="#C9A050" />
-        </Pressable>
-
-        {/* ── Tools & Resources (includes Encounter Log) ── */}
-        <Text style={styles.sectionTitle} accessibilityRole="header">
-          Tools &amp; Resources
-        </Text>
+        {/* ── Tools & Resources — all features ── */}
+        <Text style={styles.sectionTitle} accessibilityRole="header">Tools &amp; Resources</Text>
 
         {features.map((f) => (
           <FeatureCard
@@ -378,6 +280,11 @@ export default function HomeScreen() {
             onPress={() => router.push(f.route as never)}
           />
         ))}
+
+        {/* ── Legal disclaimer ── */}
+        <View style={styles.disclaimer} accessibilityLabel="Legal disclaimer">
+          <Text style={styles.disclaimerText}>{HOME_DISCLAIMER}</Text>
+        </View>
       </ScrollView>
 
       <LanguagePicker

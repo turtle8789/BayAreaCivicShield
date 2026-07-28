@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { DEFAULT_LANGUAGE, Language } from '@/constants/languages';
+import { ForumPost, SEED_POSTS } from '@/constants/forum-data';
 
 // ─── Encounter types ─────────────────────────────────────────────────────────
 
@@ -35,9 +36,9 @@ export const ENCOUNTER_TYPE_LABELS: Record<EncounterType, string> = {
 
 export interface SavedDeadline {
   id: string;
-  text: string;        // the deadline text
-  source: string;      // "Document", filename, etc.
-  savedAt: string;     // ISO date
+  text: string;
+  source: string;
+  savedAt: string;
 }
 
 // ─── Accessibility / Settings ─────────────────────────────────────────────────
@@ -84,10 +85,15 @@ interface AppContextValue {
   removeDeadline: (id: string) => Promise<void>;
   clearDeadlines: () => Promise<void>;
 
+  // Forum (community discussion board)
+  forumPosts: ForumPost[];  // user-created posts only (seed posts come from constants)
+  addForumPost: (data: Omit<ForumPost, 'id' | 'helpfulCount' | 'markedHelpful' | 'isUserPost' | 'replies'>) => Promise<void>;
+  toggleForumHelpful: (postId: string) => void;
+
   // Accessibility
   fontSize: FontSizeLevel;
   setFontSize: (size: FontSizeLevel) => void;
-  fs: (base: number) => number; // scaled font size helper
+  fs: (base: number) => number;
   highContrast: boolean;
   setHighContrast: (v: boolean) => void;
 
@@ -96,14 +102,16 @@ interface AppContextValue {
   setTourCompleted: (v: boolean) => void;
 }
 
-// Exported so useColors can read highContrast without a hook
+// Exported so useColors can read highContrast without a circular-dep issue
 export const AppContext = createContext<AppContextValue | null>(null);
 
-const STORAGE_ENCOUNTERS     = 'civicshield_encounters';
-const STORAGE_DEADLINES      = 'civicshield_deadlines';
-const STORAGE_FONT_SIZE      = 'civicshield_fontsize';
-const STORAGE_TOUR           = 'civicshield_tour_done';
-const STORAGE_HIGH_CONTRAST  = 'civicshield_high_contrast';
+const STORAGE_ENCOUNTERS    = 'civicshield_encounters';
+const STORAGE_DEADLINES     = 'civicshield_deadlines';
+const STORAGE_FONT_SIZE     = 'civicshield_fontsize';
+const STORAGE_TOUR          = 'civicshield_tour_done';
+const STORAGE_HIGH_CONTRAST = 'civicshield_high_contrast';
+const STORAGE_FORUM_POSTS   = 'civicshield_forum_posts';
+const STORAGE_FORUM_HELPFUL = 'civicshield_forum_helpful'; // set of ids marked helpful
 
 // ─── Translation via free MyMemory API ───────────────────────────────────────
 
@@ -124,15 +132,17 @@ async function translateWithMyMemory(text: string, targetLang: string): Promise<
 // ─── Provider ─────────────────────────────────────────────────────────────────
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguageState] = useState<Language>(DEFAULT_LANGUAGE);
-  const [encounters, setEncounters] = useState<Encounter[]>([]);
-  const [isTranslating, setIsTranslating] = useState(false);
-  const [savedDeadlines, setSavedDeadlines] = useState<SavedDeadline[]>([]);
-  const [fontSize, setFontSizeState] = useState<FontSizeLevel>('medium');
-  const [highContrast, setHighContrastState] = useState(false);
-  const [tourCompleted, setTourCompletedState] = useState(false);
+  const [language, setLanguageState]         = useState<Language>(DEFAULT_LANGUAGE);
+  const [encounters, setEncounters]           = useState<Encounter[]>([]);
+  const [isTranslating, setIsTranslating]     = useState(false);
+  const [savedDeadlines, setSavedDeadlines]   = useState<SavedDeadline[]>([]);
+  const [forumPosts, setForumPosts]           = useState<ForumPost[]>([]);
+  const [helpfulIds, setHelpfulIds]           = useState<Set<string>>(new Set());
+  const [fontSize, setFontSizeState]          = useState<FontSizeLevel>('medium');
+  const [highContrast, setHighContrastState]  = useState(false);
+  const [tourCompleted, setTourCompletedState]= useState(false);
 
-  // Load persisted state on mount
+  // ── Hydrate from AsyncStorage ─────────────────────────────────────────────
   useEffect(() => {
     Promise.all([
       AsyncStorage.getItem(STORAGE_ENCOUNTERS),
@@ -140,12 +150,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       AsyncStorage.getItem(STORAGE_FONT_SIZE),
       AsyncStorage.getItem(STORAGE_TOUR),
       AsyncStorage.getItem(STORAGE_HIGH_CONTRAST),
-    ]).then(([enc, dead, font, tour, hc]) => {
-      if (enc)  setEncounters(JSON.parse(enc) as Encounter[]);
-      if (dead) setSavedDeadlines(JSON.parse(dead) as SavedDeadline[]);
-      if (font) setFontSizeState(font as FontSizeLevel);
-      if (tour) setTourCompletedState(tour === 'true');
-      if (hc)   setHighContrastState(hc === 'true');
+      AsyncStorage.getItem(STORAGE_FORUM_POSTS),
+      AsyncStorage.getItem(STORAGE_FORUM_HELPFUL),
+    ]).then(([enc, dead, font, tour, hc, forum, helpful]) => {
+      if (enc)     setEncounters(JSON.parse(enc) as Encounter[]);
+      if (dead)    setSavedDeadlines(JSON.parse(dead) as SavedDeadline[]);
+      if (font)    setFontSizeState(font as FontSizeLevel);
+      if (tour)    setTourCompletedState(tour === 'true');
+      if (hc)      setHighContrastState(hc === 'true');
+      if (forum)   setForumPosts(JSON.parse(forum) as ForumPost[]);
+      if (helpful) setHelpfulIds(new Set(JSON.parse(helpful) as string[]));
     }).catch(() => {});
   }, []);
 
@@ -202,6 +216,46 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     await AsyncStorage.removeItem(STORAGE_DEADLINES);
   }, []);
 
+  // ── Forum posts ───────────────────────────────────────────────────────────
+  const addForumPost = useCallback(async (
+    data: Omit<ForumPost, 'id' | 'helpfulCount' | 'markedHelpful' | 'isUserPost' | 'replies'>,
+  ) => {
+    const post: ForumPost = {
+      ...data,
+      id: `user_${Date.now()}`,
+      helpfulCount: 0,
+      markedHelpful: false,
+      isUserPost: true,
+      replies: [],
+    };
+    const updated = [post, ...forumPosts];
+    setForumPosts(updated);
+    await AsyncStorage.setItem(STORAGE_FORUM_POSTS, JSON.stringify(updated));
+  }, [forumPosts]);
+
+  // Toggle "helpful" for both seed posts and user posts (tracked by ID set)
+  const toggleForumHelpful = useCallback((postId: string) => {
+    const newIds = new Set(helpfulIds);
+    if (newIds.has(postId)) {
+      newIds.delete(postId);
+    } else {
+      newIds.add(postId);
+    }
+    setHelpfulIds(newIds);
+    AsyncStorage.setItem(STORAGE_FORUM_HELPFUL, JSON.stringify([...newIds])).catch(() => {});
+
+    // Also update count in user posts
+    setForumPosts((prev) => {
+      const updated = prev.map((p) =>
+        p.id === postId
+          ? { ...p, markedHelpful: !p.markedHelpful, helpfulCount: p.helpfulCount + (p.markedHelpful ? -1 : 1) }
+          : p,
+      );
+      AsyncStorage.setItem(STORAGE_FORUM_POSTS, JSON.stringify(updated)).catch(() => {});
+      return updated;
+    });
+  }, [helpfulIds]);
+
   // ── Accessibility ─────────────────────────────────────────────────────────
   const setFontSize = useCallback((size: FontSizeLevel) => {
     setFontSizeState(size);
@@ -221,6 +275,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     AsyncStorage.setItem(STORAGE_TOUR, v ? 'true' : 'false').catch(() => {});
   }, []);
 
+  // Merge helpfulIds into seed posts so markedHelpful reflects persisted state
+  const allForumPosts = forumPosts.map((p) => ({
+    ...p,
+    markedHelpful: helpfulIds.has(p.id),
+  }));
+
   return (
     <AppContext.Provider
       value={{
@@ -228,6 +288,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         encounters, addEncounter, deleteEncounter,
         translateText, isTranslating,
         savedDeadlines, addDeadline, removeDeadline, clearDeadlines,
+        forumPosts: allForumPosts, addForumPost, toggleForumHelpful,
         fontSize, setFontSize, fs,
         highContrast, setHighContrast,
         tourCompleted, setTourCompleted,

@@ -22,23 +22,13 @@ const queryClient = new QueryClient();
 function RootLayoutNav() {
   return (
     <Stack screenOptions={{ headerBackTitle: 'Back' }}>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen
-        name="new-log"
-        options={{ headerShown: false, presentation: 'modal' }}
-      />
-      <Stack.Screen
-        name="log-list"
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="settings"
-        options={{ headerShown: false, presentation: 'modal' }}
-      />
-      <Stack.Screen
-        name="tour"
-        options={{ headerShown: false, presentation: 'modal' }}
-      />
+      <Stack.Screen name="(tabs)"        options={{ headerShown: false }} />
+      <Stack.Screen name="new-log"       options={{ headerShown: false, presentation: 'modal' }} />
+      <Stack.Screen name="log-list"      options={{ headerShown: false }} />
+      <Stack.Screen name="settings"      options={{ headerShown: false, presentation: 'modal' }} />
+      <Stack.Screen name="tour"          options={{ headerShown: false, presentation: 'modal' }} />
+      <Stack.Screen name="forum"         options={{ headerShown: false }} />
+      <Stack.Screen name="resource-hub"  options={{ headerShown: false }} />
     </Stack>
   );
 }
@@ -52,9 +42,7 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    if (fontsLoaded || fontError) {
-      SplashScreen.hideAsync();
-    }
+    if (fontsLoaded || fontError) SplashScreen.hideAsync();
   }, [fontsLoaded, fontError]);
 
   if (!fontsLoaded && !fontError) return null;
