@@ -1,0 +1,268 @@
+CIVICSHIELD PRO — FULL FEATURE & UI DESCRIPTION (FOR REPLIT AI)
+
+CivicShield Pro is a multilingual legal assistance platform that helps users understand legal documents, extract deadlines, find local legal resources, generate QR codes, and navigate a clean, accessible interface. It combines translation, structured parsing, geolocation, and sharing tools into a single Streamlit-based app with a rich UI and multi-language support.
+
+====================================================
+1. DEMO MODE & GUIDED TOUR
+====================================================
+
+DEMO MODE:
+- Toggle: 🎬 DEMO ON
+- Loads sample legal content, deadlines, summaries, and resource results.
+- Allows users to explore all features safely with mock data.
+- Sidebar clearly indicates: “Demo Mode Active — Sample data is displayed.”
+
+GUIDED TOUR:
+- Triggered via 🎓 Tour or ❓ Quick Tour.
+- Walks users through:
+  - Uploading documents
+  - Translating content
+  - Extracting deadlines
+  - Finding local resources
+  - Generating QR codes
+  - Sharing information
+- Uses step-by-step explanations and highlighted UI elements.
+
+====================================================
+2. QR CODE GENERATION
+====================================================
+
+- Generates QR codes from:
+  - Extracted text
+  - Deadlines
+  - Resource lists
+  - Translated summaries
+- Displays QR codes directly in the UI.
+- Allows saving or scanning the QR code.
+- Progress messages: “Generating QR code…”
+- Error handling: “QR code generation failed.”
+
+====================================================
+3. LEGAL DOCUMENT TRANSLATION (CONTENT ONLY)
+====================================================
+
+Supported languages for document translation include:
+- English
+- Spanish
+- Telugu
+- Punjabi
+- Hindi
+- Arabic
+- French
+- Chinese (Simplified)
+- Tagalog
+- Portuguese
+- Bengali
+- Tamil
+- Urdu
+- (Expandable to any language supported by the translation backend)
+
+Features:
+- Dedicated translation function separate from UI translation.
+- Handles long paragraphs and legal phrasing.
+- Fallback messages:
+  - “Translation failed.”
+  - “No text found to translate.”
+
+====================================================
+4. DEADLINE & DATE EXTRACTION
+====================================================
+
+Detects:
+- Court deadlines
+- Filing dates
+- Response windows
+- “Within X days” phrasing
+- Penalties
+- Required actions
+- Hearing dates
+- Notice periods
+
+Logic:
+- Regex for MM/DD/YYYY, Month DD, YYYY, DD Month YYYY
+- Detects uppercase legal headers
+- Merges fragmented lines before parsing
+
+Outputs:
+- Deadline
+- Action Required
+- Penalty
+- Notes
+
+====================================================
+5. “FIND RIGHTS NEAR YOU” — LOCAL RESOURCE FINDER
+====================================================
+
+Features:
+- Accepts city, ZIP code, or full address.
+- Matches against a database of:
+  - Legal aid offices
+  - Tenant rights groups
+  - Immigration support centers
+  - Domestic violence hotlines
+  - Court self-help centers
+- Uses geocoded coordinates to compute distance.
+
+Displays:
+- Name
+- Address
+- Phone
+- Website
+- Distance
+- Directions (Google Maps link)
+
+UI:
+- Search input
+- Radius selector
+- Results list
+- Directions/contact buttons
+
+Errors:
+- “No resources found.”
+- “Invalid address.”
+- “Geocoding failed.”
+
+====================================================
+6. AUDIO FEATURES
+====================================================
+
+- Text-to-speech for legal summaries
+- Audio playback for advice/explanations
+- Speech-to-text for user notes or officer statements
+
+UI:
+- Microphone icon
+- Speaker icon
+- Play/pause controls
+
+====================================================
+7. ACCESSIBILITY FEATURES
+====================================================
+
+- Adjustable font size
+- High-contrast mode
+- Screen reader-friendly text
+- Clear iconography
+- Emoji-enhanced labels
+- Simple, linear navigation
+
+Examples:
+- 🔇 Screen Reader OFF
+- Clear language-change error messages
+
+====================================================
+8. FULL UI TRANSLATION SYSTEM (MULTILINGUAL INTERFACE)
+====================================================
+
+Supported UI languages:
+- English
+- Spanish
+- Telugu
+- Punjabi
+- Hindi
+- Arabic
+- French
+- Chinese (Simplified)
+- Tagalog
+- Portuguese
+- Bengali
+- Tamil
+- Urdu
+- (Expandable via UI_STRINGS dictionary)
+
+Behavior:
+- All UI text stored in UI_STRINGS.
+- Uses t(key) and translate_for_user() for UI.
+- st.session_state["language"] controls active UI language.
+- Changing language updates:
+  - Buttons
+  - Labels
+  - Headings
+  - Instructions
+  - Error messages
+  - Sidebar items
+
+Examples of translatable UI strings:
+- 🚀 Launch App
+- 📺 Start Demo
+- ❓ Quick Tour
+- 📱 Share with Others
+- ⬅️ Previous
+- Key Features
+- Find Rights Near You
+
+====================================================
+9. ICONS, COLORS & VISUAL DESIGN
+====================================================
+
+Icons:
+- 🚀 Launch App
+- 📺 Demo
+- 🎓 Tour
+- ❓ Help
+- 📱 Share
+- ⬅️ Back
+- 🔇 Screen Reader
+- 🎬 Demo Mode
+- 📄 Document Upload
+- 🌐 Translation
+- 📍 Location
+- 🗂️ Resources
+- 🧾 Deadlines
+- 🔍 Extract
+
+Color Palette:
+- Dusty Rose (primary accent)
+- Soft neutral backgrounds
+- High-contrast black/white text
+- Accent colors:
+  - Blue (actions)
+  - Green (success)
+  - Red (errors)
+  - Yellow (warnings)
+
+Layout:
+- Sidebar navigation
+- Central content area
+- Card-style components
+- Emoji-enhanced labels
+
+====================================================
+10. APP STRUCTURE
+====================================================
+
+Main Pages:
+- Home
+- Document Upload
+- Translation
+- Deadlines
+- Resource Finder
+- QR Generator
+- Audio Tools
+- Settings
+- Demo Mode
+- Guided Tour
+
+Core Modules:
+- Translation pipeline (document content)
+- Deadline extraction logic
+- Resource database + geocoding
+- UI translation system (UI_STRINGS, t(key))
+- QR code generator
+- Audio utilities
+
+====================================================
+FINAL SUMMARY (FOR REPLIT AI)
+====================================================
+
+CivicShield Pro is a multilingual legal assistance app with:
+- Demo mode + guided tour
+- Legal document translation into many languages
+- Deadline and action extraction
+- Local resource finder (“Find Rights Near You”)
+- QR code generation
+- Audio features
+- Full UI translation system across many languages
+- Modern icons, dusty rose aesthetic, and clean Streamlit layout
+
+Use this description to understand the app’s purpose, structure, UI, language system, and feature set when analyzing or modifying the codebase.

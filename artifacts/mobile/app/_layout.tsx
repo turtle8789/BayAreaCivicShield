@@ -28,6 +28,14 @@ function RootLayoutNav() {
         name="new-log"
         options={{ headerShown: false, presentation: 'modal' }}
       />
+      <Stack.Screen
+        name="log-list"
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="settings"
+        options={{ headerShown: false, presentation: 'modal' }}
+      />
     </Stack>
   );
 }

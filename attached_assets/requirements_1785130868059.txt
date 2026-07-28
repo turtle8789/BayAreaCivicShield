@@ -1,0 +1,72 @@
+# CivicShield Pro - Production Dependencies
+# Last Updated: 2024
+
+# ============================================================================
+# CORE WEB FRAMEWORK
+# ============================================================================
+streamlit
+# Purpose: Web application framework, handles UI rendering, session management
+# Features: Fast multi-page apps, real-time updates, interactive components
+# Docs: https://docs.streamlit.io
+
+# ============================================================================
+# TRANSLATION & LANGUAGE PROCESSING
+# ============================================================================
+deep-translator==1.11.4
+# Purpose: Google Translate API wrapper for 14+ language support
+# Features: No API key required, fast translation, easy language switching
+# Docs: https://github.com/nidhaloff/deep_translator
+
+# ============================================================================
+# AUDIO & SPEECH PROCESSING
+# ============================================================================
+gTTS==2.4.0
+# Purpose: Google Text-to-Speech for audio generation
+# Features: Free, no API key, supports all 14 target languages
+# Lightweight and Streamlit-Cloud compatible
+# Docs: https://github.com/pndurette/gTTS
+
+SpeechRecognition
+# Purpose: Google Speech-to-Text recognition
+# Features: Audio processing, transcription, works with multiple audio formats
+# Docs: https://github.com/Uberi/speech_recognition
+
+# ============================================================================
+# MICROPHONE & AUDIO RECORDING
+# ============================================================================
+streamlit-mic-recorder==0.0.8
+# Purpose: Browser-based microphone recording for Streamlit
+# Features: Real-time recording UI, WAV format output
+# Docs: https://github.com/stefanrmmr/streamlit-mic-recorder
+
+# ============================================================================
+# DOCUMENT PROCESSING & OCR
+# ============================================================================
+# Note: Document processing uses mock data for Streamlit Cloud compatibility
+# pytesseract (REMOVED - requires Tesseract system binary)
+# pdf2image (REMOVED - requires poppler system binary)
+
+Pillow
+# Purpose: Python Image Library for image processing
+# Features: Image manipulation, format conversion, filtering
+# Docs: https://pillow.readthedocs.io/
+
+qrcode==7.4.2
+# Purpose: QR code generator for shareable links
+# Features: Generate QR codes as images, customizable designs
+# Docs: https://github.com/lincolnloop/python-qrcode
+
+# ============================================================================
+# DEPLOYMENT & PRODUCTION
+# ============================================================================
+python-dotenv==1.0.0
+# Purpose: Environment variable management for secure credential storage
+# Features: Load .env files, protect API keys and sensitive data
+
+# ============================================================================
+# PYTHON VERSION REQUIREMENT
+# ============================================================================
+# Python 3.8 or higher required
+# Recommended: Python 3.9, 3.10, or 3.11
+pytesseract
+Pillow

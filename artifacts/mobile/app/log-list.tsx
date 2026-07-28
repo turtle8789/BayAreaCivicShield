@@ -30,6 +30,20 @@ function EncounterCard({ encounter, onDelete }: { encounter: Encounter; onDelete
     minute: '2-digit',
   });
 
+  const handleDelete = () => {
+    Alert.alert('Delete Encounter', 'Are you sure you want to delete this log entry?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+          onDelete();
+        },
+      },
+    ]);
+  };
+
   const styles = StyleSheet.create({
     card: {
       backgroundColor: colors.card,
@@ -51,29 +65,8 @@ function EncounterCard({ encounter, onDelete }: { encounter: Encounter; onDelete
       borderRadius: 5,
       backgroundColor: colors.primary,
     },
-    headerText: {
-      flex: 1,
-    },
-    typeLabel: {
-      fontSize: 15,
-      fontFamily: 'Inter_600SemiBold',
-      color: colors.foreground,
-    },
-    dateRow: {
-      flexDirection: 'row',
-      gap: 6,
-      marginTop: 2,
-    },
-    dateText: {
-      fontSize: 12,
-      fontFamily: 'Inter_400Regular',
-      color: colors.mutedForeground,
-    },
-    location: {
-      fontSize: 12,
-      fontFamily: 'Inter_400Regular',
-      color: colors.mutedForeground,
-    },
+    typeLabel: { fontSize: 15, fontFamily: 'Inter_600SemiBold', color: colors.foreground },
+    dateText: { fontSize: 12, fontFamily: 'Inter_400Regular', color: colors.mutedForeground },
     expandedSection: {
       borderTopWidth: 1,
       borderTopColor: colors.border,
@@ -94,11 +87,6 @@ function EncounterCard({ encounter, onDelete }: { encounter: Encounter; onDelete
       color: colors.foreground,
       lineHeight: 20,
     },
-    actionRow: {
-      flexDirection: 'row',
-      gap: 8,
-      marginTop: 4,
-    },
     deleteBtn: {
       flex: 1,
       flexDirection: 'row',
@@ -111,43 +99,24 @@ function EncounterCard({ encounter, onDelete }: { encounter: Encounter; onDelete
       borderWidth: 1,
       borderColor: colors.destructive + '25',
     },
-    deleteBtnText: {
-      fontSize: 13,
-      fontFamily: 'Inter_500Medium',
-      color: colors.destructive,
-    },
   });
-
-  const handleDelete = () => {
-    Alert.alert(
-      'Delete Encounter',
-      'Are you sure you want to delete this log entry?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => {
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-            onDelete();
-          },
-        },
-      ],
-    );
-  };
 
   return (
     <View style={styles.card}>
       <Pressable style={styles.cardHeader} onPress={() => setExpanded(!expanded)}>
         <View style={styles.typeDot} />
-        <View style={styles.headerText}>
+        <View style={{ flex: 1 }}>
           <Text style={styles.typeLabel}>{ENCOUNTER_TYPE_LABELS[encounter.type]}</Text>
-          <View style={styles.dateRow}>
+          <View style={{ flexDirection: 'row', gap: 6, marginTop: 2 }}>
             <Text style={styles.dateText}>{formattedDate} at {formattedTime}</Text>
             {encounter.location ? <Text style={styles.dateText}>· {encounter.location}</Text> : null}
           </View>
         </View>
-        <Feather name={expanded ? 'chevron-up' : 'chevron-down'} size={18} color={colors.mutedForeground} />
+        <Feather
+          name={expanded ? 'chevron-up' : 'chevron-down'}
+          size={18}
+          color={colors.mutedForeground}
+        />
       </Pressable>
 
       {expanded && (
@@ -158,25 +127,24 @@ function EncounterCard({ encounter, onDelete }: { encounter: Encounter; onDelete
               <Text style={styles.fieldValue}>{encounter.officerInfo}</Text>
             </View>
           ) : null}
-
           {encounter.description ? (
             <View>
               <Text style={styles.fieldLabel}>Description</Text>
               <Text style={styles.fieldValue}>{encounter.description}</Text>
             </View>
           ) : null}
-
           {encounter.outcome ? (
             <View>
               <Text style={styles.fieldLabel}>Outcome</Text>
               <Text style={styles.fieldValue}>{encounter.outcome}</Text>
             </View>
           ) : null}
-
-          <View style={styles.actionRow}>
+          <View style={{ flexDirection: 'row', marginTop: 4 }}>
             <Pressable style={styles.deleteBtn} onPress={handleDelete}>
               <Feather name="trash-2" size={14} color={colors.destructive} />
-              <Text style={styles.deleteBtnText}>Delete</Text>
+              <Text style={{ fontSize: 13, fontFamily: 'Inter_500Medium', color: colors.destructive }}>
+                Delete
+              </Text>
             </Pressable>
           </View>
         </View>
@@ -185,18 +153,20 @@ function EncounterCard({ encounter, onDelete }: { encounter: Encounter; onDelete
   );
 }
 
-export default function LogScreen() {
+export default function LogListScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const topPad = Platform.OS === 'web' ? 67 : insets.top;
   const bottomPad = Platform.OS === 'web' ? 34 : insets.bottom;
   const { encounters, deleteEncounter } = useApp();
 
+  const navigateToNew = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    router.push('/new-log');
+  };
+
   const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: colors.background,
-    },
+    container: { flex: 1, backgroundColor: colors.background },
     header: {
       paddingTop: topPad + 12,
       paddingHorizontal: 20,
@@ -204,17 +174,12 @@ export default function LogScreen() {
       borderBottomWidth: 1,
       borderBottomColor: colors.border,
       flexDirection: 'row',
-      alignItems: 'flex-end',
-      justifyContent: 'space-between',
+      alignItems: 'center',
+      gap: 12,
     },
-    headerLeft: {
-      flex: 1,
-    },
-    headerTitle: {
-      fontSize: 22,
-      fontFamily: 'Inter_700Bold',
-      color: colors.foreground,
-    },
+    backBtn: { padding: 2 },
+    headerLeft: { flex: 1 },
+    headerTitle: { fontSize: 22, fontFamily: 'Inter_700Bold', color: colors.foreground },
     headerSub: {
       fontSize: 13,
       fontFamily: 'Inter_400Regular',
@@ -229,9 +194,14 @@ export default function LogScreen() {
       alignItems: 'center',
       justifyContent: 'center',
     },
-    listContent: {
-      padding: 16,
-      paddingBottom: bottomPad + 16,
+    listContent: { padding: 16, paddingBottom: bottomPad + 24 },
+    countText: {
+      fontSize: 13,
+      fontFamily: 'Inter_400Regular',
+      color: colors.mutedForeground,
+      paddingHorizontal: 16,
+      paddingTop: 12,
+      paddingBottom: 4,
     },
     emptyWrap: {
       alignItems: 'center',
@@ -247,11 +217,7 @@ export default function LogScreen() {
       alignItems: 'center',
       justifyContent: 'center',
     },
-    emptyTitle: {
-      fontSize: 17,
-      fontFamily: 'Inter_600SemiBold',
-      color: colors.foreground,
-    },
+    emptyTitle: { fontSize: 17, fontFamily: 'Inter_600SemiBold', color: colors.foreground },
     emptyText: {
       fontSize: 14,
       fontFamily: 'Inter_400Regular',
@@ -269,82 +235,77 @@ export default function LogScreen() {
       alignItems: 'center',
       gap: 8,
     },
-    emptyBtnText: {
-      fontSize: 15,
-      fontFamily: 'Inter_600SemiBold',
-      color: colors.primaryForeground,
+    emptyBtnText: { fontSize: 15, fontFamily: 'Inter_600SemiBold', color: colors.primaryForeground },
+    privacyNote: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      backgroundColor: colors.muted,
+      borderRadius: 10,
+      padding: 10,
+      marginHorizontal: 16,
+      marginTop: 8,
     },
-    countText: {
-      fontSize: 13,
+    privacyText: {
+      flex: 1,
+      fontSize: 12,
       fontFamily: 'Inter_400Regular',
       color: colors.mutedForeground,
-      paddingHorizontal: 16,
-      paddingTop: 12,
-      paddingBottom: 4,
     },
   });
-
-  const navigateToNew = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    router.push('/new-log');
-  };
-
-  if (encounters.length === 0) {
-    return (
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <View style={styles.headerLeft}>
-            <Text style={styles.headerTitle}>Encounter Log</Text>
-            <Text style={styles.headerSub}>Document police interactions</Text>
-          </View>
-          <Pressable style={styles.addBtn} onPress={navigateToNew}>
-            <Feather name="plus" size={22} color="#FFFFFF" />
-          </Pressable>
-        </View>
-        <View style={styles.emptyWrap}>
-          <View style={styles.emptyIcon}>
-            <Feather name="clipboard" size={30} color={colors.mutedForeground} />
-          </View>
-          <Text style={styles.emptyTitle}>No encounters logged</Text>
-          <Text style={styles.emptyText}>
-            Document police interactions to protect yourself and your community. All records stay on your device.
-          </Text>
-          <Pressable style={styles.emptyBtn} onPress={navigateToNew}>
-            <Feather name="plus" size={16} color={colors.primaryForeground} />
-            <Text style={styles.emptyBtnText}>Log First Encounter</Text>
-          </Pressable>
-        </View>
-      </View>
-    );
-  }
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
+        <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={12}>
+          <Feather name="arrow-left" size={22} color={colors.foreground} />
+        </Pressable>
         <View style={styles.headerLeft}>
-          <Text style={styles.headerTitle}>Encounter Log</Text>
-          <Text style={styles.headerSub}>Document police interactions</Text>
+          <Text style={styles.headerTitle}>🗂️ Encounter Log</Text>
+          <Text style={styles.headerSub}>Private · stored on this device only</Text>
         </View>
         <Pressable style={styles.addBtn} onPress={navigateToNew}>
           <Feather name="plus" size={22} color="#FFFFFF" />
         </Pressable>
       </View>
 
-      <Text style={styles.countText}>{encounters.length} {encounters.length === 1 ? 'entry' : 'entries'}</Text>
-
-      <FlatList
-        data={encounters}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContent}
-        renderItem={({ item }) => (
-          <EncounterCard
-            encounter={item}
-            onDelete={() => deleteEncounter(item.id)}
+      {encounters.length === 0 ? (
+        <View style={styles.emptyWrap}>
+          <View style={styles.emptyIcon}>
+            <Feather name="clipboard" size={30} color={colors.mutedForeground} />
+          </View>
+          <Text style={styles.emptyTitle}>No encounters logged</Text>
+          <Text style={styles.emptyText}>
+            Document police interactions to protect yourself and your community. All records stay on
+            your device.
+          </Text>
+          <Pressable style={styles.emptyBtn} onPress={navigateToNew}>
+            <Feather name="plus" size={16} color={colors.primaryForeground} />
+            <Text style={styles.emptyBtnText}>Log First Encounter</Text>
+          </Pressable>
+        </View>
+      ) : (
+        <>
+          <View style={styles.privacyNote}>
+            <Feather name="lock" size={13} color={colors.mutedForeground} />
+            <Text style={styles.privacyText}>
+              {encounters.length} {encounters.length === 1 ? 'entry' : 'entries'} · stored on this device, never shared
+            </Text>
+          </View>
+          <FlatList
+            data={encounters}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={styles.listContent}
+            renderItem={({ item }) => (
+              <EncounterCard
+                encounter={item}
+                onDelete={() => deleteEncounter(item.id)}
+              />
+            )}
+            showsVerticalScrollIndicator={false}
           />
-        )}
-        scrollEnabled={encounters.length > 0}
-        showsVerticalScrollIndicator={false}
-      />
+        </>
+      )}
     </View>
   );
 }

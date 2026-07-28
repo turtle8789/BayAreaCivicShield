@@ -16,6 +16,10 @@ function NativeTabLayout() {
         <Icon sf={{ default: 'house', selected: 'house.fill' }} />
         <Label>Home</Label>
       </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="docs">
+        <Icon sf={{ default: 'doc.text', selected: 'doc.text.fill' }} />
+        <Label>Docs</Label>
+      </NativeTabs.Trigger>
       <NativeTabs.Trigger name="translate">
         <Icon sf={{ default: 'globe', selected: 'globe.fill' }} />
         <Label>Translate</Label>
@@ -27,10 +31,6 @@ function NativeTabLayout() {
       <NativeTabs.Trigger name="resources">
         <Icon sf={{ default: 'phone', selected: 'phone.fill' }} />
         <Label>Resources</Label>
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="log">
-        <Icon sf={{ default: 'doc.text', selected: 'doc.text.fill' }} />
-        <Label>Log</Label>
       </NativeTabs.Trigger>
     </NativeTabs>
   );
@@ -93,6 +93,18 @@ function ClassicTabLayout() {
         }}
       />
       <Tabs.Screen
+        name="docs"
+        options={{
+          title: 'Docs',
+          tabBarIcon: ({ color }) =>
+            isIOS ? (
+              <SymbolView name="doc.text" tintColor={color} size={22} />
+            ) : (
+              <Feather name="file-text" size={22} color={color} />
+            ),
+        }}
+      />
+      <Tabs.Screen
         name="translate"
         options={{
           title: 'Translate',
@@ -125,18 +137,6 @@ function ClassicTabLayout() {
               <SymbolView name="phone" tintColor={color} size={22} />
             ) : (
               <Feather name="phone-call" size={22} color={color} />
-            ),
-        }}
-      />
-      <Tabs.Screen
-        name="log"
-        options={{
-          title: 'Log',
-          tabBarIcon: ({ color }) =>
-            isIOS ? (
-              <SymbolView name="doc.text" tintColor={color} size={22} />
-            ) : (
-              <Feather name="clipboard" size={22} color={color} />
             ),
         }}
       />

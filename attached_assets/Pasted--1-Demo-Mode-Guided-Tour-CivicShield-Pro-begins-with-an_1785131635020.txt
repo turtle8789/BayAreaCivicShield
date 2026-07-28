@@ -1,0 +1,402 @@
+⭐ 1. Demo Mode & Guided Tour
+CivicShield Pro begins with an onboarding flow designed to help users explore the app without uploading real documents.
+
+Demo Mode
+Activated via the 🎬 DEMO ON toggle.
+
+Loads sample legal content, deadlines, summaries, and resource results.
+
+Allows users to test every feature safely.
+
+Sidebar clearly displays:
+
+“Demo Mode Active — Sample data is displayed.”
+
+All pages behave normally, but with mock data.
+
+Guided Tour
+Triggered via 🎓 Tour or ❓ Quick Tour.
+
+Walks users through:
+
+Uploading documents
+
+Translating content
+
+Extracting deadlines
+
+Finding local resources
+
+Generating QR codes
+
+Navigating the UI
+
+Uses step-by-step explanations and highlighted UI elements.
+
+Designed for first-time users, training, or accessibility.
+
+⭐ 2. QR Code Generation
+The app includes a built-in QR generator for sharing legal summaries and extracted information.
+
+Capabilities
+Generates QR codes from:
+
+Extracted text
+
+Deadlines
+
+Resource lists
+
+Translated summaries
+
+Displays the QR code directly in the UI.
+
+Allows users to save or scan the QR code.
+
+Shows progress messages like:
+
+“Generating QR code…”
+
+Handles errors gracefully:
+
+“QR code generation failed.”
+
+This feature makes it easy to share legal information with lawyers, caseworkers, or family.
+
+⭐ 3. Legal Document Translation
+CivicShield Pro includes a dedicated translation pipeline for legal content.
+
+Key Features
+Translates extracted text into:
+
+Spanish
+
+Telugu
+
+Punjabi
+
+Hindi
+
+And any language supported by the translator
+
+Uses a separate translation function (not the UI translator).
+
+Handles long text blocks and legal phrasing.
+
+Provides fallback messages:
+
+“Translation failed.”
+
+“No text found to translate.”
+
+Why It Matters
+The app keeps UI translation and document translation separate to avoid conflicts and ensure accuracy.
+
+⭐ 4. Deadline & Date Extraction
+One of the core features of CivicShield Pro is identifying important legal deadlines.
+
+What It Detects
+Court deadlines
+
+Filing dates
+
+Response windows
+
+“Within X days” phrasing
+
+Penalties
+
+Required actions
+
+Hearing dates
+
+Notice periods
+
+How It Works
+Uses regex patterns for:
+
+MM/DD/YYYY
+
+Month DD, YYYY
+
+DD Month YYYY
+
+Detects uppercase legal headers.
+
+Merges fragmented lines before parsing.
+
+Outputs structured results:
+
+Deadline:
+
+Action Required:
+
+Penalty:
+
+Notes:
+
+This helps users understand urgent legal obligations quickly.
+
+⭐ 5. “Find Rights Near You” — Local Resource Finder
+A geolocation-based feature that helps users find legal help nearby.
+
+Features
+Accepts user’s city, ZIP code, or full address.
+
+Matches against a database of:
+
+Legal aid offices
+
+Tenant rights groups
+
+Immigration support centers
+
+Domestic violence hotlines
+
+Court self-help centers
+
+Calculates distance using geocoded coordinates.
+
+Displays:
+
+Name
+
+Address
+
+Phone
+
+Website
+
+Distance
+
+Directions link (Google Maps)
+
+UI Elements
+Search bar
+
+Radius selector
+
+Results list
+
+Map/directions buttons
+
+Error Handling
+“No resources found.”
+
+“Invalid address.”
+
+“Geocoding failed.”
+
+⭐ 6. Audio Features
+CivicShield Pro includes optional audio tools for accessibility and convenience.
+
+Features
+Text-to-speech for legal summaries.
+
+Audio playback for advice.
+
+Speech-to-text for user notes or officer statements.
+
+UI Elements
+Microphone icon
+
+Speaker icon
+
+Playback controls
+
+⭐ 7. Accessibility Features
+The app includes multiple accessibility tools to ensure usability for all users.
+
+Features
+Adjustable font size
+
+High-contrast mode
+
+Screen reader compatibility
+
+Clear iconography
+
+Emoji-enhanced labels
+
+Simple navigation structure
+
+UI Strings
+🔇 Screen Reader OFF
+
+Language change error
+
+Key Features:
+
+⭐ 8. Full UI Translation System
+The entire UI is multilingual and dynamically translated.
+
+Supported Languages
+English
+
+Spanish
+
+Telugu
+
+Punjabi
+
+Hindi
+
+More can be added easily
+
+How It Works
+All UI text is stored in UI_STRINGS.
+
+The app uses:
+
+t(key)
+
+translate_for_user()
+
+Switching languages updates:
+
+Buttons
+
+Labels
+
+Headings
+
+Instructions
+
+Error messages
+
+Sidebar text
+
+Examples
+🚀 Launch App
+
+📺 Start Demo
+
+❓ Quick Tour
+
+📱 Share with Others
+
+⬅️ Previous
+
+All of these translate instantly based on st.session_state["language"].
+
+⭐ 9. Icons, Colors & UI Design
+CivicShield Pro uses a friendly, modern visual style with clear iconography and a consistent color palette.
+
+Icons
+🚀 Launch App
+
+📺 Demo
+
+🎓 Tour
+
+❓ Help
+
+📱 Share
+
+⬅️ Back
+
+🔇 Screen Reader
+
+🎬 Demo Mode
+
+📄 Document Upload
+
+🌐 Translation
+
+📍 Location
+
+🗂️ Resources
+
+🧾 Deadlines
+
+🔍 Extract
+
+Color Palette
+Dusty Rose (your chosen aesthetic)
+
+Soft neutrals for backgrounds
+
+High-contrast black/white for text
+
+Accent colors:
+
+Blue (actions)
+
+Green (success)
+
+Red (errors)
+
+Yellow (warnings)
+
+Layout
+Clean sidebar navigation
+
+Wide content area
+
+Clear section headers
+
+Card-style result boxes
+
+Emoji-enhanced labels for clarity
+
+⭐ 10. App Structure
+The app is organized into clear sections.
+
+Main Pages
+Home
+
+Document Upload
+
+Translation
+
+Deadlines
+
+Resource Finder
+
+QR Generator
+
+Audio Tools
+
+Settings
+
+Demo Mode
+
+Tour
+
+Backend Modules
+Translation pipeline
+
+Deadline extractor
+
+Resource database
+
+UI translation system
+
+QR generator
+
+Audio tools
+
+⭐ Final Summary (For Replit AI)
+CivicShield Pro is a multilingual legal assistance platform with:
+
+Demo mode
+
+Guided tour
+
+Legal document translation
+
+Deadline extraction
+
+Local resource finder
+
+QR code generation
+
+Audio tools
+
+Accessibility features
+
+Full multilingual UI
+
+Modern icons and colors
+
+Clean Streamlit layout

@@ -1,71 +1,72 @@
 /**
- * CivicShield Pro — Terracotta / cream palette with dark-mode support.
+ * CivicShield Pro — Dusty rose / pink palette with dark-mode support.
+ * Matches the uploaded logo: gold shield, pink background, rose text.
  */
 const colors = {
   light: {
-    text: '#4B403A',
-    tint: '#C97C5D',
+    text: '#3D2535',
+    tint: '#C97B8E',
 
-    background: '#F8F5F2',
-    foreground: '#4B403A',
+    background: '#FAF7F8',
+    foreground: '#3D2535',
 
-    card: '#FFFDFB',
-    cardForeground: '#4B403A',
+    card: '#FFFFFF',
+    cardForeground: '#3D2535',
 
-    primary: '#C97C5D',
+    primary: '#C97B8E',
     primaryForeground: '#FFFFFF',
 
-    secondary: '#A7B8A0',
+    secondary: '#C9A050',        // gold accent from logo
     secondaryForeground: '#FFFFFF',
 
-    muted: '#EDE8E3',
-    mutedForeground: '#6B5F55',
+    muted: '#F2E8EC',
+    mutedForeground: '#7A5566',
 
-    accent: '#D89CA4',
-    accentForeground: '#4B403A',
+    accent: '#E8B4C2',
+    accentForeground: '#3D2535',
 
     destructive: '#E05252',
     destructiveForeground: '#FFFFFF',
 
-    border: '#E8DFD7',
-    input: '#E8DFD7',
-    notification: '#C97C5D',
+    border: '#EAD5DC',
+    input: '#EAD5DC',
+    notification: '#C97B8E',
 
-    tabIconDefault: '#9B8E87',
-    tabIconSelected: '#C97C5D',
+    tabIconDefault: '#A07888',
+    tabIconSelected: '#C97B8E',
   },
 
   dark: {
-    text: '#F5EDE8',
-    tint: '#D4856A',
+    text: '#F5E8EE',
+    tint: '#D48899',
 
-    background: '#1C1610',
-    foreground: '#F5EDE8',
+    background: '#1C0F15',
+    foreground: '#F5E8EE',
 
-    card: '#2A2018',
-    cardForeground: '#F5EDE8',
+    card: '#2A1820',
+    cardForeground: '#F5E8EE',
 
-    primary: '#D4856A',
+    primary: '#D48899',
     primaryForeground: '#FFFFFF',
 
-    secondary: '#3D5238',
-    secondaryForeground: '#D4EDD0',
+    secondary: '#C9A050',
+    secondaryForeground: '#FFFFFF',
 
-    muted: '#2E2420',
-    mutedForeground: '#9B8E87',
+    muted: '#2E1A22',
+    mutedForeground: '#9A7080',
 
-    accent: '#7B4A5C',
-    accentForeground: '#F5EDE8',
+    accent: '#7B3A52',
+    accentForeground: '#F5E8EE',
 
     destructive: '#C94444',
     destructiveForeground: '#FFFFFF',
 
-    border: '#3E3028',
-    input: '#3E3028',
-    notification: '#D4856A',
+    border: '#3E2030',
+    input: '#3E2030',
+    notification: '#D48899',
 
-    tabIconDefault: '#6B5F55',
-    tabIconSelected: '#D4856A',
+    tabIconDefault: '#6B4555',
+    tabIconSelected: '#D48899',
   },
 
   // Shared border radius for cards, buttons, inputs
