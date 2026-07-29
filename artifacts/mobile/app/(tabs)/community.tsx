@@ -1,0 +1,450 @@
+/**
+ * Community tab — Forum + Resource Hub in two sub-tabs.
+ * Accessible directly from the bottom tab bar.
+ */
+import React, { useState } from 'react';
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Linking,
+  Modal,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
+import { Feather } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
+import * as WebBrowser from 'expo-web-browser';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import {
+  FORUM_CATEGORIES,
+  FORUM_DISCLAIMER,
+  ForumCategory,
+  ForumPost,
+  SEED_POSTS,
+} from '@/constants/forum-data';
+import {
+  HUB_CATEGORIES,
+  HUB_RESOURCES,
+  HubCategory,
+} from '@/constants/resource-hub-data';
+import { useApp } from '@/context/AppContext';
+import { useColors } from '@/hooks/useColors';
+
+type MainTab = 'forum' | 'hub';
+
+// ── helpers ──────────────────────────────────────────────────────────────────
+
+function timeAgo(iso: string): string {
+  const diff = (Date.now() - new Date(iso).getTime()) / 1000;
+  if (diff < 60)    return 'just now';
+  if (diff < 3600)  return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+  return `${Math.floor(diff / 86400)}d ago`;
+}
+
+function catMeta(cat: ForumCategory) {
+  return FORUM_CATEGORIES.find((c) => c.value === cat)!;
+}
+
+async function openUrl(url: string) {
+  try {
+    if (Platform.OS === 'web') {
+      window.open(url, '_blank', 'noopener');
+    } else {
+      await WebBrowser.openBrowserAsync(url, {
+        presentationStyle: WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN,
+      });
+    }
+  } catch {
+    Alert.alert('Could not open link', 'Copy and paste the URL in your browser:\n' + url);
+  }
+}
+
+// ── Forum ─────────────────────────────────────────────────────────────────────
+
+function ForumTab() {
+  const colors   = useColors();
+  const { fs, forumPosts, addForumPost, toggleForumHelpful, helpfulIds } = useApp() as any;
+  const allPosts = [...forumPosts.filter((p: ForumPost) => p.isUserPost), ...SEED_POSTS];
+
+  const [search, setSearch]           = useState('');
+  const [catFilter, setCatFilter]     = useState<ForumCategory | 'all'>('all');
+  const [detailPost, setDetailPost]   = useState<ForumPost | null>(null);
+  const [showNew, setShowNew]         = useState(false);
+  const [newTitle, setNewTitle]       = useState('');
+  const [newBody, setNewBody]         = useState('');
+  const [newCat, setNewCat]           = useState<ForumCategory>('general');
+  const [submitting, setSubmitting]   = useState(false);
+
+  const filtered = allPosts.filter((p: ForumPost) => {
+    const matchCat = catFilter === 'all' || p.category === catFilter;
+    const q = search.toLowerCase();
+    const matchQ = !q || p.title.toLowerCase().includes(q) || p.content.toLowerCase().includes(q);
+    return matchCat && matchQ;
+  });
+
+  const submitPost = async () => {
+    if (!newTitle.trim() || !newBody.trim()) {
+      Alert.alert('Missing Fields', 'Please add a title and description.');
+      return;
+    }
+    setSubmitting(true);
+    await addForumPost({
+      title: newTitle.trim(),
+      body: newBody.trim(),
+      category: newCat,
+      author: 'Anonymous',
+      timestamp: new Date().toISOString(),
+      replies: [],
+    });
+    setNewTitle(''); setNewBody(''); setNewCat('general');
+    setSubmitting(false);
+    setShowNew(false);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+  };
+
+  return (
+    <>
+      {/* Search */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: colors.muted, borderRadius: 12, marginBottom: 10, paddingHorizontal: 12, height: 42, gap: 8, borderWidth: 1, borderColor: colors.border }}>
+        <Feather name="search" size={15} color={colors.mutedForeground} />
+        <TextInput
+          style={{ flex: 1, fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground }}
+          value={search}
+          onChangeText={setSearch}
+          placeholder="Search discussions…"
+          placeholderTextColor={colors.mutedForeground}
+        />
+        {search.length > 0 && (
+          <Pressable onPress={() => setSearch('')} hitSlop={8}>
+            <Feather name="x" size={14} color={colors.mutedForeground} />
+          </Pressable>
+        )}
+      </View>
+
+      {/* Category chips */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
+        <View style={{ flexDirection: 'row', gap: 6, paddingRight: 8 }}>
+          {[{ value: 'all' as const, label: 'All', emoji: '📋' }, ...FORUM_CATEGORIES].map((c) => {
+            const active = catFilter === c.value;
+            return (
+              <Pressable
+                key={c.value}
+                onPress={() => { setCatFilter(c.value as ForumCategory | 'all'); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1.5, borderColor: active ? colors.primary : colors.border, backgroundColor: active ? colors.primary + '14' : colors.muted }}
+              >
+                <Text style={{ fontSize: fs(11) }}>{c.emoji}</Text>
+                <Text style={{ fontSize: fs(12), fontFamily: active ? 'Inter_600SemiBold' : 'Inter_400Regular', color: active ? colors.primary : colors.mutedForeground }}>
+                  {c.label}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      </ScrollView>
+
+      {/* Post cards */}
+      {filtered.map((p: ForumPost) => {
+        const meta    = catMeta(p.category);
+        const helpful = helpfulIds?.has(p.id) ?? p.markedHelpful;
+        return (
+          <View key={p.id} style={{ backgroundColor: colors.card, borderRadius: colors.radius, borderWidth: 1, borderColor: colors.border, marginBottom: 10, overflow: 'hidden' }}>
+            <Pressable onPress={() => setDetailPost(p)} style={{ padding: 14 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                <View style={{ backgroundColor: meta.color + '18', borderRadius: 20, paddingHorizontal: 8, paddingVertical: 3, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                  <Text style={{ fontSize: 11 }}>{meta.emoji}</Text>
+                  <Text style={{ fontSize: fs(11), fontFamily: 'Inter_600SemiBold', color: meta.color }}>{meta.label}</Text>
+                </View>
+                <Text style={{ fontSize: fs(11), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginLeft: 'auto' }}>{timeAgo(p.timestamp)}</Text>
+              </View>
+              <Text style={{ fontSize: fs(15), fontFamily: 'Inter_600SemiBold', color: colors.foreground, lineHeight: 21, marginBottom: 4 }}>{p.title}</Text>
+              <Text style={{ fontSize: fs(13), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, lineHeight: 19 }} numberOfLines={2}>{p.content}</Text>
+            </Pressable>
+            <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, paddingBottom: 12, gap: 16 }}>
+              <Pressable
+                onPress={() => { toggleForumHelpful?.(p.id); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}
+              >
+                <Feather name="thumbs-up" size={14} color={helpful ? colors.primary : colors.mutedForeground} />
+                <Text style={{ fontSize: fs(12), fontFamily: 'Inter_500Medium', color: helpful ? colors.primary : colors.mutedForeground }}>
+                  {p.helpfulCount + (helpful && !p.markedHelpful ? 1 : 0)} helpful
+                </Text>
+              </Pressable>
+              <Pressable onPress={() => setDetailPost(p)} style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+                <Feather name="message-circle" size={14} color={colors.mutedForeground} />
+                <Text style={{ fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.mutedForeground }}>
+                  {p.replies.length} {p.replies.length === 1 ? 'reply' : 'replies'}
+                </Text>
+              </Pressable>
+              <Text style={{ fontSize: fs(11), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginLeft: 'auto' }}>{p.author}</Text>
+            </View>
+          </View>
+        );
+      })}
+
+      {filtered.length === 0 && (
+        <View style={{ padding: 24, alignItems: 'center' }}>
+          <Text style={{ fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, textAlign: 'center' }}>No posts match your search.</Text>
+        </View>
+      )}
+
+      <View style={{ backgroundColor: colors.muted, borderRadius: colors.radius, padding: 12, marginTop: 4 }}>
+        <Text style={{ fontSize: fs(11), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, lineHeight: 17 }}>{FORUM_DISCLAIMER}</Text>
+      </View>
+
+      {/* Post Detail Modal */}
+      {detailPost && (
+        <Modal visible animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setDetailPost(null)}>
+          <DetailView post={detailPost} onClose={() => setDetailPost(null)} />
+        </Modal>
+      )}
+
+      {/* New Post Modal */}
+      <Modal visible={showNew} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setShowNew(false)}>
+        <NewPostView
+          title={newTitle} setTitle={setNewTitle}
+          body={newBody} setBody={setNewBody}
+          cat={newCat} setCat={setNewCat}
+          submitting={submitting}
+          onSubmit={submitPost}
+          onClose={() => setShowNew(false)}
+        />
+      </Modal>
+
+      {/* FAB */}
+      <Pressable
+        onPress={() => setShowNew(true)}
+        style={{ position: 'absolute', bottom: 16, right: 0, backgroundColor: colors.primary, borderRadius: 24, paddingHorizontal: 18, paddingVertical: 12, flexDirection: 'row', alignItems: 'center', gap: 6, elevation: 4 }}
+        accessibilityRole="button"
+        accessibilityLabel="Create new post"
+      >
+        <Feather name="edit-2" size={15} color="#FFFFFF" />
+        <Text style={{ fontSize: 14, fontFamily: 'Inter_600SemiBold', color: '#FFFFFF' }}>Post</Text>
+      </Pressable>
+    </>
+  );
+}
+
+// ── Post Detail ───────────────────────────────────────────────────────────────
+
+function DetailView({ post, onClose }: { post: ForumPost; onClose: () => void }) {
+  const colors = useColors();
+  const { fs } = useApp();
+  const meta = catMeta(post.category);
+  return (
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, borderBottomWidth: 1, borderBottomColor: colors.border, paddingTop: Platform.OS === 'ios' ? 50 : 20 }}>
+        <Pressable onPress={onClose} hitSlop={12} style={{ marginRight: 12 }} accessibilityRole="button" accessibilityLabel="Close">
+          <Feather name="x" size={22} color={colors.foreground} />
+        </Pressable>
+        <View style={{ backgroundColor: meta.color + '18', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+          <Text>{meta.emoji}</Text>
+          <Text style={{ fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: meta.color }}>{meta.label}</Text>
+        </View>
+      </View>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, paddingBottom: 60, flexGrow: 1 }}>
+        <Text style={{ fontSize: fs(20), fontFamily: 'Inter_700Bold', color: colors.foreground, lineHeight: 27, marginBottom: 8 }}>{post.title}</Text>
+        <Text style={{ fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginBottom: 16 }}>{post.author} · {timeAgo(post.timestamp)}</Text>
+        <Text style={{ fontSize: fs(15), fontFamily: 'Inter_400Regular', color: colors.foreground, lineHeight: 23, marginBottom: 20 }}>{post.content}</Text>
+        {post.replies.map((r, i) => (
+          <View key={i} style={{ backgroundColor: colors.muted, borderRadius: 10, padding: 12, marginBottom: 10, borderWidth: 1, borderColor: colors.border }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+              <Text style={{ fontSize: fs(13), fontFamily: 'Inter_600SemiBold', color: colors.foreground }}>{r.author}</Text>
+              <Text style={{ fontSize: fs(11), fontFamily: 'Inter_400Regular', color: colors.mutedForeground }}>{timeAgo(r.timestamp)}</Text>
+            </View>
+            <Text style={{ fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground, lineHeight: 20 }}>{r.content}</Text>
+          </View>
+        ))}
+      </ScrollView>
+    </View>
+  );
+}
+
+// ── New Post ──────────────────────────────────────────────────────────────────
+
+function NewPostView({ title, setTitle, body, setBody, cat, setCat, submitting, onSubmit, onClose }: any) {
+  const colors = useColors();
+  const { fs } = useApp();
+  return (
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, borderBottomWidth: 1, borderBottomColor: colors.border, paddingTop: Platform.OS === 'ios' ? 50 : 20 }}>
+        <Pressable onPress={onClose} hitSlop={12} style={{ marginRight: 12 }}><Feather name="x" size={22} color={colors.foreground} /></Pressable>
+        <Text style={{ flex: 1, fontSize: fs(17), fontFamily: 'Inter_700Bold', color: colors.foreground }}>New Post</Text>
+        <Pressable onPress={onSubmit} disabled={submitting} style={{ backgroundColor: colors.primary, borderRadius: 20, paddingHorizontal: 16, paddingVertical: 7, opacity: submitting ? 0.6 : 1 }}>
+          <Text style={{ fontSize: fs(14), fontFamily: 'Inter_600SemiBold', color: '#FFFFFF' }}>Share</Text>
+        </Pressable>
+      </View>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, gap: 12, flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+          <Text style={{ fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase' }}>Category</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <View style={{ flexDirection: 'row', gap: 6 }}>
+              {FORUM_CATEGORIES.map((c) => (
+                <Pressable key={c.value} onPress={() => setCat(c.value)} style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 7, borderRadius: 20, borderWidth: 1.5, borderColor: cat === c.value ? colors.primary : colors.border, backgroundColor: cat === c.value ? colors.primary + '14' : colors.muted }}>
+                  <Text style={{ fontSize: 12 }}>{c.emoji}</Text>
+                  <Text style={{ fontSize: fs(12), fontFamily: cat === c.value ? 'Inter_600SemiBold' : 'Inter_400Regular', color: cat === c.value ? colors.primary : colors.mutedForeground }}>{c.label}</Text>
+                </Pressable>
+              ))}
+            </View>
+          </ScrollView>
+          <Text style={{ fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase' }}>Title *</Text>
+          <TextInput style={{ backgroundColor: colors.muted, borderRadius: 10, padding: 12, fontSize: fs(15), fontFamily: 'Inter_400Regular', color: colors.foreground, borderWidth: 1, borderColor: colors.border }} value={title} onChangeText={setTitle} placeholder="What's your question or story?" placeholderTextColor={colors.mutedForeground} />
+          <Text style={{ fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase' }}>Details *</Text>
+          <TextInput style={{ backgroundColor: colors.muted, borderRadius: 10, padding: 12, fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground, minHeight: 140, textAlignVertical: 'top', borderWidth: 1, borderColor: colors.border }} value={body} onChangeText={setBody} placeholder="Share the full situation…" placeholderTextColor={colors.mutedForeground} multiline />
+          <View style={{ backgroundColor: colors.primary + '10', borderRadius: 10, padding: 12, flexDirection: 'row', gap: 8 }}>
+            <Feather name="lock" size={14} color={colors.primary} />
+            <Text style={{ flex: 1, fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, lineHeight: 18 }}>Posts are anonymous. Do not include personal identifying information.</Text>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </View>
+  );
+}
+
+// ── Resource Hub ──────────────────────────────────────────────────────────────
+
+function HubTab() {
+  const colors = useColors();
+  const { fs } = useApp();
+  const [filter, setFilter]   = useState<HubCategory | 'all'>('all');
+  const [search, setSearch]   = useState('');
+
+  const filtered = HUB_RESOURCES.filter((r) => {
+    const matchCat = filter === 'all' || r.category === filter;
+    const q = search.toLowerCase();
+    const matchSearch = !q || r.name.toLowerCase().includes(q) || r.description.toLowerCase().includes(q) || r.tags.some((t) => t.includes(q));
+    return matchCat && matchSearch;
+  });
+
+  return (
+    <>
+      {/* Search */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: colors.muted, borderRadius: 12, marginBottom: 10, paddingHorizontal: 12, height: 42, gap: 8, borderWidth: 1, borderColor: colors.border }}>
+        <Feather name="search" size={15} color={colors.mutedForeground} />
+        <TextInput
+          style={{ flex: 1, fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground }}
+          value={search} onChangeText={setSearch}
+          placeholder="Search resources…"
+          placeholderTextColor={colors.mutedForeground}
+        />
+        {search.length > 0 && <Pressable onPress={() => setSearch('')} hitSlop={8}><Feather name="x" size={14} color={colors.mutedForeground} /></Pressable>}
+      </View>
+
+      {/* Category tabs */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 12 }}>
+        <View style={{ flexDirection: 'row', gap: 6, paddingRight: 8 }}>
+          {[{ value: 'all' as const, label: 'All', emoji: '📋' }, ...HUB_CATEGORIES].map((c) => {
+            const active = filter === c.value;
+            return (
+              <Pressable key={c.value} onPress={() => { setFilter(c.value as HubCategory | 'all'); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1.5, borderColor: active ? colors.primary : colors.border, backgroundColor: active ? colors.primary + '14' : colors.muted }}>
+                <Text style={{ fontSize: 11 }}>{c.emoji}</Text>
+                <Text style={{ fontSize: fs(12), fontFamily: active ? 'Inter_600SemiBold' : 'Inter_400Regular', color: active ? colors.primary : colors.mutedForeground }}>{c.label}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      </ScrollView>
+
+      <Text style={{ fontSize: fs(11), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginBottom: 10 }}>
+        {filtered.length} resource{filtered.length !== 1 ? 's' : ''}
+      </Text>
+
+      {filtered.map((r) => (
+        <View key={r.id} style={{ backgroundColor: colors.card, borderRadius: colors.radius, borderWidth: 1, borderColor: colors.border, marginBottom: 10, padding: 14 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 6 }}>
+            <Text style={{ flex: 1, fontSize: fs(15), fontFamily: 'Inter_600SemiBold', color: colors.foreground, lineHeight: 21 }}>{r.name}</Text>
+            <View style={{ backgroundColor: r.free ? '#5A9E6F18' : colors.muted, borderRadius: 20, paddingHorizontal: 8, paddingVertical: 3 }}>
+              <Text style={{ fontSize: fs(10), fontFamily: 'Inter_600SemiBold', color: r.free ? '#5A9E6F' : colors.mutedForeground }}>{r.free ? 'FREE' : 'PAID'}</Text>
+            </View>
+          </View>
+          <Text style={{ fontSize: fs(13), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, lineHeight: 18, marginBottom: 8 }}>{r.description}</Text>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 5, marginBottom: 10 }}>
+            {r.tags.slice(0, 4).map((tag) => (
+              <View key={tag} style={{ backgroundColor: colors.muted, borderRadius: 20, paddingHorizontal: 8, paddingVertical: 3 }}>
+                <Text style={{ fontSize: fs(11), fontFamily: 'Inter_400Regular', color: colors.mutedForeground }}>{tag}</Text>
+              </View>
+            ))}
+          </View>
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            <Pressable onPress={() => openUrl(r.url.startsWith('http') ? r.url : `https://${r.url}`)} style={{ flex: 1, backgroundColor: colors.primary, borderRadius: 10, paddingVertical: 10, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 6 }}>
+              <Feather name="external-link" size={14} color="#FFFFFF" />
+              <Text style={{ fontSize: fs(13), fontFamily: 'Inter_600SemiBold', color: '#FFFFFF' }}>Open Website</Text>
+            </Pressable>
+            {r.phone && (
+              <Pressable onPress={() => Linking.openURL(`tel:${r.phone!.replace(/\D/g, '')}`).catch(() => {})} style={{ backgroundColor: '#5A9E6F14', borderRadius: 10, paddingVertical: 10, paddingHorizontal: 16, alignItems: 'center', flexDirection: 'row', gap: 6 }}>
+                <Feather name="phone" size={14} color="#5A9E6F" />
+                <Text style={{ fontSize: fs(13), fontFamily: 'Inter_600SemiBold', color: '#5A9E6F' }}>Call</Text>
+              </Pressable>
+            )}
+          </View>
+        </View>
+      ))}
+    </>
+  );
+}
+
+// ── Main Screen ───────────────────────────────────────────────────────────────
+
+export default function CommunityScreen() {
+  const colors  = useColors();
+  const insets  = useSafeAreaInsets();
+  const { fs }  = useApp();
+  const topPad  = Platform.OS === 'web' ? 67 : insets.top;
+  const [tab, setTab] = useState<MainTab>('forum');
+
+  const styles = StyleSheet.create({
+    container:   { flex: 1, backgroundColor: colors.background },
+    header:      { paddingTop: topPad + 12, paddingHorizontal: 20, paddingBottom: 0, borderBottomWidth: 1, borderBottomColor: colors.border },
+    headerTitle: { fontSize: fs(22), fontFamily: 'Inter_700Bold', color: colors.foreground },
+    headerSub:   { fontSize: fs(13), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginTop: 2, marginBottom: 12 },
+    tabRow:      { flexDirection: 'row', marginBottom: 0 },
+    tabBtn:      { flex: 1, paddingVertical: 10, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 6, borderBottomWidth: 2, borderBottomColor: 'transparent' },
+    tabBtnActive:{ borderBottomColor: colors.primary },
+    tabBtnText:  { fontSize: fs(14), fontFamily: 'Inter_500Medium', color: colors.mutedForeground },
+    tabBtnTextA: { color: colors.primary, fontFamily: 'Inter_600SemiBold' },
+    scroll:      { flex: 1 },
+    scrollContent: { padding: 16, paddingBottom: Platform.OS === 'web' ? 80 : 110, flexGrow: 1 },
+  });
+
+  return (
+    <View style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle} accessibilityRole="header">💬 Community</Text>
+        <Text style={styles.headerSub}>Forum & legal resource directory</Text>
+        <View style={styles.tabRow}>
+          {([
+            { id: 'forum' as MainTab, label: '💬 Forum' },
+            { id: 'hub'   as MainTab, label: '📦 Resource Hub' },
+          ]).map(({ id, label }) => (
+            <Pressable
+              key={id}
+              style={[styles.tabBtn, tab === id && styles.tabBtnActive]}
+              onPress={() => { setTab(id); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
+              accessibilityRole="tab"
+              accessibilityState={{ selected: tab === id }}
+            >
+              <Text style={[styles.tabBtnText, tab === id && styles.tabBtnTextA]}>{label}</Text>
+            </Pressable>
+          ))}
+        </View>
+      </View>
+
+      {/* Content */}
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
+        {tab === 'forum' ? <ForumTab /> : <HubTab />}
+      </ScrollView>
+    </View>
+  );
+}

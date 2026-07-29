@@ -6,7 +6,7 @@
 
 export type I18nKey =
   // Navigation tabs
-  | 'nav.home' | 'nav.docs' | 'nav.translate' | 'nav.rights' | 'nav.resources'
+  | 'nav.home' | 'nav.docs' | 'nav.translate' | 'nav.rights' | 'nav.resources' | 'nav.community'
   // Home screen
   | 'home.tagline' | 'home.emergency' | 'home.tools_section'
   | 'home.saved_deadlines' | 'home.clear_all' | 'home.dismiss' | 'home.disclaimer'
@@ -41,30 +41,60 @@ export const TRANSLATIONS: Translations = {
     vi: 'Trang chủ',  tl: 'Tahanan',      hi: 'होम',             ko: '홈',
     ar: 'الرئيسية',   fr: 'Accueil',      pt: 'Início',          ru: 'Главная',
     ja: 'ホーム',      am: 'መነሻ',
+    te: 'హోమ్',       pa: 'ਹੋਮ',           ta: 'முகப்பு',         bn: 'হোম',
+    id: 'Beranda',    ur: 'ہوم',          tr: 'Ana Sayfa',      sw: 'Nyumbani',
+    it: 'Home',       th: 'หน้าหลัก',      ms: 'Utama',          ne: 'होम',
+    so: 'Hoyga',      ht: 'Akèy',
   },
   'nav.docs': {
     en: 'Docs',       es: 'Documentos',   'zh-CN': '文件',       'zh-TW': '文件',
     vi: 'Tài liệu',   tl: 'Mga Dokumento',hi: 'दस्तावेज़',        ko: '문서',
     ar: 'وثائق',      fr: 'Documents',    pt: 'Documentos',      ru: 'Документы',
     ja: '書類',        am: 'ሰነዶች',
+    te: 'డాక్స్',     pa: 'ਦਸਤਾਵੇਜ਼',      ta: 'ஆவணங்கள்',       bn: 'নথি',
+    id: 'Dokumen',    ur: 'دستاویزات',    tr: 'Belgeler',       sw: 'Hati',
+    it: 'Documenti',  th: 'เอกสาร',        ms: 'Dokumen',        ne: 'कागजात',
+    so: 'Dukumenti',  ht: 'Dokiman',
   },
   'nav.translate': {
     en: 'Translate',  es: 'Traducir',     'zh-CN': '翻译',       'zh-TW': '翻譯',
     vi: 'Dịch',       tl: 'Isalin',       hi: 'अनुवाद',          ko: '번역',
     ar: 'ترجمة',      fr: 'Traduire',     pt: 'Traduzir',        ru: 'Перевод',
     ja: '翻訳',        am: 'ትርጉም',
+    te: 'అనువాదం',    pa: 'ਅਨੁਵਾਦ',        ta: 'மொழிபெயர்',      bn: 'অনুবাদ',
+    id: 'Terjemah',   ur: 'ترجمہ',        tr: 'Çeviri',         sw: 'Tafsiri',
+    it: 'Traduzione', th: 'แปลภาษา',       ms: 'Terjemahan',     ne: 'अनुवाद',
+    so: 'Turjumaad',  ht: 'Tradiksyon',
   },
   'nav.rights': {
     en: 'Rights',     es: 'Derechos',     'zh-CN': '权利',       'zh-TW': '權利',
     vi: 'Quyền lợi',  tl: 'Mga Karapatan',hi: 'अधिकार',          ko: '권리',
     ar: 'الحقوق',     fr: 'Droits',       pt: 'Direitos',        ru: 'Права',
     ja: '権利',        am: 'መብቶች',
+    te: 'హక్కులు',    pa: 'ਅਧਿਕਾਰ',        ta: 'உரிமைகள்',       bn: 'অধিকার',
+    id: 'Hak',        ur: 'حقوق',         tr: 'Haklar',         sw: 'Haki',
+    it: 'Diritti',    th: 'สิทธิ์',         ms: 'Hak',            ne: 'अधिकार',
+    so: 'Xuquuqda',   ht: 'Dwa',
   },
   'nav.resources': {
     en: 'Resources',  es: 'Recursos',     'zh-CN': '资源',       'zh-TW': '資源',
-    vi: 'Tài nguyên', tl: 'Mga Mapagkukunan', hi: 'संसाधन',      ko: '리소스',
+    vi: 'Tài nguyên', tl: 'Mga Mapagkukunan', hi: 'संसाधन',     ko: '리소스',
     ar: 'الموارد',    fr: 'Ressources',   pt: 'Recursos',        ru: 'Ресурсы',
     ja: 'リソース',    am: 'ሀብቶች',
+    te: 'వనరులు',     pa: 'ਸਰੋਤ',         ta: 'வளங்கள்',        bn: 'সম্পদ',
+    id: 'Sumber Daya',ur: 'وسائل',        tr: 'Kaynaklar',      sw: 'Rasilimali',
+    it: 'Risorse',    th: 'ทรัพยากร',      ms: 'Sumber',         ne: 'स्रोत',
+    so: 'Kheyraadka', ht: 'Resous',
+  },
+  'nav.community': {
+    en: 'Community',  es: 'Comunidad',    'zh-CN': '社区',       'zh-TW': '社區',
+    vi: 'Cộng đồng',  tl: 'Komunidad',    hi: 'समुदाय',          ko: '커뮤니티',
+    ar: 'المجتمع',    fr: 'Communauté',   pt: 'Comunidade',      ru: 'Сообщество',
+    ja: 'コミュニティ', am: 'ማህበረሰብ',
+    te: 'కమ్యూనిటీ',  pa: 'ਸਮੁਦਾਇ',       ta: 'சமூகம்',         bn: 'সম্প্রদায়',
+    id: 'Komunitas',  ur: 'کمیونٹی',      tr: 'Topluluk',       sw: 'Jamii',
+    it: 'Comunità',   th: 'ชุมชน',         ms: 'Komuniti',       ne: 'समुदाय',
+    so: 'Bulshada',   ht: 'Kominote',
   },
 
   // ── Home ────────────────────────────────────────────────────────────────────

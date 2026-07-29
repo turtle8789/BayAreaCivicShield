@@ -273,6 +273,7 @@ function FindNearbyTab() {
   const [sorted, setSorted]           = useState<Array<{ resource: LegalResource; dist: number }>>([]);
   const [searched, setSearched]       = useState(false);
   const [typeFilter, setTypeFilter]   = useState<ResourceType | 'all'>('all');
+  const [radiusMiles, setRadiusMiles] = useState<number | null>(25); // null = no limit
 
   const useMyLocation = async () => {
     try {
@@ -333,10 +334,20 @@ function FindNearbyTab() {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   };
 
-  // Apply type filter
-  const filtered = typeFilter === 'all'
-    ? sorted
-    : sorted.filter(({ resource }) => resource.type === typeFilter);
+  // Apply type + radius filters
+  const RADIUS_OPTIONS: Array<{ label: string; value: number | null }> = [
+    { label: '5 mi',  value: 5  },
+    { label: '10 mi', value: 10 },
+    { label: '25 mi', value: 25 },
+    { label: '50 mi', value: 50 },
+    { label: 'Any',   value: null },
+  ];
+
+  const filtered = sorted.filter(({ resource, dist }) => {
+    const matchType   = typeFilter === 'all' || resource.type === typeFilter;
+    const matchRadius = radiusMiles === null || dist <= radiusMiles;
+    return matchType && matchRadius;
+  });
 
   return (
     <>
@@ -409,6 +420,31 @@ function FindNearbyTab() {
             </View>
           ) : null}
 
+          {/* Radius filter */}
+          <View style={{ marginBottom: 12 }}>
+            <Text style={{ fontSize: 12, fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase', letterSpacing: 0.7, marginBottom: 8 }}>
+              📍 Search Radius
+            </Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              <View style={{ flexDirection: 'row', gap: 6, paddingRight: 8 }}>
+                {RADIUS_OPTIONS.map((opt) => {
+                  const active = radiusMiles === opt.value;
+                  return (
+                    <Pressable
+                      key={String(opt.value)}
+                      onPress={() => { setRadiusMiles(opt.value); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
+                      style={{ paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, borderWidth: 1.5, borderColor: active ? colors.primary : colors.border, backgroundColor: active ? colors.primary + '14' : colors.muted }}
+                      accessibilityRole="radio"
+                      accessibilityState={{ selected: active }}
+                    >
+                      <Text style={{ fontSize: 13, fontFamily: active ? 'Inter_600SemiBold' : 'Inter_400Regular', color: active ? colors.primary : colors.mutedForeground }}>{opt.label}</Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </ScrollView>
+          </View>
+
           {/* Type filter chips */}
           <View style={{ marginBottom: 4 }}>
             <Text style={{ fontSize: 12, fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase', letterSpacing: 0.7, marginBottom: 8 }}>
@@ -419,7 +455,9 @@ function FindNearbyTab() {
 
           {/* Result count */}
           <Text style={{ fontSize: 12, fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginBottom: 10 }}>
-            {filtered.length} {filtered.length === 1 ? 'result' : 'results'} {typeFilter !== 'all' ? `· ${TYPE_LABELS[typeFilter as ResourceType]}` : ''}
+            {filtered.length} {filtered.length === 1 ? 'result' : 'results'}
+            {radiusMiles !== null ? ` within ${radiusMiles} mi` : ''}
+            {typeFilter !== 'all' ? ` · ${TYPE_LABELS[typeFilter as ResourceType]}` : ''}
           </Text>
 
           {filtered.length === 0 ? (

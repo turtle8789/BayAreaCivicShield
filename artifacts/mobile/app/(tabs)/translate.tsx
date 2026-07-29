@@ -27,16 +27,44 @@ import { useColors } from '@/hooks/useColors';
 const CHAR_LIMIT = 450;
 
 async function doTranslate(text: string, from: string, to: string): Promise<string> {
-  const langPair = `${from === 'auto' ? 'auto' : from}|${to}`;
-  const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${langPair}`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const data = (await res.json()) as {
-    responseData?: { translatedText?: string };
-    responseStatus?: number;
-  };
-  if (data.responseStatus !== 200) throw new Error('Translation service error');
-  return data.responseData?.translatedText ?? text;
+  // Chunk long text into ≤450-char pieces (MyMemory free limit per request)
+  const chunks: string[] = [];
+  const words = text.split(' ');
+  let current = '';
+  for (const word of words) {
+    if ((current + ' ' + word).length > 440) {
+      if (current) chunks.push(current.trim());
+      current = word;
+    } else {
+      current = current ? current + ' ' + word : word;
+    }
+  }
+  if (current) chunks.push(current.trim());
+
+  const translated: string[] = [];
+  for (const chunk of chunks) {
+    const langPair = `${from === 'auto' ? 'autodetect' : from}|${to}`;
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(chunk)}&langpair=${encodeURIComponent(langPair)}`;
+    const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = (await res.json()) as {
+      responseData?: { translatedText?: string };
+      responseStatus?: number;
+      responseDetails?: string;
+    };
+    // status 429 = rate limit; status 403 = quota exceeded
+    if (data.responseStatus === 429 || data.responseStatus === 403) {
+      throw new Error('RATE_LIMIT');
+    }
+    const result = data.responseData?.translatedText ?? '';
+    // MyMemory sometimes returns "PLEASE SELECT TWO DISTINCT LANGUAGES" on same-lang pairs
+    if (result.includes('PLEASE SELECT TWO DISTINCT LANGUAGES')) {
+      throw new Error('SAME_LANG');
+    }
+    if (!result) throw new Error('Empty translation response');
+    translated.push(result);
+  }
+  return translated.join(' ');
 }
 
 export default function TranslateScreen() {
@@ -78,8 +106,15 @@ export default function TranslateScreen() {
       setTranslated(result);
       AccessibilityInfo.announceForAccessibility(`Translation: ${result.slice(0, 80)}`);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    } catch {
-      Alert.alert('Translation Failed', 'Could not reach translation service. Please try again.');
+    } catch (err: any) {
+      const msg = err?.message ?? '';
+      if (msg === 'RATE_LIMIT') {
+        Alert.alert('Rate Limit Reached', 'The free translation service has a daily limit. Please try again in a few minutes, or use shorter text.');
+      } else if (msg === 'SAME_LANG') {
+        Alert.alert('Same Language', 'Source and target language appear to be the same. Please select a different target language.');
+      } else {
+        Alert.alert('Translation Failed', 'Could not connect to the translation service. Check your internet connection and try again.');
+      }
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     } finally {
       setLoading(false);

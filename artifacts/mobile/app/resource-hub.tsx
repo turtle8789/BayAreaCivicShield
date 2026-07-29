@@ -185,8 +185,8 @@ export default function ResourceHubScreen() {
   );
 }
 
-function ResourceCard({ resource, styles, colors, fs }: { resource: ReturnType<typeof HUB_RESOURCES[0]['__proto__']['constructor']>; styles: any; colors: any; fs: (n: number) => number }) {
-  const r = resource as (typeof HUB_RESOURCES)[0];
+function ResourceCard({ resource, styles, colors, fs }: { resource: (typeof HUB_RESOURCES)[0]; styles: any; colors: any; fs: (n: number) => number }) {
+  const r = resource;
   const cat = HUB_CATEGORIES.find((c) => c.value === r.category)!;
   return (
     <View style={styles.card} accessibilityLabel={r.name}>

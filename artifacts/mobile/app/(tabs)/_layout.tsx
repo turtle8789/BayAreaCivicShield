@@ -35,6 +35,10 @@ function NativeTabLayout() {
         <Icon sf={{ default: 'phone', selected: 'phone.fill' }} />
         <Text>{t('nav.resources')}</Text>
       </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="community">
+        <Icon sf={{ default: 'bubble.left.and.bubble.right', selected: 'bubble.left.and.bubble.right.fill' }} />
+        <Text>{t('nav.community')}</Text>
+      </NativeTabs.Trigger>
     </NativeTabs>
   );
 }
@@ -119,6 +123,14 @@ function ClassicTabLayout() {
           title: t('nav.resources'),
           tabBarIcon: ({ color }) =>
             isIOS ? <SymbolView name="phone" tintColor={color} size={22} /> : <Feather name="phone-call" size={22} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="community"
+        options={{
+          title: t('nav.community'),
+          tabBarIcon: ({ color }) =>
+            isIOS ? <SymbolView name="bubble.left.and.bubble.right" tintColor={color} size={22} /> : <Feather name="message-circle" size={22} color={color} />,
         }}
       />
     </Tabs>
