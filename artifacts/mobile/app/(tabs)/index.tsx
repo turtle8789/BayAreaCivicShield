@@ -38,56 +38,56 @@ export default function HomeScreen() {
   // ── Feature cards — every capability in the app ───────────────────────────
   const features = [
     {
-      title: '📄 Document Analyzer',
+      title: t('home.feature_docs'),
       description: 'Scan or paste legal text. Extract deadlines, dates & penalties. Save to dashboard.',
       iconName: 'file-text',
       accentColor: '#C9A050',
       route: '/(tabs)/docs',
     },
     {
-      title: '🌐 Real-Time Translation',
-      description: 'Translate text or voice into 14 languages. Tap 🎤 to speak — iOS, Android & web.',
+      title: t('home.feature_translate'),
+      description: 'Translate text or voice into 28 languages. Tap 🎤 to speak — iOS, Android & web.',
       iconName: 'globe',
       accentColor: '#C97B8E',
       route: '/(tabs)/translate',
     },
     {
-      title: '📚 Know Your Rights',
+      title: t('home.feature_rights'),
       description: 'Civil rights for traffic stops, arrests, immigration, home searches & more.',
       iconName: 'book-open',
       accentColor: '#A07888',
       route: '/(tabs)/rights',
     },
     {
-      title: '📍 Find Legal Resources',
+      title: t('home.feature_resources'),
       description: 'Legal aid, hotlines & support organizations sorted by distance from you.',
       iconName: 'map-pin',
       accentColor: '#C9A050',
       route: '/(tabs)/resources',
     },
     {
-      title: '📞 Crisis Hotlines',
+      title: t('home.feature_hotlines'),
       description: '24/7 emergency, legal, immigration, domestic violence & LGBTQ+ lines.',
       iconName: 'phone-call',
       accentColor: '#E05252',
       route: '/(tabs)/resources',
     },
     {
-      title: '💬 Community Forum',
+      title: t('home.feature_forum'),
       description: `${forumPosts.length > 0 ? `${forumPosts.length} posts by you + ` : ''}7 community discussions — share experiences, ask questions, get advice.`,
       iconName: 'message-circle',
       accentColor: '#9B7EC9',
       route: '/forum',
     },
     {
-      title: '📚 Resource Hub',
+      title: t('home.feature_hub'),
       description: '25+ curated free legal aid links, civil rights orgs, housing, immigration & employment.',
       iconName: 'book',
       accentColor: '#5A9E6F',
       route: '/resource-hub',
     },
     {
-      title: '🗂️ Encounter Log',
+      title: t('home.feature_log'),
       description: encounters.length === 0
         ? 'Privately document police interactions — stored only on your device.'
         : `${encounters.length} encounter${encounters.length === 1 ? '' : 's'} logged — tap to view or add.`,
@@ -126,8 +126,8 @@ export default function HomeScreen() {
     deadlineSectionTitle:  { fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: '#C9A050', textTransform: 'uppercase', letterSpacing: 0.8 },
     clearAllBtn:  { flexDirection: 'row', alignItems: 'center', gap: 4 },
     clearAllText: { fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.mutedForeground },
-    deadlineCard: { backgroundColor: '#C9A050' + '12', borderRadius: colors.radius, borderWidth: 1, borderColor: '#C9A050' + '40', padding: 12, marginBottom: 8, flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
-    deadlineText: { flex: 1, fontSize: fs(13), fontFamily: 'Inter_500Medium', color: colors.foreground, lineHeight: 18 },
+    deadlineCard: { backgroundColor: '#C9A050' + '12', borderRadius: colors.radius, borderWidth: 1, borderColor: '#C9A050' + '40', padding: 12, marginBottom: 8 },
+    deadlineText: { fontSize: fs(13), fontFamily: 'Inter_500Medium', color: colors.foreground, lineHeight: 18 },
     deadlineSource:{ fontSize: fs(11), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginTop: 2 },
 
     // Emergency

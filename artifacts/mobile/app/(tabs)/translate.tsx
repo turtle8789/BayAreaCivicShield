@@ -18,6 +18,7 @@ import { LanguagePicker } from '@/components/LanguagePicker';
 import { LANGUAGES, Language } from '@/constants/languages';
 import { useApp } from '@/context/AppContext';
 import { useColors } from '@/hooks/useColors';
+import { useT } from '@/hooks/useTranslation';
 
 // expo-speech-recognition requires a native dev/production build.
 // We lazy-require it only when the user taps the mic button so the
@@ -71,6 +72,7 @@ export default function TranslateScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { fs } = useApp();
+  const { t } = useT();
   const topPad = Platform.OS === 'web' ? 67 : insets.top;
 
   const [sourceText, setSourceText]       = useState('');
@@ -88,7 +90,7 @@ export default function TranslateScreen() {
   const webRecRef = useRef<any>(null);
 
   const sourceCode = sourceLang === 'auto' ? 'auto' : sourceLang.code;
-  const sourceName = sourceLang === 'auto' ? 'Auto-detect' : sourceLang.nativeName;
+  const sourceName = sourceLang === 'auto' ? t('translate.auto_detect') : sourceLang.nativeName;
 
   // Clean up native listeners on unmount
   useEffect(() => {
@@ -302,7 +304,7 @@ export default function TranslateScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle} accessibilityRole="header">🌐 Translate</Text>
-        <Text style={styles.headerSub}>Text or voice — 14 languages</Text>
+        <Text style={styles.headerSub}>{t('translate.subtitle')}</Text>
       </View>
 
       <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
@@ -335,7 +337,7 @@ export default function TranslateScreen() {
         {/* Source card */}
         <View style={styles.card}>
           <View style={styles.cardHeader}>
-            <Text style={styles.cardLabel} accessibilityRole="header">Original</Text>
+            <Text style={styles.cardLabel} accessibilityRole="header">{t('translate.original')}</Text>
             <Text style={[styles.charCount, sourceText.length >= CHAR_LIMIT && styles.charWarn]}>
               {sourceText.length}/{CHAR_LIMIT}
             </Text>
@@ -350,7 +352,7 @@ export default function TranslateScreen() {
             value={sourceText}
             onChangeText={(t) => setSourceText(t.slice(0, CHAR_LIMIT))}
             multiline
-            placeholder="Enter text to translate…"
+            placeholder={t('translate.placeholder')}
             placeholderTextColor={colors.mutedForeground}
             accessibilityLabel="Text to translate"
           />
@@ -361,7 +363,7 @@ export default function TranslateScreen() {
               // Show a clearly disabled button so users know upfront instead of hitting an error.
               <View style={[styles.voiceBtn, styles.voiceBtnIdle, { opacity: 0.45 }]}>
                 <Feather name="mic-off" size={15} color={colors.mutedForeground} />
-                <Text style={[styles.voiceBtnText, { color: colors.mutedForeground }]}>🎤 Voice</Text>
+                <Text style={[styles.voiceBtnText, { color: colors.mutedForeground }]}>{t('translate.voice_btn')}</Text>
               </View>
             ) : (
               <Pressable
@@ -372,7 +374,7 @@ export default function TranslateScreen() {
               >
                 <Feather name={listening ? 'mic-off' : 'mic'} size={15} color={listening ? '#E05252' : colors.mutedForeground} />
                 <Text style={[styles.voiceBtnText, { color: listening ? '#E05252' : colors.mutedForeground }]}>
-                  {listening ? 'Stop' : '🎤 Voice'}
+                  {listening ? t('translate.stop') : t('translate.voice_btn')}
                 </Text>
               </Pressable>
             )}
@@ -390,10 +392,10 @@ export default function TranslateScreen() {
             <Text style={styles.cardLabel} accessibilityRole="header">{targetLang.name}</Text>
           </View>
           {loading
-            ? <View style={styles.translatingRow}><ActivityIndicator size="small" color={colors.primary} /><Text style={styles.translatingTxt}>Translating…</Text></View>
+            ? <View style={styles.translatingRow}><ActivityIndicator size="small" color={colors.primary} /><Text style={styles.translatingTxt}>{t('translate.translating')}</Text></View>
             : translatedText
               ? <Text style={styles.outputText} selectable>{translatedText}</Text>
-              : <Text style={styles.placeholder}>Translation will appear here</Text>
+              : <Text style={styles.placeholder}>{t('translate.result_placeholder')}</Text>
           }
         </View>
 
@@ -406,7 +408,7 @@ export default function TranslateScreen() {
           accessibilityRole="button"
         >
           <Feather name="globe" size={18} color="#FFFFFF" />
-          <Text style={styles.translateBtnText}>Translate</Text>
+          <Text style={styles.translateBtnText}>{t('translate.btn')}</Text>
         </Pressable>
 
         {/* Tips */}

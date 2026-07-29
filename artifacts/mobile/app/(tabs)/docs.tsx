@@ -19,6 +19,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useApp } from '@/context/AppContext';
 import { useColors } from '@/hooks/useColors';
+import { useT } from '@/hooks/useTranslation';
 
 // ─── OCR via OCR.space free API ───────────────────────────────────────────────
 
@@ -182,6 +183,7 @@ export default function DocsScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { addDeadline, pendingDocText, setPendingDocText, fs } = useApp();
+  const { t } = useT();
   const topPad = Platform.OS === 'web' ? 67 : insets.top;
 
   const [inputText, setInputText] = useState('');
@@ -380,7 +382,7 @@ export default function DocsScreen() {
       {/* Input card */}
       <View style={styles.card}>
         <View style={styles.cardHeader}>
-          <Text style={styles.cardLabel} accessibilityRole="header">Legal Text</Text>
+          <Text style={styles.cardLabel} accessibilityRole="header">{t('docs.input_label')}</Text>
           <Text style={styles.charCount}>{inputText.length} chars</Text>
         </View>
         <TextInput
@@ -388,7 +390,7 @@ export default function DocsScreen() {
           value={inputText}
           onChangeText={setInputText}
           multiline
-          placeholder="Paste or type legal document text here…"
+          placeholder={t('docs.placeholder')}
           placeholderTextColor={colors.mutedForeground}
           accessibilityLabel="Legal document text input"
           accessibilityHint="Paste text from a court notice, eviction letter, or any legal document"
@@ -408,7 +410,7 @@ export default function DocsScreen() {
             ? <ActivityIndicator size="small" color={colors.primary} />
             : <Feather name="camera" size={15} color={colors.primary} />}
           <Text style={[styles.actionBtnText, { color: colors.primary }]}>
-            {ocrLoading ? 'Scanning…' : 'Scan Image'}
+            {ocrLoading ? '…' : t('docs.scan_image')}
           </Text>
         </Pressable>
         <Pressable
@@ -418,7 +420,7 @@ export default function DocsScreen() {
           accessibilityRole="button"
         >
           <Feather name="file-text" size={15} color={colors.foreground} />
-          <Text style={styles.actionBtnText}>Sample</Text>
+          <Text style={styles.actionBtnText}>{t('docs.sample')}</Text>
         </Pressable>
         {inputText.length > 0 && (
           <Pressable
@@ -457,7 +459,7 @@ export default function DocsScreen() {
           ? <ActivityIndicator size="small" color="#FFFFFF" />
           : <Feather name="search" size={18} color="#FFFFFF" />}
         <Text style={styles.analyzeBtnText}>
-          {analyzing ? 'Analyzing…' : '🔍 Extract Deadlines & Dates'}
+          {analyzing ? t('docs.analyzing') : t('docs.extract_btn')}
         </Text>
       </Pressable>
 
@@ -466,7 +468,7 @@ export default function DocsScreen() {
         <>
           <View style={styles.resultHeader}>
             <Text style={styles.resultTitle} accessibilityRole="header">
-              Results {totalFound > 0 ? `(${totalFound} found)` : ''}
+              {t('docs.results')} {totalFound > 0 ? `(${totalFound})` : ''}
             </Text>
             <View style={{ flexDirection: 'row', gap: 8 }}>
               <Pressable style={styles.iconBtn} onPress={() => setShowQR((p) => !p)} accessibilityLabel="Toggle QR code" accessibilityRole="button">
@@ -487,7 +489,7 @@ export default function DocsScreen() {
               accessibilityRole="button"
             >
               <Feather name="bookmark" size={16} color="#FFFFFF" />
-              <Text style={styles.saveDashText}>💾 Save Deadlines to Dashboard</Text>
+              <Text style={styles.saveDashText}>{t('docs.save_btn')}</Text>
             </Pressable>
           )}
 
@@ -501,10 +503,10 @@ export default function DocsScreen() {
             </View>
           )}
 
-          <ResultSection label="Important Dates" icon="calendar" color="#C9A050" items={result.dates} emptyMsg="No specific dates found." />
-          <ResultSection label="Deadlines & Actions Required" icon="alert-circle" color={colors.primary} items={result.deadlines} emptyMsg="No deadlines detected." />
-          <ResultSection label="Penalties & Warnings" icon="alert-triangle" color="#E05252" items={result.penalties} emptyMsg="No penalties found." />
-          <ResultSection label="Required Actions" icon="check-square" color="#5A9E6F" items={result.actions} emptyMsg="No required actions found." />
+          <ResultSection label={t('docs.important_dates')} icon="calendar" color="#C9A050" items={result.dates} emptyMsg={t('docs.no_dates')} />
+          <ResultSection label={t('docs.deadlines_section')} icon="alert-circle" color={colors.primary} items={result.deadlines} emptyMsg={t('docs.no_deadlines')} />
+          <ResultSection label={t('docs.penalties_section')} icon="alert-triangle" color="#E05252" items={result.penalties} emptyMsg={t('docs.no_penalties')} />
+          <ResultSection label={t('docs.actions_section')} icon="check-square" color="#5A9E6F" items={result.actions} emptyMsg={t('docs.no_actions')} />
 
           {totalFound === 0 && (
             <View style={styles.tipCard}>
@@ -550,13 +552,13 @@ export default function DocsScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle} accessibilityRole="header">📄 Document Analyzer</Text>
-        <Text style={styles.headerSub}>Text or image — extract deadlines, dates & penalties</Text>
+        <Text style={styles.headerTitle} accessibilityRole="header">{t('docs.title')}</Text>
+        <Text style={styles.headerSub}>{t('docs.subtitle')}</Text>
         <View style={styles.subTabRow}>
           {(['analyze', 'guide'] as const).map((tab) => (
             <Pressable key={tab} style={[styles.subTab, activeSubTab === tab && styles.subTabActive]} onPress={() => setActiveSubTab(tab)} accessibilityRole="tab" accessibilityState={{ selected: activeSubTab === tab }}>
               <Text style={[styles.subTabText, activeSubTab === tab && styles.subTabTextActive]}>
-                {tab === 'analyze' ? 'Analyze' : 'Guide'}
+                {tab === 'analyze' ? t('docs.tab_analyze') : t('docs.tab_guide')}
               </Text>
             </Pressable>
           ))}

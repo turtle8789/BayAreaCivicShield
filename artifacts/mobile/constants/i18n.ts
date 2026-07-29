@@ -30,7 +30,26 @@ export type I18nKey =
   | 'resources.showing_near' | 'resources.no_results'
   | 'resources.search_tip'
   // QR / Expo Go
-  | 'qr.title' | 'qr.subtitle' | 'qr.url_label' | 'qr.copy_url' | 'qr.copied';
+  | 'qr.title' | 'qr.subtitle' | 'qr.url_label' | 'qr.copy_url' | 'qr.copied'
+  // Docs screen
+  | 'docs.title' | 'docs.subtitle' | 'docs.tab_analyze' | 'docs.tab_guide'
+  | 'docs.input_label' | 'docs.placeholder' | 'docs.scan_image' | 'docs.sample'
+  | 'docs.extract_btn' | 'docs.analyzing' | 'docs.results'
+  | 'docs.important_dates' | 'docs.deadlines_section' | 'docs.penalties_section' | 'docs.actions_section'
+  | 'docs.save_btn' | 'docs.no_dates' | 'docs.no_deadlines' | 'docs.no_penalties' | 'docs.no_actions'
+  // Translate screen
+  | 'translate.subtitle' | 'translate.original' | 'translate.clear' | 'translate.btn'
+  | 'translate.placeholder' | 'translate.result_placeholder' | 'translate.translating'
+  | 'translate.voice_btn' | 'translate.stop' | 'translate.auto_detect'
+  // Community screen
+  | 'community.subtitle' | 'community.tab_forum' | 'community.tab_hub'
+  | 'community.search_forum' | 'community.search_hub'
+  | 'community.post_btn' | 'community.new_post' | 'community.open_website'
+  | 'community.no_posts' | 'community.free_badge' | 'community.no_resources'
+  // Home feature card titles
+  | 'home.feature_docs' | 'home.feature_translate' | 'home.feature_rights'
+  | 'home.feature_resources' | 'home.feature_hotlines' | 'home.feature_forum'
+  | 'home.feature_hub' | 'home.feature_log';
 
 type Translations = Record<I18nKey, Record<string, string>>;
 
@@ -761,5 +780,340 @@ export const TRANSLATIONS: Translations = {
     vi: 'Đã sao chép!',            tl: 'Nakopya!',               hi: 'कॉपी हो गया!',            ko: '복사됨!',
     ar: 'تم النسخ!',               fr: 'Copié!',                 pt: 'Copiado!',                ru: 'Скопировано!',
     ja: 'コピーしました！',          am: 'ተቀድቷል!',
+  },
+
+  // ── Docs screen ──────────────────────────────────────────────────────────────
+  'docs.title': {
+    en: '📄 Document Analyzer',  es: '📄 Analizador de Documentos',  'zh-CN': '📄 文件分析器',      'zh-TW': '📄 文件分析器',
+    vi: '📄 Phân Tích Tài Liệu', tl: '📄 Pagsusuri ng Dokumento',    hi: '📄 दस्तावेज़ विश्लेषक',   ko: '📄 문서 분석기',
+    ar: '📄 محلل الوثائق',        fr: '📄 Analyseur de Documents',    pt: '📄 Analisador de Documentos', ru: '📄 Анализатор Документов',
+    ja: '📄 文書アナライザー',      am: '📄 ሰነድ ተንታኝ',
+  },
+  'docs.subtitle': {
+    en: 'Extract deadlines, dates & penalties',  es: 'Extrae plazos, fechas y multas',
+    'zh-CN': '提取截止日期、日期和罚款',            'zh-TW': '提取截止日期、日期和罰款',
+    vi: 'Trích xuất thời hạn, ngày và hình phạt', tl: 'Kunin ang mga deadline, petsa at parusa',
+    hi: 'समय सीमाएं, तारीखें और जुर्माने निकालें',  ko: '마감일, 날짜 및 벌금 추출',
+    ar: 'استخراج المواعيد والتواريخ والعقوبات',   fr: 'Extraire les délais, dates et pénalités',
+    pt: 'Extrair prazos, datas e multas',          ru: 'Извлечь сроки, даты и штрафы',
+    ja: '期限・日付・罰金を抽出',                   am: 'የጊዜ ገደቦች፣ ቀኖች እና ቅጣቶች ይውጡ',
+  },
+  'docs.tab_analyze': {
+    en: 'Analyze',   es: 'Analizar',   'zh-CN': '分析',     'zh-TW': '分析',
+    vi: 'Phân tích', tl: 'Suriin',     hi: 'विश्लेषण',      ko: '분석',
+    ar: 'تحليل',     fr: 'Analyser',   pt: 'Analisar',      ru: 'Анализ',
+    ja: '分析',       am: 'ተንተናዊ',
+  },
+  'docs.tab_guide': {
+    en: 'Guide',       es: 'Guía',     'zh-CN': '指南',  'zh-TW': '指南',
+    vi: 'Hướng dẫn',   tl: 'Gabay',    hi: 'मार्गदर्शिका', ko: '가이드',
+    ar: 'دليل',        fr: 'Guide',    pt: 'Guia',       ru: 'Руководство',
+    ja: 'ガイド',       am: 'መምሪያ',
+  },
+  'docs.input_label': {
+    en: 'Legal Text',       es: 'Texto Legal',     'zh-CN': '法律文本',    'zh-TW': '法律文本',
+    vi: 'Văn bản pháp lý',  tl: 'Legal na Teksto', hi: 'कानूनी पाठ',       ko: '법적 텍스트',
+    ar: 'النص القانوني',    fr: 'Texte Juridique', pt: 'Texto Legal',      ru: 'Юридический текст',
+    ja: '法的テキスト',      am: 'የህግ ጽሑፍ',
+  },
+  'docs.placeholder': {
+    en: 'Paste or type legal document text here…',  es: 'Pega o escribe el texto legal aquí…',
+    'zh-CN': '在此粘贴或输入法律文件文本…',            'zh-TW': '在此貼上或輸入法律文件文本…',
+    vi: 'Dán hoặc gõ văn bản tài liệu pháp lý…',   tl: 'I-paste o i-type ang legal na teksto dito…',
+    hi: 'यहाँ कानूनी दस्तावेज़ का पाठ चिपकाएं…',    ko: '법적 문서 텍스트를 여기에 입력하세요…',
+    ar: 'الصق أو اكتب نص الوثيقة القانونية هنا…',  fr: 'Collez ou tapez le texte juridique ici…',
+    pt: 'Cole ou digite o texto legal aqui…',        ru: 'Вставьте юридический текст здесь…',
+    ja: 'ここに法的文書のテキストを入力…',             am: 'የህግ ሰነድ ጽሑፍ እዚህ ይለጥፉ…',
+  },
+  'docs.scan_image': {
+    en: 'Scan Image',    es: 'Escanear Imagen',  'zh-CN': '扫描图像',   'zh-TW': '掃描圖像',
+    vi: 'Quét Hình Ảnh', tl: 'I-scan ang Larawan', hi: 'छवि स्कैन करें', ko: '이미지 스캔',
+    ar: 'مسح الصورة',    fr: 'Scanner Image',    pt: 'Digitalizar',     ru: 'Сканировать',
+    ja: '画像をスキャン',  am: 'ምስልን ቃኝ',
+  },
+  'docs.sample': {
+    en: 'Sample',  es: 'Muestra',  'zh-CN': '示例',  'zh-TW': '範例',
+    vi: 'Mẫu',     tl: 'Sample',   hi: 'उदाहरण',     ko: '샘플',
+    ar: 'عينة',    fr: 'Exemple',  pt: 'Exemplo',    ru: 'Пример',
+    ja: 'サンプル', am: 'ናሙና',
+  },
+  'docs.extract_btn': {
+    en: '🔍 Extract Deadlines & Dates',     es: '🔍 Extraer Plazos y Fechas',
+    'zh-CN': '🔍 提取截止日期和日期',          'zh-TW': '🔍 提取截止日期和日期',
+    vi: '🔍 Trích Xuất Thời Hạn và Ngày',   tl: '🔍 Kunin ang mga Deadline at Petsa',
+    hi: '🔍 समय सीमाएं और तारीखें निकालें',  ko: '🔍 마감일 및 날짜 추출',
+    ar: '🔍 استخراج المواعيد والتواريخ',     fr: '🔍 Extraire Délais et Dates',
+    pt: '🔍 Extrair Prazos e Datas',         ru: '🔍 Извлечь сроки и даты',
+    ja: '🔍 期限と日付を抽出',               am: '🔍 የጊዜ ገደቦችና ቀኖች ይውጡ',
+  },
+  'docs.analyzing': {
+    en: 'Analyzing…',       es: 'Analizando…',     'zh-CN': '分析中…',   'zh-TW': '分析中…',
+    vi: 'Đang phân tích…',  tl: 'Sinusuri…',       hi: 'विश्लेषण हो रहा है…', ko: '분석 중…',
+    ar: 'يتم التحليل…',     fr: 'Analyse en cours…', pt: 'Analisando…', ru: 'Анализируется…',
+    ja: '分析中…',           am: 'በመተንተን ላይ…',
+  },
+  'docs.results': {
+    en: 'Results',    es: 'Resultados',  'zh-CN': '结果',   'zh-TW': '結果',
+    vi: 'Kết quả',    tl: 'Mga Resulta', hi: 'परिणाम',      ko: '결과',
+    ar: 'النتائج',    fr: 'Résultats',   pt: 'Resultados',  ru: 'Результаты',
+    ja: '結果',        am: 'ውጤቶች',
+  },
+  'docs.important_dates': {
+    en: 'Important Dates',     es: 'Fechas Importantes',  'zh-CN': '重要日期',   'zh-TW': '重要日期',
+    vi: 'Ngày Quan Trọng',     tl: 'Mahahalagang Petsa',  hi: 'महत्वपूर्ण तारीखें', ko: '중요 날짜',
+    ar: 'التواريخ المهمة',     fr: 'Dates Importantes',   pt: 'Datas Importantes', ru: 'Важные даты',
+    ja: '重要な日付',            am: 'አስፈላጊ ቀኖች',
+  },
+  'docs.deadlines_section': {
+    en: 'Deadlines & Actions Required',    es: 'Plazos y Acciones Requeridas',
+    'zh-CN': '截止日期和必要行动',            'zh-TW': '截止日期和必要行動',
+    vi: 'Thời Hạn và Hành Động Cần Thiết', tl: 'Mga Deadline at Kinakailangang Aksyon',
+    hi: 'समय सीमाएं और आवश्यक कार्रवाई',   ko: '마감일 및 필요 조치',
+    ar: 'المواعيد والإجراءات المطلوبة',     fr: 'Délais et Actions Requises',
+    pt: 'Prazos e Ações Necessárias',       ru: 'Сроки и необходимые действия',
+    ja: '期限と必要なアクション',             am: 'የጊዜ ገደቦች እና የሚያስፈልጉ እርምጃዎች',
+  },
+  'docs.penalties_section': {
+    en: 'Penalties & Warnings',   es: 'Multas y Advertencias', 'zh-CN': '处罚和警告',  'zh-TW': '處罰和警告',
+    vi: 'Hình Phạt và Cảnh Báo',  tl: 'Mga Parusa at Babala',  hi: 'जुर्माने और चेतावनियां', ko: '벌금 및 경고',
+    ar: 'العقوبات والتحذيرات',    fr: 'Pénalités et Avertissements', pt: 'Penalidades e Avisos', ru: 'Штрафы и предупреждения',
+    ja: '罰金・警告',               am: 'ቅጣቶች እና ማስጠንቀቂያዎች',
+  },
+  'docs.actions_section': {
+    en: 'Required Actions',        es: 'Acciones Requeridas',  'zh-CN': '必要行动',  'zh-TW': '必要行動',
+    vi: 'Hành Động Cần Thiết',     tl: 'Kinakailangang Aksyon', hi: 'आवश्यक कार्रवाई', ko: '필요 조치',
+    ar: 'الإجراءات المطلوبة',      fr: 'Actions Requises',     pt: 'Ações Necessárias', ru: 'Необходимые действия',
+    ja: '必要なアクション',          am: 'የሚያስፈልጉ እርምጃዎች',
+  },
+  'docs.save_btn': {
+    en: '💾 Save Dates to Dashboard',   es: '💾 Guardar Fechas en Panel',
+    'zh-CN': '💾 保存日期到仪表板',       'zh-TW': '💾 儲存日期到儀表板',
+    vi: '💾 Lưu Ngày vào Bảng Điều Khiển', tl: '💾 I-save ang mga Petsa sa Dashboard',
+    hi: '💾 डैशबोर्ड में तारीखें सहेजें', ko: '💾 대시보드에 날짜 저장',
+    ar: '💾 حفظ التواريخ في لوحة التحكم', fr: '💾 Enregistrer les Dates',
+    pt: '💾 Salvar Datas no Painel',     ru: '💾 Сохранить даты на панели',
+    ja: '💾 日付をダッシュボードに保存',  am: '💾 ቀኖቹን ወደ ዳሽቦርድ አስቀምጥ',
+  },
+  'docs.no_dates': {
+    en: 'No specific dates found.',    es: 'No se encontraron fechas.',  'zh-CN': '未找到具体日期。',  'zh-TW': '未找到具體日期。',
+    vi: 'Không tìm thấy ngày.',        tl: 'Walang petsa na nakita.',    hi: 'कोई तारीख नहीं मिली।',   ko: '날짜를 찾을 수 없습니다.',
+    ar: 'لم يتم العثور على تواريخ.',   fr: 'Aucune date trouvée.',       pt: 'Nenhuma data encontrada.',ru: 'Дат не найдено.',
+    ja: '日付は見つかりませんでした。',  am: 'ምንም ቀን አልተገኘም።',
+  },
+  'docs.no_deadlines': {
+    en: 'No deadlines detected.',      es: 'No se detectaron plazos.',   'zh-CN': '未检测到截止日期。', 'zh-TW': '未偵測到截止日期。',
+    vi: 'Không phát hiện thời hạn.',   tl: 'Walang deadline na nakita.', hi: 'कोई समय सीमा नहीं मिली।', ko: '마감일이 없습니다.',
+    ar: 'لم يتم اكتشاف مواعيد.',       fr: 'Aucune échéance détectée.',  pt: 'Nenhum prazo detectado.',  ru: 'Сроков не обнаружено.',
+    ja: '期限は検出されませんでした。',  am: 'ምንም የጊዜ ገደብ አልተገኘም።',
+  },
+  'docs.no_penalties': {
+    en: 'No penalties found.',         es: 'No se encontraron multas.',  'zh-CN': '未发现处罚。',       'zh-TW': '未發現處罰。',
+    vi: 'Không tìm thấy hình phạt.',   tl: 'Walang parusa na nakita.',   hi: 'कोई जुर्माना नहीं मिला।', ko: '벌금이 없습니다.',
+    ar: 'لم يتم العثور على عقوبات.',   fr: 'Aucune pénalité trouvée.',   pt: 'Nenhuma penalidade.',      ru: 'Штрафов не найдено.',
+    ja: '罰金は見つかりませんでした。',  am: 'ምንም ቅጣት አልተገኘም።',
+  },
+  'docs.no_actions': {
+    en: 'No required actions found.',  es: 'No se encontraron acciones.','zh-CN': '未找到必要行动。',   'zh-TW': '未找到必要行動。',
+    vi: 'Không tìm thấy hành động.',   tl: 'Walang kinakailangang aksyon.',hi: 'कोई आवश्यक कार्रवाई नहीं।',ko: '필요한 조치가 없습니다.',
+    ar: 'لم يتم العثور على إجراءات.',  fr: 'Aucune action requise.',     pt: 'Nenhuma ação necessária.', ru: 'Действий не найдено.',
+    ja: 'アクションはありません。',      am: 'ምንም እርምጃ አልተገኘም።',
+  },
+
+  // ── Translate screen ─────────────────────────────────────────────────────────
+  'translate.subtitle': {
+    en: 'Text or voice — translate instantly',  es: 'Texto o voz — traduce al instante',
+    'zh-CN': '文字或语音 — 即时翻译',             'zh-TW': '文字或語音 — 即時翻譯',
+    vi: 'Văn bản hoặc giọng nói — dịch ngay',  tl: 'Teksto o boses — isinalin kaagad',
+    hi: 'टेक्स्ट या आवाज़ — तुरंत अनुवाद',      ko: '텍스트 또는 음성 — 즉시 번역',
+    ar: 'نص أو صوت — ترجمة فورية',             fr: 'Texte ou voix — traduction instantanée',
+    pt: 'Texto ou voz — tradução instantânea',  ru: 'Текст или голос — перевод',
+    ja: 'テキスト・音声 — 即時翻訳',              am: 'ጽሑፍ ወይም ድምፅ — ወዲያው ትርጉም',
+  },
+  'translate.original': {
+    en: 'Original',  es: 'Original',  'zh-CN': '原文',  'zh-TW': '原文',
+    vi: 'Gốc',       tl: 'Orihinal',  hi: 'मूल',        ko: '원본',
+    ar: 'الأصل',     fr: 'Original',  pt: 'Original',   ru: 'Оригинал',
+    ja: '原文',       am: 'ዋናው',
+  },
+  'translate.clear': {
+    en: 'Clear',   es: 'Borrar',    'zh-CN': '清除',  'zh-TW': '清除',
+    vi: 'Xóa',     tl: 'I-clear',   hi: 'साफ़ करें',  ko: '지우기',
+    ar: 'مسح',     fr: 'Effacer',   pt: 'Limpar',     ru: 'Очистить',
+    ja: 'クリア',   am: 'አጽዳ',
+  },
+  'translate.btn': {
+    en: 'Translate',  es: 'Traducir',  'zh-CN': '翻译',  'zh-TW': '翻譯',
+    vi: 'Dịch',       tl: 'Isalin',    hi: 'अनुवाद करें', ko: '번역',
+    ar: 'ترجم',       fr: 'Traduire',  pt: 'Traduzir',   ru: 'Перевести',
+    ja: '翻訳',        am: 'ተርጉም',
+  },
+  'translate.placeholder': {
+    en: 'Enter text to translate…',    es: 'Escribe el texto a traducir…',
+    'zh-CN': '输入要翻译的文本…',         'zh-TW': '輸入要翻譯的文本…',
+    vi: 'Nhập văn bản cần dịch…',      tl: 'Ilagay ang tekstong isalin…',
+    hi: 'अनुवाद के लिए टेक्स्ट दर्ज करें…', ko: '번역할 텍스트를 입력하세요…',
+    ar: 'أدخل النص للترجمة…',          fr: 'Entrez le texte à traduire…',
+    pt: 'Digite o texto para traduzir…', ru: 'Введите текст для перевода…',
+    ja: '翻訳するテキストを入力…',        am: 'ለመተርጎም ጽሑፍ ያስገቡ…',
+  },
+  'translate.result_placeholder': {
+    en: 'Translation will appear here',  es: 'La traducción aparecerá aquí',
+    'zh-CN': '翻译结果将显示在此处',        'zh-TW': '翻譯結果將顯示在此處',
+    vi: 'Bản dịch sẽ xuất hiện ở đây',   tl: 'Lilitaw dito ang pagsasalin',
+    hi: 'अनुवाद यहाँ दिखाई देगा',         ko: '번역이 여기에 표시됩니다',
+    ar: 'ستظهر الترجمة هنا',             fr: 'La traduction apparaîtra ici',
+    pt: 'A tradução aparecerá aqui',      ru: 'Перевод появится здесь',
+    ja: '翻訳がここに表示されます',          am: 'ትርጉሙ እዚህ ይታያል',
+  },
+  'translate.translating': {
+    en: 'Translating…',    es: 'Traduciendo…',     'zh-CN': '翻译中…',  'zh-TW': '翻譯中…',
+    vi: 'Đang dịch…',      tl: 'Nagsasalin…',      hi: 'अनुवाद हो रहा है…', ko: '번역 중…',
+    ar: 'جارٍ الترجمة…',   fr: 'Traduction en cours…', pt: 'Traduzindo…', ru: 'Перевод…',
+    ja: '翻訳中…',          am: 'በመተርጎም ላይ…',
+  },
+  'translate.voice_btn': {
+    en: '🎤 Voice',  es: '🎤 Voz',    'zh-CN': '🎤 语音',  'zh-TW': '🎤 語音',
+    vi: '🎤 Giọng',  tl: '🎤 Boses',  hi: '🎤 आवाज़',      ko: '🎤 음성',
+    ar: '🎤 صوت',    fr: '🎤 Voix',   pt: '🎤 Voz',        ru: '🎤 Голос',
+    ja: '🎤 音声',    am: '🎤 ድምፅ',
+  },
+  'translate.stop': {
+    en: 'Stop',   es: 'Detener',  'zh-CN': '停止',  'zh-TW': '停止',
+    vi: 'Dừng',   tl: 'Ihinto',   hi: 'रोकें',      ko: '정지',
+    ar: 'إيقاف',  fr: 'Arrêter',  pt: 'Parar',      ru: 'Стоп',
+    ja: '停止',    am: 'አቁም',
+  },
+  'translate.auto_detect': {
+    en: 'Auto-detect',           es: 'Detección automática',  'zh-CN': '自动检测',  'zh-TW': '自動偵測',
+    vi: 'Tự phát hiện',          tl: 'Awtomatiko',            hi: 'स्वतः पहचान',    ko: '자동 감지',
+    ar: 'كشف تلقائي',            fr: 'Détection auto',        pt: 'Auto-detectar',  ru: 'Авто',
+    ja: '自動検出',               am: 'ራስ-ፈላጊ',
+  },
+
+  // ── Community screen ─────────────────────────────────────────────────────────
+  'community.subtitle': {
+    en: 'Forum & legal resource directory',   es: 'Foro y directorio de recursos legales',
+    'zh-CN': '论坛与法律资源目录',               'zh-TW': '論壇與法律資源目錄',
+    vi: 'Diễn đàn & tài nguyên pháp lý',      tl: 'Forum at legal na direktoryo',
+    hi: 'फोरम और कानूनी संसाधन निर्देशिका',   ko: '포럼 및 법률 자원 디렉토리',
+    ar: 'المنتدى ودليل الموارد القانونية',     fr: 'Forum et répertoire juridique',
+    pt: 'Fórum e diretório de recursos',       ru: 'Форум и каталог ресурсов',
+    ja: 'フォーラムと法律リソース',              am: 'ፎረም እና የህግ ሀብት ማውጫ',
+  },
+  'community.tab_forum': {
+    en: '💬 Forum',  es: '💬 Foro',    'zh-CN': '💬 论坛',  'zh-TW': '💬 論壇',
+    vi: '💬 Diễn đàn', tl: '💬 Forum', hi: '💬 फोरम',      ko: '💬 포럼',
+    ar: '💬 المنتدى', fr: '💬 Forum',  pt: '💬 Fórum',     ru: '💬 Форум',
+    ja: '💬 フォーラム', am: '💬 ፎረም',
+  },
+  'community.tab_hub': {
+    en: '📦 Resource Hub',    es: '📦 Centro de Recursos',  'zh-CN': '📦 资源中心',  'zh-TW': '📦 資源中心',
+    vi: '📦 Trung Tâm TN',    tl: '📦 Resource Hub',        hi: '📦 संसाधन हब',      ko: '📦 리소스 허브',
+    ar: '📦 مركز الموارد',    fr: '📦 Centre de Ressources', pt: '📦 Centro',        ru: '📦 Ресурсы',
+    ja: '📦 リソースハブ',      am: '📦 የሀብቶች ማዕከል',
+  },
+  'community.search_forum': {
+    en: 'Search discussions…',   es: 'Buscar discusiones…',  'zh-CN': '搜索讨论…',  'zh-TW': '搜尋討論…',
+    vi: 'Tìm kiếm thảo luận…',   tl: 'Maghanap ng diskusyon…', hi: 'चर्चाएं खोजें…', ko: '토론 검색…',
+    ar: 'البحث في المناقشات…',   fr: 'Rechercher des discussions…', pt: 'Pesquisar discussões…', ru: 'Поиск обсуждений…',
+    ja: 'ディスカッションを検索…', am: 'ውይይቶች ፈልግ…',
+  },
+  'community.search_hub': {
+    en: 'Search resources…',     es: 'Buscar recursos…',     'zh-CN': '搜索资源…',  'zh-TW': '搜尋資源…',
+    vi: 'Tìm kiếm tài nguyên…',  tl: 'Maghanap ng mapagkukunan…', hi: 'संसाधन खोजें…', ko: '리소스 검색…',
+    ar: 'البحث في الموارد…',     fr: 'Rechercher des ressources…', pt: 'Pesquisar recursos…', ru: 'Поиск ресурсов…',
+    ja: 'リソースを検索…',         am: 'ሀብቶቹን ፈልግ…',
+  },
+  'community.post_btn': {
+    en: 'Post',       es: 'Publicar',  'zh-CN': '发布',  'zh-TW': '發布',
+    vi: 'Đăng',       tl: 'I-post',    hi: 'पोस्ट करें', ko: '게시',
+    ar: 'نشر',        fr: 'Publier',   pt: 'Postar',     ru: 'Опубл.',
+    ja: '投稿',        am: 'ለጥፍ',
+  },
+  'community.new_post': {
+    en: 'New Post',      es: 'Nueva Publicación',  'zh-CN': '新帖子',  'zh-TW': '新貼文',
+    vi: 'Bài Đăng Mới',  tl: 'Bagong Post',        hi: 'नई पोस्ट',     ko: '새 게시물',
+    ar: 'منشور جديد',    fr: 'Nouvelle Publication', pt: 'Novo Post',  ru: 'Новая запись',
+    ja: '新規投稿',       am: 'አዲስ ልጥፍ',
+  },
+  'community.open_website': {
+    en: 'Open Website',    es: 'Abrir Sitio Web',  'zh-CN': '打开网站',  'zh-TW': '開啟網站',
+    vi: 'Mở Trang Web',    tl: 'Buksan ang Website', hi: 'वेबसाइट खोलें', ko: '웹사이트 열기',
+    ar: 'فتح الموقع',      fr: 'Ouvrir le Site',   pt: 'Abrir Site',     ru: 'Открыть сайт',
+    ja: 'ウェブサイトを開く', am: 'ድህረ ገጽ ክፈት',
+  },
+  'community.no_posts': {
+    en: 'No posts match your search.',   es: 'Ninguna publicación coincide.',
+    'zh-CN': '没有帖子符合搜索。',          'zh-TW': '沒有貼文符合搜尋。',
+    vi: 'Không có bài đăng phù hợp.',    tl: 'Walang post na tumutugma.',
+    hi: 'कोई पोस्ट मेल नहीं खाती।',      ko: '검색에 맞는 게시물이 없습니다.',
+    ar: 'لا توجد مشاركات تطابق.',        fr: 'Aucune publication trouvée.',
+    pt: 'Nenhuma publicação encontrada.', ru: 'Нет записей.',
+    ja: '一致する投稿はありません。',        am: 'ምንም ልጥፍ አልተዛመደም።',
+  },
+  'community.free_badge': {
+    en: 'FREE',     es: 'GRATIS',  'zh-CN': '免费',   'zh-TW': '免費',
+    vi: 'MIỄN PHÍ', tl: 'LIBRE',   hi: 'मुफ़्त',       ko: '무료',
+    ar: 'مجاني',    fr: 'GRATUIT', pt: 'GRÁTIS',      ru: 'БЕСПЛАТНО',
+    ja: '無料',      am: 'ነፃ',
+  },
+  'community.no_resources': {
+    en: 'No resources match your search.',  es: 'Ningún recurso coincide.',
+    'zh-CN': '没有资源符合搜索。',             'zh-TW': '沒有資源符合搜尋。',
+    vi: 'Không có tài nguyên phù hợp.',     tl: 'Walang mapagkukunang tumutugma.',
+    hi: 'कोई संसाधन नहीं मिला।',            ko: '검색에 맞는 리소스가 없습니다.',
+    ar: 'لا توجد موارد تطابق.',             fr: 'Aucune ressource trouvée.',
+    pt: 'Nenhum recurso encontrado.',        ru: 'Ресурсов не найдено.',
+    ja: 'リソースはありません。',              am: 'ምንም ሀብት አልተዛመደም።',
+  },
+
+  // ── Home feature card titles ──────────────────────────────────────────────────
+  'home.feature_docs': {
+    en: '📄 Document Analyzer',  es: '📄 Analizador de Documentos',  'zh-CN': '📄 文件分析器',     'zh-TW': '📄 文件分析器',
+    vi: '📄 Phân Tích Tài Liệu', tl: '📄 Pagsusuri ng Dokumento',    hi: '📄 दस्तावेज़ विश्लेषक', ko: '📄 문서 분석기',
+    ar: '📄 محلل الوثائق',       fr: '📄 Analyseur de Documents',    pt: '📄 Analisador',          ru: '📄 Анализатор Документов',
+    ja: '📄 文書アナライザー',     am: '📄 ሰነድ ተንታኝ',
+  },
+  'home.feature_translate': {
+    en: '🌐 Real-Time Translation',  es: '🌐 Traducción en Tiempo Real',  'zh-CN': '🌐 实时翻译',  'zh-TW': '🌐 即時翻譯',
+    vi: '🌐 Dịch Thuật Trực Tiếp',  tl: '🌐 Real-Time na Pagsasalin',    hi: '🌐 रीयल-टाइम अनुवाद', ko: '🌐 실시간 번역',
+    ar: '🌐 الترجمة الفورية',        fr: '🌐 Traduction en Temps Réel',   pt: '🌐 Tradução em Tempo Real', ru: '🌐 Перевод в реальном времени',
+    ja: '🌐 リアルタイム翻訳',        am: '🌐 በቅጽበት ትርጉም',
+  },
+  'home.feature_rights': {
+    en: '📚 Know Your Rights',          es: '📚 Conoce tus Derechos',      'zh-CN': '📚 了解你的权利',  'zh-TW': '📚 了解您的權利',
+    vi: '📚 Biết Quyền của Bạn',        tl: '📚 Alamin ang Iyong mga Karapatan', hi: '📚 अपने अधिकार जानें', ko: '📚 당신의 권리 알기',
+    ar: '📚 اعرف حقوقك',               fr: '📚 Connaissez Vos Droits',    pt: '📚 Conheça Seus Direitos', ru: '📚 Знай свои права',
+    ja: '📚 あなたの権利を知る',          am: '📚 መብቶቸህን ዕወቅ',
+  },
+  'home.feature_resources': {
+    en: '📍 Find Legal Resources',     es: '📍 Encontrar Recursos Legales',  'zh-CN': '📍 查找法律资源',  'zh-TW': '📍 尋找法律資源',
+    vi: '📍 Tìm Tài Nguyên Pháp Lý',  tl: '📍 Hanapin ang Legal na Mapagkukunan', hi: '📍 कानूनी संसाधन खोजें', ko: '📍 법률 자원 찾기',
+    ar: '📍 اعثر على الموارد القانونية', fr: '📍 Trouver des Ressources',   pt: '📍 Encontrar Recursos',   ru: '📍 Найти ресурсы',
+    ja: '📍 法律リソースを探す',          am: '📍 የህግ ሀብቶች ፈልግ',
+  },
+  'home.feature_hotlines': {
+    en: '📞 Crisis Hotlines',    es: '📞 Líneas de Crisis',   'zh-CN': '📞 危机热线',    'zh-TW': '📞 危機熱線',
+    vi: '📞 Đường Dây Khủng Hoảng', tl: '📞 Mga Crisis Hotline', hi: '📞 संकट हॉटलाइन', ko: '📞 위기 핫라인',
+    ar: '📞 خطوط أزمات',          fr: '📞 Lignes de Crise',   pt: '📞 Linhas de Crise', ru: '📞 Горячие линии',
+    ja: '📞 緊急ホットライン',       am: '📞 የቀውስ ሆትላይኖች',
+  },
+  'home.feature_forum': {
+    en: '💬 Community Forum',    es: '💬 Foro Comunitario',  'zh-CN': '💬 社区论坛',  'zh-TW': '💬 社群論壇',
+    vi: '💬 Diễn Đàn Cộng Đồng', tl: '💬 Community Forum',   hi: '💬 सामुदायिक मंच',  ko: '💬 커뮤니티 포럼',
+    ar: '💬 منتدى المجتمع',       fr: '💬 Forum Communautaire', pt: '💬 Fórum Comunitário', ru: '💬 Форум сообщества',
+    ja: '💬 コミュニティフォーラム', am: '💬 ማህበረሰብ ፎረም',
+  },
+  'home.feature_hub': {
+    en: '📚 Resource Hub',       es: '📚 Centro de Recursos',  'zh-CN': '📚 资源中心',  'zh-TW': '📚 資源中心',
+    vi: '📚 Trung Tâm Tài Nguyên', tl: '📚 Resource Hub',      hi: '📚 संसाधन हब',      ko: '📚 리소스 허브',
+    ar: '📚 مركز الموارد',        fr: '📚 Centre de Ressources', pt: '📚 Centro',        ru: '📚 Центр ресурсов',
+    ja: '📚 リソースハブ',          am: '📚 የሀብቶች ማዕከል',
+  },
+  'home.feature_log': {
+    en: '🗂️ Encounter Log',         es: '🗂️ Registro de Encuentros',  'zh-CN': '🗂️ 遭遇记录',  'zh-TW': '🗂️ 遭遇記錄',
+    vi: '🗂️ Nhật Ký Gặp Gỡ',       tl: '🗂️ Talaan ng Pakikipagtagpo', hi: '🗂️ मुठभेड़ लॉग',    ko: '🗂️ 조우 기록',
+    ar: '🗂️ سجل المواجهات',         fr: '🗂️ Journal des Rencontres',  pt: '🗂️ Registro',      ru: '🗂️ Журнал встреч',
+    ja: '🗂️ 遭遇ログ',               am: '🗂️ ስብሰባ መዝገብ',
   },
 };

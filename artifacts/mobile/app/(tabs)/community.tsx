@@ -34,6 +34,7 @@ import {
 } from '@/constants/resource-hub-data';
 import { useApp } from '@/context/AppContext';
 import { useColors } from '@/hooks/useColors';
+import { useT } from '@/hooks/useTranslation';
 
 type MainTab = 'forum' | 'hub';
 
@@ -69,6 +70,7 @@ async function openUrl(url: string) {
 
 function ForumTab() {
   const colors   = useColors();
+  const { t } = useT();
   const { fs, forumPosts, addForumPost, toggleForumHelpful, helpfulIds } = useApp() as any;
   const allPosts = [...forumPosts.filter((p: ForumPost) => p.isUserPost), ...SEED_POSTS];
 
@@ -117,7 +119,7 @@ function ForumTab() {
           style={{ flex: 1, fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground }}
           value={search}
           onChangeText={setSearch}
-          placeholder="Search discussions…"
+          placeholder={t('community.search_forum')}
           placeholderTextColor={colors.mutedForeground}
         />
         {search.length > 0 && (
@@ -172,7 +174,7 @@ function ForumTab() {
               >
                 <Feather name="thumbs-up" size={14} color={helpful ? colors.primary : colors.mutedForeground} />
                 <Text style={{ fontSize: fs(12), fontFamily: 'Inter_500Medium', color: helpful ? colors.primary : colors.mutedForeground }}>
-                  {p.helpfulCount + (helpful && !p.markedHelpful ? 1 : 0)} helpful
+                  {p.helpfulCount + (helpful && !p.markedHelpful ? 1 : 0)} 👍
                 </Text>
               </Pressable>
               <Pressable onPress={() => setDetailPost(p)} style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
@@ -189,7 +191,7 @@ function ForumTab() {
 
       {filtered.length === 0 && (
         <View style={{ padding: 24, alignItems: 'center' }}>
-          <Text style={{ fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, textAlign: 'center' }}>No posts match your search.</Text>
+          <Text style={{ fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, textAlign: 'center' }}>{t('community.no_posts')}</Text>
         </View>
       )}
 
@@ -224,7 +226,7 @@ function ForumTab() {
         accessibilityLabel="Create new post"
       >
         <Feather name="edit-2" size={15} color="#FFFFFF" />
-        <Text style={{ fontSize: 14, fontFamily: 'Inter_600SemiBold', color: '#FFFFFF' }}>Post</Text>
+        <Text style={{ fontSize: 14, fontFamily: 'Inter_600SemiBold', color: '#FFFFFF' }}>{t('community.post_btn')}</Text>
       </Pressable>
     </>
   );
@@ -269,12 +271,13 @@ function DetailView({ post, onClose }: { post: ForumPost; onClose: () => void })
 
 function NewPostView({ title, setTitle, body, setBody, cat, setCat, submitting, onSubmit, onClose }: any) {
   const colors = useColors();
+  const { t } = useT();
   const { fs } = useApp();
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, borderBottomWidth: 1, borderBottomColor: colors.border, paddingTop: Platform.OS === 'ios' ? 50 : 20 }}>
         <Pressable onPress={onClose} hitSlop={12} style={{ marginRight: 12 }}><Feather name="x" size={22} color={colors.foreground} /></Pressable>
-        <Text style={{ flex: 1, fontSize: fs(17), fontFamily: 'Inter_700Bold', color: colors.foreground }}>New Post</Text>
+        <Text style={{ flex: 1, fontSize: fs(17), fontFamily: 'Inter_700Bold', color: colors.foreground }}>{t('community.new_post')}</Text>
         <Pressable onPress={onSubmit} disabled={submitting} style={{ backgroundColor: colors.primary, borderRadius: 20, paddingHorizontal: 16, paddingVertical: 7, opacity: submitting ? 0.6 : 1 }}>
           <Text style={{ fontSize: fs(14), fontFamily: 'Inter_600SemiBold', color: '#FFFFFF' }}>Share</Text>
         </Pressable>
@@ -310,6 +313,7 @@ function NewPostView({ title, setTitle, body, setBody, cat, setCat, submitting, 
 
 function HubTab() {
   const colors = useColors();
+  const { t } = useT();
   const { fs } = useApp();
   const [filter, setFilter]   = useState<HubCategory | 'all'>('all');
   const [search, setSearch]   = useState('');
@@ -329,7 +333,7 @@ function HubTab() {
         <TextInput
           style={{ flex: 1, fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground }}
           value={search} onChangeText={setSearch}
-          placeholder="Search resources…"
+          placeholder={t('community.search_hub')}
           placeholderTextColor={colors.mutedForeground}
         />
         {search.length > 0 && <Pressable onPress={() => setSearch('')} hitSlop={8}><Feather name="x" size={14} color={colors.mutedForeground} /></Pressable>}
@@ -360,7 +364,7 @@ function HubTab() {
           <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 6 }}>
             <Text style={{ flex: 1, fontSize: fs(15), fontFamily: 'Inter_600SemiBold', color: colors.foreground, lineHeight: 21 }}>{r.name}</Text>
             <View style={{ backgroundColor: r.free ? '#5A9E6F18' : colors.muted, borderRadius: 20, paddingHorizontal: 8, paddingVertical: 3 }}>
-              <Text style={{ fontSize: fs(10), fontFamily: 'Inter_600SemiBold', color: r.free ? '#5A9E6F' : colors.mutedForeground }}>{r.free ? 'FREE' : 'PAID'}</Text>
+              <Text style={{ fontSize: fs(10), fontFamily: 'Inter_600SemiBold', color: r.free ? '#5A9E6F' : colors.mutedForeground }}>{r.free ? t('community.free_badge') : 'PAID'}</Text>
             </View>
           </View>
           <Text style={{ fontSize: fs(13), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, lineHeight: 18, marginBottom: 8 }}>{r.description}</Text>
@@ -374,7 +378,7 @@ function HubTab() {
           <View style={{ flexDirection: 'row', gap: 8 }}>
             <Pressable onPress={() => openUrl(r.url.startsWith('http') ? r.url : `https://${r.url}`)} style={{ flex: 1, backgroundColor: colors.primary, borderRadius: 10, paddingVertical: 10, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 6 }}>
               <Feather name="external-link" size={14} color="#FFFFFF" />
-              <Text style={{ fontSize: fs(13), fontFamily: 'Inter_600SemiBold', color: '#FFFFFF' }}>Open Website</Text>
+              <Text style={{ fontSize: fs(13), fontFamily: 'Inter_600SemiBold', color: '#FFFFFF' }}>{t('community.open_website')}</Text>
             </Pressable>
             {r.phone && (
               <Pressable onPress={() => Linking.openURL(`tel:${r.phone!.replace(/\D/g, '')}`).catch(() => {})} style={{ backgroundColor: '#5A9E6F14', borderRadius: 10, paddingVertical: 10, paddingHorizontal: 16, alignItems: 'center', flexDirection: 'row', gap: 6 }}>
@@ -394,6 +398,7 @@ function HubTab() {
 export default function CommunityScreen() {
   const colors  = useColors();
   const insets  = useSafeAreaInsets();
+  const { t }   = useT();
   const { fs }  = useApp();
   const topPad  = Platform.OS === 'web' ? 67 : insets.top;
   const [tab, setTab] = useState<MainTab>('forum');
@@ -417,11 +422,11 @@ export default function CommunityScreen() {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle} accessibilityRole="header">💬 Community</Text>
-        <Text style={styles.headerSub}>Forum & legal resource directory</Text>
+        <Text style={styles.headerSub}>{t('community.subtitle')}</Text>
         <View style={styles.tabRow}>
           {([
-            { id: 'forum' as MainTab, label: '💬 Forum' },
-            { id: 'hub'   as MainTab, label: '📦 Resource Hub' },
+            { id: 'forum' as MainTab, label: t('community.tab_forum') },
+            { id: 'hub'   as MainTab, label: t('community.tab_hub') },
           ]).map(({ id, label }) => (
             <Pressable
               key={id}
