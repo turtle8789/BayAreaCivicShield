@@ -39,6 +39,7 @@ export interface SavedDeadline {
   text: string;
   source: string;
   savedAt: string;
+  docText?: string; // original document text — for "View Case Details" navigation
 }
 
 // ─── Accessibility / Settings ─────────────────────────────────────────────────
@@ -81,9 +82,13 @@ interface AppContextValue {
 
   // Saved deadlines (dashboard)
   savedDeadlines: SavedDeadline[];
-  addDeadline: (text: string, source: string) => Promise<void>;
+  addDeadline: (text: string, source: string, docText?: string) => Promise<void>;
   removeDeadline: (id: string) => Promise<void>;
   clearDeadlines: () => Promise<void>;
+
+  // Pending doc text — set before navigating to Docs so it pre-populates the analyzer
+  pendingDocText: string | null;
+  setPendingDocText: (text: string | null) => void;
 
   // Forum (community discussion board)
   forumPosts: ForumPost[];  // user-created posts only (seed posts come from constants)
@@ -142,6 +147,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [fontSize, setFontSizeState]          = useState<FontSizeLevel>('medium');
   const [highContrast, setHighContrastState]  = useState(false);
   const [tourCompleted, setTourCompletedState]= useState(false);
+  const [pendingDocText, setPendingDocText]   = useState<string | null>(null);
 
   // ── Hydrate from AsyncStorage ─────────────────────────────────────────────
   useEffect(() => {
@@ -199,12 +205,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // ── Saved Deadlines ───────────────────────────────────────────────────────
-  const addDeadline = useCallback(async (text: string, source: string) => {
+  const addDeadline = useCallback(async (text: string, source: string, docText?: string) => {
     const item: SavedDeadline = {
       id: Date.now().toString() + Math.random().toString(36).slice(2, 6),
       text: text.slice(0, 300),
       source,
       savedAt: new Date().toISOString(),
+      docText: docText?.slice(0, 4000), // store up to 4000 chars of the original document
     };
     const updated = [item, ...savedDeadlines];
     setSavedDeadlines(updated);
@@ -294,6 +301,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         encounters, addEncounter, deleteEncounter,
         translateText, isTranslating,
         savedDeadlines, addDeadline, removeDeadline, clearDeadlines,
+        pendingDocText, setPendingDocText,
         forumPosts: allForumPosts, addForumPost, toggleForumHelpful,
         fontSize, setFontSize, fs,
         highContrast, setHighContrast,

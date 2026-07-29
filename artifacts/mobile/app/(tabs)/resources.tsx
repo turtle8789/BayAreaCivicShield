@@ -295,19 +295,19 @@ function FindNearbyTab() {
   // Free Nominatim geocoding — no key needed
   const searchByAddress = async () => {
     if (!manualZip.trim()) {
-      Alert.alert('Enter Location', 'Please enter a city or ZIP code.');
+      Alert.alert('Enter Location', 'Please enter a city, ZIP code, or address.');
       return;
     }
     setLoading(true);
     try {
-      const q = encodeURIComponent(manualZip.trim() + ', California');
+      const q = encodeURIComponent(manualZip.trim());
       const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1`,
-        { headers: { 'User-Agent': 'CivicShieldPro/1.0' } },
+        `https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1&addressdetails=1`,
+        { headers: { 'User-Agent': 'CivicShieldPro/2.0 (civic-legal-aid-app)' } },
       );
       const data = (await res.json()) as Array<{ lat: string; lon: string; display_name: string }>;
       if (!data || data.length === 0) {
-        Alert.alert('Not Found', 'Could not find that location. Try a different city or ZIP code.');
+        Alert.alert('Location Not Found', `"${manualZip.trim()}" could not be found. Try a full city name (e.g. "Los Angeles"), a ZIP code (e.g. "90001"), or an address.`);
         setLoading(false);
         return;
       }
@@ -376,7 +376,7 @@ function FindNearbyTab() {
             style={{ flex: 1, backgroundColor: colors.muted, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14, fontFamily: 'Inter_400Regular', color: colors.foreground, borderWidth: 1, borderColor: colors.border }}
             value={manualZip}
             onChangeText={setManualZip}
-            placeholder="e.g. Los Angeles or 90001"
+            placeholder="e.g. Los Angeles, 90001, or a street address"
             placeholderTextColor={colors.mutedForeground}
             returnKeyType="search"
             onSubmitEditing={searchByAddress}

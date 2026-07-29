@@ -16,9 +16,7 @@ import { FeatureCard } from '@/components/FeatureCard';
 import { LanguagePicker } from '@/components/LanguagePicker';
 import { useApp } from '@/context/AppContext';
 import { useColors } from '@/hooks/useColors';
-
-const HOME_DISCLAIMER =
-  '⚠️ Legal Disclaimer: CivicShield Pro provides general legal information and community-shared content for educational purposes only — not legal advice. Laws vary by jurisdiction and individual circumstances. Always consult a licensed attorney before making legal decisions. CivicShield Pro is not liable for actions taken based on this app\'s content.';
+import { useT } from '@/hooks/useTranslation';
 
 export default function HomeScreen() {
   const colors = useColors();
@@ -27,9 +25,11 @@ export default function HomeScreen() {
     language, setLanguage,
     encounters,
     savedDeadlines, removeDeadline, clearDeadlines,
+    setPendingDocText,
     forumPosts,
     fs,
   } = useApp();
+  const { t } = useT();
   const [showLangPicker, setShowLangPicker] = useState(false);
 
   const topPad    = Platform.OS === 'web' ? 67 : insets.top;
@@ -160,7 +160,7 @@ export default function HomeScreen() {
             />
             <View>
               <Text style={styles.appName} accessibilityRole="header">CivicShield Pro</Text>
-              <Text style={styles.tagline}>Know your rights. Stay protected.</Text>
+              <Text style={styles.tagline}>{t('home.tagline')}</Text>
             </View>
           </View>
           <Pressable
@@ -184,7 +184,7 @@ export default function HomeScreen() {
             accessibilityRole="button"
           >
             <Feather name="settings" size={13} color={colors.mutedForeground} />
-            <Text style={styles.settingsChipText}>Settings</Text>
+            <Text style={styles.settingsChipText}>{t('common.settings')}</Text>
           </Pressable>
           <Pressable
             style={styles.settingsChip}
@@ -193,7 +193,7 @@ export default function HomeScreen() {
             accessibilityRole="button"
           >
             <Feather name="eye" size={13} color={colors.mutedForeground} />
-            <Text style={styles.settingsChipText}>Accessibility</Text>
+            <Text style={styles.settingsChipText}>{t('common.accessibility')}</Text>
           </Pressable>
           <Pressable
             style={styles.settingsChip}
@@ -202,7 +202,7 @@ export default function HomeScreen() {
             accessibilityRole="button"
           >
             <Feather name="compass" size={13} color="#C9A050" />
-            <Text style={[styles.settingsChipText, { color: '#C9A050' }]}>Tour</Text>
+            <Text style={[styles.settingsChipText, { color: '#C9A050' }]}>{t('common.tour')}</Text>
           </Pressable>
         </View>
       </View>
@@ -213,43 +213,71 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
         alwaysBounceVertical
       >
-        {/* ── Saved Deadlines Dashboard ── */}
+        {/* ── Important Dates Dashboard ── */}
         {savedDeadlines.length > 0 && (
           <View style={{ marginBottom: 14 }}>
             <View style={styles.deadlineSectionHeader}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                <Feather name="bookmark" size={14} color="#C9A050" />
+                <Feather name="calendar" size={14} color="#C9A050" />
                 <Text style={styles.deadlineSectionTitle} accessibilityRole="header">
-                  Saved Deadlines ({savedDeadlines.length})
+                  {t('home.saved_deadlines')} ({savedDeadlines.length})
                 </Text>
               </View>
               <Pressable
                 style={styles.clearAllBtn}
                 onPress={() => { clearDeadlines(); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
-                accessibilityLabel="Clear all saved deadlines"
+                accessibilityLabel="Clear all important dates"
                 accessibilityRole="button"
               >
                 <Feather name="trash-2" size={12} color={colors.mutedForeground} />
-                <Text style={styles.clearAllText}>Clear all</Text>
+                <Text style={styles.clearAllText}>{t('home.clear_all')}</Text>
               </Pressable>
             </View>
             {savedDeadlines.map((d) => (
-              <View key={d.id} style={styles.deadlineCard} accessibilityLabel={`Saved deadline: ${d.text}`}>
-                <Feather name="alert-circle" size={16} color="#C9A050" style={{ marginTop: 1 }} />
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.deadlineText}>{d.text}</Text>
+              <View key={d.id} style={styles.deadlineCard}>
+                {/* Header row: ⚠️ label + dismiss button */}
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+                    <Text style={{ fontSize: fs(11), fontFamily: 'Inter_700Bold', color: '#C9A050', letterSpacing: 0.6 }}>
+                      ⚠️ IMPORTANT DATE
+                    </Text>
+                  </View>
+                  <Pressable
+                    onPress={() => { removeDeadline(d.id); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
+                    accessibilityLabel="Dismiss"
+                    accessibilityRole="button"
+                    hitSlop={10}
+                  >
+                    <Feather name="x" size={15} color={colors.mutedForeground} />
+                  </Pressable>
+                </View>
+
+                {/* Deadline text */}
+                <Text style={styles.deadlineText}>{d.text}</Text>
+
+                {/* Footer row: source · date  +  View Case Details → */}
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
                   <Text style={styles.deadlineSource}>
                     {d.source} · {new Date(d.savedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                   </Text>
+                  {d.docText ? (
+                    <Pressable
+                      onPress={() => {
+                        setPendingDocText(d.docText!);
+                        router.push('/(tabs)/docs');
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      }}
+                      style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}
+                      accessibilityRole="button"
+                      accessibilityLabel="View case details"
+                    >
+                      <Text style={{ fontSize: fs(11), fontFamily: 'Inter_600SemiBold', color: colors.primary }}>
+                        {t('home.view_case')}
+                      </Text>
+                      <Feather name="chevron-right" size={12} color={colors.primary} />
+                    </Pressable>
+                  ) : null}
                 </View>
-                <Pressable
-                  onPress={() => { removeDeadline(d.id); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
-                  accessibilityLabel="Dismiss deadline"
-                  accessibilityRole="button"
-                  hitSlop={8}
-                >
-                  <Feather name="x" size={15} color={colors.mutedForeground} />
-                </Pressable>
               </View>
             ))}
           </View>
@@ -263,12 +291,12 @@ export default function HomeScreen() {
           accessibilityRole="button"
         >
           <Feather name="alert-triangle" size={20} color="#FFFFFF" />
-          <Text style={styles.emergencyText}>In an emergency or crisis?</Text>
+          <Text style={styles.emergencyText}>{t('home.emergency')}</Text>
           <Text style={styles.emergencyNumber}>911</Text>
         </Pressable>
 
         {/* ── Tools & Resources — all features ── */}
-        <Text style={styles.sectionTitle} accessibilityRole="header">Tools &amp; Resources</Text>
+        <Text style={styles.sectionTitle} accessibilityRole="header">{t('home.tools_section')}</Text>
 
         {features.map((f) => (
           <FeatureCard
@@ -283,7 +311,7 @@ export default function HomeScreen() {
 
         {/* ── Legal disclaimer ── */}
         <View style={styles.disclaimer} accessibilityLabel="Legal disclaimer">
-          <Text style={styles.disclaimerText}>{HOME_DISCLAIMER}</Text>
+          <Text style={styles.disclaimerText}>{t('home.disclaimer')}</Text>
         </View>
       </ScrollView>
 

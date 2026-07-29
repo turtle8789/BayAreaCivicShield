@@ -181,7 +181,7 @@ function ResultSection({
 export default function DocsScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
-  const { addDeadline, fs } = useApp();
+  const { addDeadline, pendingDocText, setPendingDocText, fs } = useApp();
   const topPad = Platform.OS === 'web' ? 67 : insets.top;
 
   const [inputText, setInputText] = useState('');
@@ -191,6 +191,18 @@ export default function DocsScreen() {
   const [showQR, setShowQR] = useState(false);
   const [activeSubTab, setActiveSubTab] = useState<'analyze' | 'guide'>('analyze');
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
+
+  // If navigated here from a saved deadline's "View Case Details", pre-populate the text
+  React.useEffect(() => {
+    if (pendingDocText) {
+      setInputText(pendingDocText);
+      setResult(null);
+      setShowQR(false);
+      setSavedIds(new Set());
+      setPendingDocText(null);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleAnalyze = () => {
     if (!inputText.trim()) {
@@ -272,10 +284,10 @@ export default function DocsScreen() {
 
   // ── Save deadlines to dashboard ───────────────────────────────────────────
   const handleSaveDeadline = async (text: string, key: string) => {
-    await addDeadline(text, 'Document Analyzer');
+    await addDeadline(text, 'Document Analyzer', inputText);
     setSavedIds((prev) => new Set(prev).add(key));
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    Alert.alert('✅ Saved to Dashboard', 'This deadline will appear at the top of your Home screen.');
+    Alert.alert('✅ Saved to Dashboard', 'This important date is now pinned at the top of your Home screen. Tap it to return to this document.');
   };
 
   const handleSaveAll = async () => {
@@ -290,12 +302,12 @@ export default function DocsScreen() {
       return;
     }
     for (const item of all.slice(0, 5)) {
-      await addDeadline(item, 'Document Analyzer');
+      await addDeadline(item, 'Document Analyzer', inputText);
     }
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     Alert.alert(
-      `✅ Saved ${Math.min(all.length, 5)} Item${Math.min(all.length, 5) === 1 ? '' : 's'}`,
-      'Deadlines are now pinned at the top of your Home screen.',
+      `✅ Saved ${Math.min(all.length, 5)} Important Date${Math.min(all.length, 5) === 1 ? '' : 's'}`,
+      'These are pinned at the top of your Home screen. Tap any one to return to this document.',
     );
   };
 
