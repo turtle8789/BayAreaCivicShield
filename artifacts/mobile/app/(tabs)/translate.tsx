@@ -321,19 +321,30 @@ export default function TranslateScreen() {
           />
           {/* Voice button */}
           <View style={styles.voiceRow}>
-            <Pressable
-              style={[styles.voiceBtn, listening ? styles.voiceBtnActive : styles.voiceBtnIdle]}
-              onPress={handleVoice}
-              accessibilityLabel={listening ? 'Stop listening' : 'Start voice input'}
-              accessibilityRole="button"
-            >
-              <Feather name={listening ? 'mic-off' : 'mic'} size={15} color={listening ? '#E05252' : colors.mutedForeground} />
-              <Text style={[styles.voiceBtnText, { color: listening ? '#E05252' : colors.mutedForeground }]}>
-                {listening ? 'Stop' : '🎤 Voice'}
-              </Text>
-            </Pressable>
+            {Platform.OS !== 'web' ? (
+              // On native, voice requires a full dev/production build — not available in Expo Go.
+              // Show a clearly disabled button so users know upfront instead of hitting an error.
+              <View style={[styles.voiceBtn, styles.voiceBtnIdle, { opacity: 0.45 }]}>
+                <Feather name="mic-off" size={15} color={colors.mutedForeground} />
+                <Text style={[styles.voiceBtnText, { color: colors.mutedForeground }]}>🎤 Voice</Text>
+              </View>
+            ) : (
+              <Pressable
+                style={[styles.voiceBtn, listening ? styles.voiceBtnActive : styles.voiceBtnIdle]}
+                onPress={handleVoice}
+                accessibilityLabel={listening ? 'Stop listening' : 'Start voice input'}
+                accessibilityRole="button"
+              >
+                <Feather name={listening ? 'mic-off' : 'mic'} size={15} color={listening ? '#E05252' : colors.mutedForeground} />
+                <Text style={[styles.voiceBtnText, { color: listening ? '#E05252' : colors.mutedForeground }]}>
+                  {listening ? 'Stop' : '🎤 Voice'}
+                </Text>
+              </Pressable>
+            )}
             <Text style={styles.voiceHint}>
-              {listening ? 'Speak clearly…' : 'Tap mic to speak'}
+              {Platform.OS !== 'web'
+                ? 'Voice needs a full app build — type text above'
+                : listening ? 'Speak clearly…' : 'Tap mic to speak'}
             </Text>
           </View>
         </View>

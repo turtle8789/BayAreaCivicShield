@@ -1,6 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { DEFAULT_LANGUAGE, Language } from '@/constants/languages';
+import { DEFAULT_LANGUAGE, Language, getLanguageByCode } from '@/constants/languages';
 import { ForumPost, SEED_POSTS } from '@/constants/forum-data';
 
 // ─── Encounter types ─────────────────────────────────────────────────────────
@@ -68,7 +68,7 @@ export const HIGH_CONTRAST_OVERRIDES = {
 interface AppContextValue {
   // Language
   language: Language;
-  setLanguage: (lang: Language) => void;
+  setLanguage: (lang: Language) => Promise<void>;
 
   // Encounters
   encounters: Encounter[];
@@ -112,6 +112,7 @@ const STORAGE_TOUR          = 'civicshield_tour_done';
 const STORAGE_HIGH_CONTRAST = 'civicshield_high_contrast';
 const STORAGE_FORUM_POSTS   = 'civicshield_forum_posts';
 const STORAGE_FORUM_HELPFUL = 'civicshield_forum_helpful'; // set of ids marked helpful
+const STORAGE_LANGUAGE      = 'civicshield_language';      // persists selected language code
 
 // ─── Translation via free MyMemory API ───────────────────────────────────────
 
@@ -152,7 +153,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       AsyncStorage.getItem(STORAGE_HIGH_CONTRAST),
       AsyncStorage.getItem(STORAGE_FORUM_POSTS),
       AsyncStorage.getItem(STORAGE_FORUM_HELPFUL),
-    ]).then(([enc, dead, font, tour, hc, forum, helpful]) => {
+      AsyncStorage.getItem(STORAGE_LANGUAGE),
+    ]).then(([enc, dead, font, tour, hc, forum, helpful, lang]) => {
       if (enc)     setEncounters(JSON.parse(enc) as Encounter[]);
       if (dead)    setSavedDeadlines(JSON.parse(dead) as SavedDeadline[]);
       if (font)    setFontSizeState(font as FontSizeLevel);
@@ -160,10 +162,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (hc)      setHighContrastState(hc === 'true');
       if (forum)   setForumPosts(JSON.parse(forum) as ForumPost[]);
       if (helpful) setHelpfulIds(new Set(JSON.parse(helpful) as string[]));
+      if (lang)    setLanguageState(getLanguageByCode(lang));
     }).catch(() => {});
   }, []);
 
-  const setLanguage = useCallback((lang: Language) => setLanguageState(lang), []);
+  const setLanguage = useCallback(async (lang: Language) => {
+    setLanguageState(lang);
+    await AsyncStorage.setItem(STORAGE_LANGUAGE, lang.code);
+  }, []);
 
   // ── Encounters ────────────────────────────────────────────────────────────
   const addEncounter = useCallback(async (data: Omit<Encounter, 'id'>) => {
