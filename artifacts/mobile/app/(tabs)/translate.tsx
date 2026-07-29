@@ -3,6 +3,7 @@ import {
   AccessibilityInfo,
   ActivityIndicator,
   Alert,
+  NativeModules,
   Platform,
   Pressable,
   ScrollView,
@@ -220,6 +221,16 @@ export default function TranslateScreen() {
 
   // ── Voice — native ─────────────────────────────────────────────────────────
   const startNativeVoice = async () => {
+    // NativeModules.ExpoSpeechRecognition is undefined in Expo Go — guard before require()
+    // to avoid a hard crash at the native bridge level (try/catch can't catch bridge errors).
+    if (!NativeModules.ExpoSpeechRecognition) {
+      Alert.alert(
+        '🎤 Voice on Mobile',
+        'Voice input requires a full app build and is not available in Expo Go.\n\nType what the officer said in the text box instead — or use the web version where voice works today.',
+        [{ text: 'Got it' }],
+      );
+      return;
+    }
     try {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const { ExpoSpeechRecognitionModule } = require('expo-speech-recognition');

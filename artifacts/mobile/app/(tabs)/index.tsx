@@ -239,7 +239,7 @@ export default function HomeScreen() {
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
                     <Text style={{ fontSize: fs(11), fontFamily: 'Inter_700Bold', color: '#C9A050', letterSpacing: 0.6 }}>
-                      ⚠️ IMPORTANT DATE
+                      {t('home.important_date')}
                     </Text>
                   </View>
                   <Pressable

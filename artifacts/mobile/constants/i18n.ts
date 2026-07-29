@@ -10,6 +10,7 @@ export type I18nKey =
   // Home screen
   | 'home.tagline' | 'home.emergency' | 'home.tools_section'
   | 'home.saved_deadlines' | 'home.view_case' | 'home.clear_all' | 'home.dismiss' | 'home.disclaimer'
+  | 'home.important_date'
   // Common buttons / labels
   | 'common.settings' | 'common.accessibility' | 'common.tour'
   | 'common.back' | 'common.call' | 'common.website' | 'common.directions'
@@ -1065,6 +1066,14 @@ export const TRANSLATIONS: Translations = {
     ar: 'لا توجد موارد تطابق.',             fr: 'Aucune ressource trouvée.',
     pt: 'Nenhum recurso encontrado.',        ru: 'Ресурсов не найдено.',
     ja: 'リソースはありません。',              am: 'ምንም ሀብት አልተዛመደም።',
+  },
+
+  // ── Home deadline card ─────────────────────────────────────────────────────────
+  'home.important_date': {
+    en: '⚠️ IMPORTANT DATE',     es: '⚠️ FECHA IMPORTANTE',    'zh-CN': '⚠️ 重要日期',         'zh-TW': '⚠️ 重要日期',
+    vi: '⚠️ NGÀY QUAN TRỌNG',    tl: '⚠️ MAHALAGANG PETSA',    hi: '⚠️ महत्वपूर्ण तारीख',      ko: '⚠️ 중요 날짜',
+    ar: '⚠️ تاريخ مهم',           fr: '⚠️ DATE IMPORTANTE',     pt: '⚠️ DATA IMPORTANTE',       ru: '⚠️ ВАЖНАЯ ДАТА',
+    ja: '⚠️ 重要な日付',            am: '⚠️ አስፈላጊ ቀን',
   },
 
   // ── Home feature card titles ──────────────────────────────────────────────────
