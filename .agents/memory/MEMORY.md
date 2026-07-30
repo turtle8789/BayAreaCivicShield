@@ -1,2 +1,2 @@
-- [CivicShield Pro architecture](civicshield-architecture.md) — Expo mobile-only app, no backend; all persistence via AsyncStorage; five context keys.
+- [CivicShield Pro architecture](civicshield-architecture.md) — Expo mobile-only app, no backend; all persistence via AsyncStorage; five context keys. Last push: 21fd282 (2026-07-30).
 - [Nested Pressable on web](nested-pressable-web.md) — avoid nesting Pressable inside Pressable; split into body + sibling footer Pressables instead.
