@@ -16,12 +16,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LanguagePicker } from '@/components/LanguagePicker';
 import { FontSizeLevel, useApp } from '@/context/AppContext';
 import { useColors } from '@/hooks/useColors';
-
-const FONT_SIZES: { label: string; value: FontSizeLevel; preview: number }[] = [
-  { label: 'Small', value: 'small', preview: 12 },
-  { label: 'Medium', value: 'medium', preview: 14 },
-  { label: 'Large', value: 'large', preview: 18 },
-];
+import { useT } from '@/hooks/useTranslation';
 
 function SettingsRow({
   icon,
@@ -66,6 +61,7 @@ export default function SettingsScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const topPad = Platform.OS === 'web' ? 67 : insets.top;
+  const { t } = useT();
 
   const {
     language, setLanguage,
@@ -73,6 +69,12 @@ export default function SettingsScreen() {
     highContrast, setHighContrast,
     encounters, clearDeadlines, savedDeadlines,
   } = useApp();
+
+  const FONT_SIZES: { labelKey: 'settings.font_small' | 'settings.font_medium' | 'settings.font_large'; value: FontSizeLevel; preview: number }[] = [
+    { labelKey: 'settings.font_small',  value: 'small',  preview: 12 },
+    { labelKey: 'settings.font_medium', value: 'medium', preview: 14 },
+    { labelKey: 'settings.font_large',  value: 'large',  preview: 18 },
+  ];
 
   const [showLangPicker, setShowLangPicker] = useState(false);
 
@@ -83,17 +85,17 @@ export default function SettingsScreen() {
 
   const handleClearData = () => {
     Alert.alert(
-      'Clear All Data',
-      `This will permanently delete ${encounters.length} encounter log${encounters.length === 1 ? '' : 's'} and ${savedDeadlines.length} saved deadline${savedDeadlines.length === 1 ? '' : 's'}. This cannot be undone.`,
+      t('settings.clear_title'),
+      `${t('settings.clear_title')}: ${encounters.length} encounter log${encounters.length === 1 ? '' : 's'} + ${savedDeadlines.length} deadline${savedDeadlines.length === 1 ? '' : 's'}.`,
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('settings.clear_cancel'), style: 'cancel' },
         {
-          text: 'Delete All',
+          text: t('settings.clear_confirm'),
           style: 'destructive',
           onPress: () => {
             clearDeadlines();
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-            Alert.alert('Cleared', 'All saved deadlines have been deleted.');
+            Alert.alert(t('settings.cleared_title'), t('settings.cleared_msg'));
           },
         },
       ],
@@ -155,24 +157,24 @@ export default function SettingsScreen() {
         <Pressable onPress={() => router.back()} hitSlop={12} accessibilityLabel="Close settings" accessibilityRole="button">
           <Feather name="x" size={22} color={colors.foreground} />
         </Pressable>
-        <Text style={styles.headerTitle} accessibilityRole="header">Settings</Text>
+        <Text style={styles.headerTitle} accessibilityRole="header">{t('settings.title')}</Text>
       </View>
 
       <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
 
         {/* ── Language ── */}
-        <Text style={styles.sectionLabel} accessibilityRole="header">Language</Text>
+        <Text style={styles.sectionLabel} accessibilityRole="header">{t('settings.section_language')}</Text>
         <View style={styles.card}>
           <SettingsRow
             icon="globe"
-            label="App Language"
+            label={t('settings.app_language')}
             description={`${language.nativeName} — ${language.name}`}
             onPress={() => setShowLangPicker(true)}
           />
         </View>
 
         {/* ── Accessibility ── */}
-        <Text style={styles.sectionLabel} accessibilityRole="header">Accessibility</Text>
+        <Text style={styles.sectionLabel} accessibilityRole="header">{t('settings.section_accessibility')}</Text>
         <View style={styles.card}>
           {/* Font size chips */}
           <View style={{ paddingHorizontal: 16, paddingTop: 14, paddingBottom: 4 }}>
@@ -181,9 +183,9 @@ export default function SettingsScreen() {
                 <Feather name="type" size={18} color={colors.primary} />
               </View>
               <View>
-                <Text style={{ fontSize: fs(15), fontFamily: 'Inter_500Medium', color: colors.foreground }}>Font Size</Text>
+                <Text style={{ fontSize: fs(15), fontFamily: 'Inter_500Medium', color: colors.foreground }}>{t('settings.font_size')}</Text>
                 <Text style={{ fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.mutedForeground }}>
-                  Changes text size throughout the app
+                  {t('settings.font_size_desc')}
                 </Text>
               </View>
             </View>
@@ -193,12 +195,12 @@ export default function SettingsScreen() {
                   key={f.value}
                   style={[styles.fontChip, fontSize === f.value && styles.fontChipActive]}
                   onPress={() => { setFontSize(f.value); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
-                  accessibilityLabel={`Font size ${f.label}`}
+                  accessibilityLabel={`Font size ${t(f.labelKey)}`}
                   accessibilityRole="radio"
                   accessibilityState={{ selected: fontSize === f.value }}
                 >
                   <Text style={[{ fontSize: f.preview }, styles.fontPreview, fontSize === f.value && styles.fontPreviewActive]}>Aa</Text>
-                  <Text style={[styles.fontChipLabel, fontSize === f.value && styles.fontChipLabelActive]}>{f.label}</Text>
+                  <Text style={[styles.fontChipLabel, fontSize === f.value && styles.fontChipLabelActive]}>{t(f.labelKey)}</Text>
                 </Pressable>
               ))}
             </View>
@@ -209,15 +211,15 @@ export default function SettingsScreen() {
           {/* High contrast toggle */}
           <SettingsRow
             icon="sun"
-            label="High Contrast Mode"
-            description={highContrast ? 'On — dark background, white text' : 'Off — increases readability'}
+            label={t('settings.high_contrast')}
+            description={highContrast ? t('settings.high_contrast_on') : t('settings.high_contrast_off')}
             right={
               <Switch
                 value={highContrast}
                 onValueChange={handleHighContrast}
                 trackColor={{ false: colors.muted, true: colors.primary + '80' }}
                 thumbColor={highContrast ? colors.primary : '#F4F4F4'}
-                accessibilityLabel="High contrast mode"
+                accessibilityLabel={t('settings.high_contrast')}
               />
             }
           />
@@ -239,67 +241,65 @@ export default function SettingsScreen() {
           {/* Screen reader note */}
           <SettingsRow
             icon="volume-2"
-            label="Screen Reader Support"
-            description="Accessibility labels are enabled throughout the app — compatible with VoiceOver (iOS) and TalkBack (Android)"
+            label={t('settings.screen_reader')}
+            description={t('settings.screen_reader_desc')}
           />
         </View>
 
         {/* ── Guided Tour & QR ── */}
-        <Text style={styles.sectionLabel} accessibilityRole="header">Tour & Help</Text>
+        <Text style={styles.sectionLabel} accessibilityRole="header">{t('settings.section_tour')}</Text>
         <View style={styles.card}>
           <SettingsRow
             icon="compass"
-            label="Guided Tour"
-            description="Step-by-step walkthrough of every feature"
+            label={t('settings.guided_tour')}
+            description={t('settings.guided_tour_desc')}
             onPress={() => { router.back(); setTimeout(() => router.push('/tour'), 300); }}
           />
           <View style={styles.divider} />
           <SettingsRow
             icon="grid"
-            label="Expo Go QR Code"
-            description="Scan to preview this app on your phone"
+            label={t('settings.expo_qr')}
+            description={t('settings.expo_qr_desc')}
             onPress={() => { router.back(); setTimeout(() => router.push('/qrcode-screen'), 300); }}
           />
         </View>
 
         {/* ── Data ── */}
-        <Text style={styles.sectionLabel} accessibilityRole="header">Data & Privacy</Text>
+        <Text style={styles.sectionLabel} accessibilityRole="header">{t('settings.section_data')}</Text>
         <View style={styles.card}>
           <SettingsRow
             icon="database"
-            label="Saved Deadlines"
-            description={`${savedDeadlines.length} deadline${savedDeadlines.length === 1 ? '' : 's'} pinned to Home`}
+            label={t('settings.deadlines_label')}
+            description={`${savedDeadlines.length} deadline${savedDeadlines.length === 1 ? '' : 's'} pinned`}
           />
           <View style={styles.divider} />
           <SettingsRow
             icon="clipboard"
-            label="Encounter Log"
-            description={`${encounters.length} encounter${encounters.length === 1 ? '' : 's'} stored on device`}
+            label={t('settings.log_label')}
+            description={`${encounters.length} encounter${encounters.length === 1 ? '' : 's'} stored`}
           />
           <View style={styles.divider} />
           <SettingsRow
             icon="trash-2"
-            label="Clear Saved Deadlines"
-            description="Remove all pinned deadlines from the dashboard"
+            label={t('settings.clear_deadlines')}
+            description={t('settings.clear_deadlines_desc')}
             onPress={handleClearData}
           />
         </View>
 
         {/* ── About ── */}
-        <Text style={styles.sectionLabel} accessibilityRole="header">About</Text>
+        <Text style={styles.sectionLabel} accessibilityRole="header">{t('settings.section_about')}</Text>
         <View style={styles.card}>
-          <SettingsRow icon="shield" label="CivicShield Pro" description="v1.0.0 — Multilingual legal assistance" />
+          <SettingsRow icon="shield" label="CivicShield Pro" description={t('settings.app_desc')} />
           <View style={styles.divider} />
-          <SettingsRow icon="lock" label="Privacy" description="All data stays on your device. Nothing is uploaded or shared." />
+          <SettingsRow icon="lock" label={t('settings.privacy_row')} description={t('settings.privacy_desc')} />
           <View style={styles.divider} />
-          <SettingsRow icon="heart" label="Built for the Community" description="Free legal education and assistance tools" />
+          <SettingsRow icon="heart" label={t('settings.built_for')} description={t('settings.built_for_desc')} />
         </View>
 
         {/* Disclaimer */}
         <View style={styles.disclaimer}>
-          <Text style={styles.disclaimerText}>
-            ⚠️ Disclaimer: CivicShield Pro provides general legal information, not legal advice. Laws vary by state and situation. Always consult a licensed attorney for guidance specific to your circumstances.
-          </Text>
+          <Text style={styles.disclaimerText}>{t('settings.disclaimer')}</Text>
         </View>
 
         <Text style={styles.versionText}>CivicShield Pro · v1.0.0</Text>

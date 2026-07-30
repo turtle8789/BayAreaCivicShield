@@ -87,7 +87,7 @@ function RightsDetail({ category, onBack }: { category: RightsCategory; onBack: 
         ))}
         <View style={{ backgroundColor: colors.muted, borderRadius: colors.radius, padding: 14, marginTop: 8 }}>
           <Text style={{ fontSize: 12, fontFamily: 'Inter_400Regular', color: colors.mutedForeground, lineHeight: 18 }}>
-            This is general educational information, not legal advice. Laws vary by state and situation.
+            {t('rights.general_info')}
           </Text>
         </View>
       </ScrollView>
@@ -171,12 +171,12 @@ function QuizScreen({ onBack }: { onBack: () => void }) {
 
   if (finished) {
     const pct = Math.round((score / total) * 100);
-    const title   = pct >= 80 ? 'Great work! 🎉' : pct >= 60 ? 'Good effort! 👍' : 'Keep learning 📚';
+    const title   = pct >= 80 ? t('rights.score_great') : pct >= 60 ? t('rights.score_good') : t('rights.score_keep');
     const message = pct >= 80
-      ? 'Excellent! You know your rights well.'
+      ? t('rights.score_great_msg')
       : pct >= 60
-        ? 'Good job! Review the rights sections to learn more.'
-        : 'Keep studying — knowing your rights matters.';
+        ? t('rights.score_good_msg')
+        : t('rights.score_keep_msg');
     return (
       <View style={styles.container}>
         <View style={styles.header}>
@@ -187,7 +187,7 @@ function QuizScreen({ onBack }: { onBack: () => void }) {
         </View>
         <View style={styles.finishContainer}>
           <Text style={styles.finishScore}>{score}</Text>
-          <Text style={styles.finishTotal}>out of {total} correct</Text>
+          <Text style={styles.finishTotal}>{t('common.out_of')} {total} {t('rights.correct_label')}</Text>
           <Text style={styles.finishTitle}>{title}</Text>
           <Text style={styles.finishSub}>{message}</Text>
           <Pressable style={styles.restartBtn} onPress={handleRestart} accessibilityRole="button">
@@ -206,7 +206,7 @@ function QuizScreen({ onBack }: { onBack: () => void }) {
         <Pressable onPress={onBack} hitSlop={12} accessibilityRole="button" accessibilityLabel={t('common.back')}>
           <Feather name="arrow-left" size={22} color={colors.foreground} />
         </Pressable>
-        <Text style={styles.headerTitle}>Know Your Rights Quiz</Text>
+        <Text style={styles.headerTitle}>{t('rights.quiz_title')}</Text>
         <Text style={styles.progressText}>{currentIdx + 1}/{total}</Text>
       </View>
 

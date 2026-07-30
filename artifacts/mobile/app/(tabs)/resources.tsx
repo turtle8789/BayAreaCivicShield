@@ -210,13 +210,13 @@ function ResourceCard({
 
 // ─── Category Filter Chips ────────────────────────────────────────────────────
 
-const TYPE_FILTER_OPTIONS: Array<{ value: ResourceType | 'all'; label: string }> = [
-  { value: 'all',             label: 'All' },
-  { value: 'legal_aid',       label: 'Legal Aid' },
-  { value: 'public_defender', label: 'Public Defender' },
-  { value: 'nonprofit',       label: 'Nonprofit' },
-  { value: 'clinic',          label: 'Legal Clinic' },
-  { value: 'bar_referral',    label: 'Bar Referral' },
+const TYPE_FILTER_OPTIONS: Array<{ value: ResourceType | 'all'; labelKey: string }> = [
+  { value: 'all',             labelKey: 'resources.filter_all' },
+  { value: 'legal_aid',       labelKey: 'resources.filter_legal_aid' },
+  { value: 'public_defender', labelKey: 'resources.filter_defender' },
+  { value: 'nonprofit',       labelKey: 'resources.filter_nonprofit' },
+  { value: 'clinic',          labelKey: 'resources.filter_clinic' },
+  { value: 'bar_referral',    labelKey: 'resources.filter_bar' },
 ];
 
 function TypeFilterChips({
@@ -227,11 +227,13 @@ function TypeFilterChips({
   onChange: (v: ResourceType | 'all') => void;
 }) {
   const colors = useColors();
+  const { t } = useT();
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 12 }}>
       <View style={{ flexDirection: 'row', gap: 8, paddingRight: 8 }}>
         {TYPE_FILTER_OPTIONS.map((opt) => {
           const active = selected === opt.value;
+          const label = t(opt.labelKey as any);
           return (
             <Pressable
               key={opt.value}
@@ -246,10 +248,10 @@ function TypeFilterChips({
               }}
               accessibilityRole="radio"
               accessibilityState={{ selected: active }}
-              accessibilityLabel={`Filter: ${opt.label}`}
+              accessibilityLabel={`Filter: ${label}`}
             >
               <Text style={{ fontSize: 13, fontFamily: active ? 'Inter_600SemiBold' : 'Inter_400Regular', color: active ? colors.primary : colors.mutedForeground }}>
-                {opt.label}
+                {label}
               </Text>
             </Pressable>
           );
@@ -280,14 +282,14 @@ function FindNearbyTab() {
       setLoading(true);
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Permission Denied', 'Location access was denied. You can enter a city or ZIP code below instead.');
+        Alert.alert('Permission Denied', t('resources.perm_denied'));
         setLoading(false);
         return;
       }
       const loc = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
-      computeResults(loc.coords.latitude, loc.coords.longitude, 'Your current location');
+      computeResults(loc.coords.latitude, loc.coords.longitude, t('resources.your_location'));
     } catch {
-      Alert.alert('Error', 'Could not get location. Please try entering a city or ZIP code.');
+      Alert.alert('Error', t('resources.location_error'));
       setLoading(false);
     }
   };
@@ -295,7 +297,7 @@ function FindNearbyTab() {
   // Free Nominatim geocoding — no key needed
   const searchByAddress = async () => {
     if (!manualZip.trim()) {
-      Alert.alert('Enter Location', 'Please enter a city, ZIP code, or address.');
+      Alert.alert(t('resources.enter_location'), t('resources.enter_location'));
       return;
     }
     setLoading(true);
@@ -307,7 +309,7 @@ function FindNearbyTab() {
       );
       const data = (await res.json()) as Array<{ lat: string; lon: string; display_name: string }>;
       if (!data || data.length === 0) {
-        Alert.alert('Location Not Found', `"${manualZip.trim()}" could not be found. Try a full city name (e.g. "Los Angeles"), a ZIP code (e.g. "90001"), or an address.`);
+        Alert.alert(t('resources.not_found'), `"${manualZip.trim()}" could not be found. Try a full city name (e.g. "Los Angeles"), a ZIP code (e.g. "90001"), or an address.`);
         setLoading(false);
         return;
       }
@@ -315,7 +317,7 @@ function FindNearbyTab() {
       const lon = parseFloat(data[0].lon);
       computeResults(lat, lon, data[0].display_name.split(',').slice(0, 2).join(','));
     } catch {
-      Alert.alert('Error', 'Could not geocode address. Check your internet connection.');
+      Alert.alert('Error', t('resources.geocode_error'));
       setLoading(false);
     }
   };
@@ -336,11 +338,11 @@ function FindNearbyTab() {
 
   // Apply type + radius filters
   const RADIUS_OPTIONS: Array<{ label: string; value: number | null }> = [
-    { label: '5 mi',  value: 5  },
-    { label: '10 mi', value: 10 },
-    { label: '25 mi', value: 25 },
-    { label: '50 mi', value: 50 },
-    { label: 'Any',   value: null },
+    { label: '5 mi',              value: 5    },
+    { label: '10 mi',             value: 10   },
+    { label: '25 mi',             value: 25   },
+    { label: '50 mi',             value: 50   },
+    { label: t('resources.radius_any'), value: null },
   ];
 
   const filtered = sorted.filter(({ resource, dist }) => {

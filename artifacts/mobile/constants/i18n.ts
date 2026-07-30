@@ -15,7 +15,7 @@ export type I18nKey =
   | 'common.settings' | 'common.accessibility' | 'common.tour'
   | 'common.back' | 'common.call' | 'common.website' | 'common.directions'
   | 'common.search' | 'common.close' | 'common.copy' | 'common.done'
-  | 'common.open_maps'
+  | 'common.open_maps' | 'common.out_of'
   // Rights screen
   | 'rights.title' | 'rights.subtitle'
   | 'rights.quiz_banner_title' | 'rights.quiz_banner_sub'
@@ -50,7 +50,47 @@ export type I18nKey =
   // Home feature card titles
   | 'home.feature_docs' | 'home.feature_translate' | 'home.feature_rights'
   | 'home.feature_resources' | 'home.feature_hotlines' | 'home.feature_forum'
-  | 'home.feature_hub' | 'home.feature_log';
+  | 'home.feature_hub' | 'home.feature_log'
+  // Settings screen
+  | 'settings.title' | 'settings.section_language' | 'settings.app_language'
+  | 'settings.section_accessibility' | 'settings.font_size' | 'settings.font_size_desc'
+  | 'settings.font_small' | 'settings.font_medium' | 'settings.font_large'
+  | 'settings.high_contrast' | 'settings.high_contrast_on' | 'settings.high_contrast_off'
+  | 'settings.screen_reader' | 'settings.screen_reader_desc'
+  | 'settings.section_tour' | 'settings.guided_tour' | 'settings.guided_tour_desc'
+  | 'settings.expo_qr' | 'settings.expo_qr_desc'
+  | 'settings.section_data' | 'settings.deadlines_label' | 'settings.log_label'
+  | 'settings.clear_deadlines' | 'settings.clear_deadlines_desc'
+  | 'settings.section_about' | 'settings.privacy_row' | 'settings.privacy_desc'
+  | 'settings.built_for' | 'settings.built_for_desc' | 'settings.app_desc'
+  | 'settings.disclaimer' | 'settings.clear_title' | 'settings.clear_cancel'
+  | 'settings.clear_confirm' | 'settings.cleared_title' | 'settings.cleared_msg'
+  // Rights quiz extras
+  | 'rights.general_info' | 'rights.quiz_title'
+  | 'rights.score_great' | 'rights.score_good' | 'rights.score_keep'
+  | 'rights.score_great_msg' | 'rights.score_good_msg' | 'rights.score_keep_msg'
+  | 'rights.correct_label'
+  // Resources filters
+  | 'resources.filter_all' | 'resources.filter_legal_aid' | 'resources.filter_defender'
+  | 'resources.filter_nonprofit' | 'resources.filter_clinic' | 'resources.filter_bar'
+  | 'resources.radius_label' | 'resources.radius_any' | 'resources.your_location'
+  | 'resources.perm_denied' | 'resources.location_error' | 'resources.enter_location'
+  | 'resources.not_found' | 'resources.geocode_error'
+  // Encounter log list
+  | 'log.title' | 'log.subtitle' | 'log.empty_title' | 'log.empty_desc' | 'log.first_btn'
+  | 'log.entry' | 'log.entries' | 'log.stored_device'
+  | 'log.delete_title' | 'log.delete_msg' | 'log.delete_cancel' | 'log.delete_btn'
+  | 'log.officer_info' | 'log.description_label' | 'log.outcome_label' | 'log.at'
+  // New log form
+  | 'newlog.title' | 'newlog.save' | 'newlog.type_label'
+  | 'newlog.location' | 'newlog.location_ph'
+  | 'newlog.officer' | 'newlog.officer_ph'
+  | 'newlog.description' | 'newlog.description_ph' | 'newlog.description_hint'
+  | 'newlog.outcome' | 'newlog.outcome_ph'
+  | 'newlog.legal_note' | 'newlog.required_msg' | 'newlog.error_msg'
+  // Encounter types
+  | 'encounter.traffic_stop' | 'encounter.arrest' | 'encounter.questioning'
+  | 'encounter.citation' | 'encounter.search' | 'encounter.other';
 
 type Translations = Record<I18nKey, Record<string, string>>;
 
@@ -423,6 +463,12 @@ export const TRANSLATIONS: Translations = {
     vi: 'Sao chép',   tl: 'Kopyahin',     hi: 'कॉपी करें',       ko: '복사',
     ar: 'نسخ',        fr: 'Copier',       pt: 'Copiar',          ru: 'Скопировать',
     ja: 'コピー',      am: 'ቅዳ',
+  },
+  'common.out_of': {
+    en: 'out of',  es: 'de',        'zh-CN': '/',  'zh-TW': '/',
+    vi: 'trong',   tl: 'sa',        hi: 'में से',   ko: '/',
+    ar: 'من',      fr: 'sur',       pt: 'de',      ru: 'из',
+    ja: '/',        am: 'ከ',
   },
   'common.done': {
     en: 'Done',       es: 'Listo',        'zh-CN': '完成',       'zh-TW': '完成',
@@ -1124,5 +1170,763 @@ export const TRANSLATIONS: Translations = {
     vi: '🗂️ Nhật Ký Gặp Gỡ',       tl: '🗂️ Talaan ng Pakikipagtagpo', hi: '🗂️ मुठभेड़ लॉग',    ko: '🗂️ 조우 기록',
     ar: '🗂️ سجل المواجهات',         fr: '🗂️ Journal des Rencontres',  pt: '🗂️ Registro',      ru: '🗂️ Журнал встреч',
     ja: '🗂️ 遭遇ログ',               am: '🗂️ ስብሰባ መዝገብ',
+  },
+
+  // ── Settings screen ───────────────────────────────────────────────────────────
+  'settings.title': {
+    en: 'Settings',      es: 'Configuración',  'zh-CN': '设置',      'zh-TW': '設定',
+    vi: 'Cài đặt',       tl: 'Mga Setting',    hi: 'सेटिंग्स',       ko: '설정',
+    ar: 'الإعدادات',     fr: 'Paramètres',     pt: 'Configurações',  ru: 'Настройки',
+    ja: '設定',           am: 'ቅንብሮች',
+  },
+  'settings.section_language': {
+    en: 'Language',    es: 'Idioma',      'zh-CN': '语言',    'zh-TW': '語言',
+    vi: 'Ngôn ngữ',    tl: 'Wika',        hi: 'भाषा',         ko: '언어',
+    ar: 'اللغة',       fr: 'Langue',      pt: 'Idioma',       ru: 'Язык',
+    ja: '言語',         am: 'ቋንቋ',
+  },
+  'settings.app_language': {
+    en: 'App Language',        es: 'Idioma de la App',    'zh-CN': '应用语言',        'zh-TW': '應用程式語言',
+    vi: 'Ngôn ngữ ứng dụng',  tl: 'Wika ng App',         hi: 'ऐप की भाषा',           ko: '앱 언어',
+    ar: 'لغة التطبيق',         fr: "Langue de l'app",     pt: 'Idioma do App',        ru: 'Язык приложения',
+    ja: 'アプリ言語',            am: 'የApp ቋንቋ',
+  },
+  'settings.section_accessibility': {
+    en: 'Accessibility',    es: 'Accesibilidad',  'zh-CN': '辅助功能',  'zh-TW': '輔助使用',
+    vi: 'Trợ năng',         tl: 'Accessibility',  hi: 'पहुँच',          ko: '접근성',
+    ar: 'إمكانية الوصول',   fr: 'Accessibilité',  pt: 'Acessibilidade', ru: 'Доступность',
+    ja: 'アクセシビリティ',   am: 'ተደራሽነት',
+  },
+  'settings.font_size': {
+    en: 'Font Size',     es: 'Tamaño de Fuente', 'zh-CN': '字体大小',  'zh-TW': '字型大小',
+    vi: 'Cỡ chữ',        tl: 'Laki ng Font',     hi: 'फ़ॉन्ट आकार',    ko: '글자 크기',
+    ar: 'حجم الخط',      fr: 'Taille de Police', pt: 'Tamanho da Fonte', ru: 'Размер шрифта',
+    ja: 'フォントサイズ',  am: 'የፊደል መጠን',
+  },
+  'settings.font_size_desc': {
+    en: 'Changes text size throughout the app',  es: 'Cambia el tamaño del texto en la app',
+    'zh-CN': '更改应用中的文字大小',               'zh-TW': '變更應用程式中的文字大小',
+    vi: 'Thay đổi kích thước chữ trong app',     tl: 'Binabago ang laki ng teksto sa app',
+    hi: 'ऐप में टेक्स्ट का आकार बदलता है',        ko: '앱 전체의 텍스트 크기를 변경합니다',
+    ar: 'يغير حجم النص في التطبيق',               fr: "Change la taille du texte dans l'app",
+    pt: 'Muda o tamanho do texto no app',         ru: 'Изменяет размер текста в приложении',
+    ja: 'アプリ全体のテキストサイズを変更',          am: 'በApp ውስጥ ያለውን ጽሑፍ መጠን ይቀይራል',
+  },
+  'settings.font_small': {
+    en: 'Small',     es: 'Pequeño',  'zh-CN': '小',  'zh-TW': '小',
+    vi: 'Nhỏ',       tl: 'Maliit',   hi: 'छोटा',     ko: '작게',
+    ar: 'صغير',      fr: 'Petit',    pt: 'Pequeno',  ru: 'Мелкий',
+    ja: '小',         am: 'ትንሽ',
+  },
+  'settings.font_medium': {
+    en: 'Medium',    es: 'Mediano',   'zh-CN': '中',  'zh-TW': '中',
+    vi: 'Vừa',       tl: 'Katamtaman', hi: 'मध्यम',  ko: '보통',
+    ar: 'متوسط',     fr: 'Moyen',     pt: 'Médio',   ru: 'Средний',
+    ja: '中',         am: 'መካከለኛ',
+  },
+  'settings.font_large': {
+    en: 'Large',     es: 'Grande',   'zh-CN': '大',  'zh-TW': '大',
+    vi: 'Lớn',       tl: 'Malaki',   hi: 'बड़ा',     ko: '크게',
+    ar: 'كبير',      fr: 'Grand',    pt: 'Grande',   ru: 'Крупный',
+    ja: '大',         am: 'ትልቅ',
+  },
+  'settings.high_contrast': {
+    en: 'High Contrast Mode',      es: 'Modo Alto Contraste',    'zh-CN': '高对比度模式',   'zh-TW': '高對比度模式',
+    vi: 'Chế độ Tương phản Cao',   tl: 'High Contrast Mode',     hi: 'उच्च कंट्रास्ट मोड',  ko: '고대비 모드',
+    ar: 'وضع التباين العالي',       fr: 'Mode Contraste Élevé',   pt: 'Modo Alto Contraste', ru: 'Высокий контраст',
+    ja: 'ハイコントラスト',           am: 'ከፍተኛ ንፅፅር ሁነታ',
+  },
+  'settings.high_contrast_on': {
+    en: 'On — dark background, white text',  es: 'Activado — fondo oscuro, texto blanco',
+    'zh-CN': '开启 — 深色背景，白色文字',      'zh-TW': '開啟 — 深色背景，白色文字',
+    vi: 'Bật — nền tối, chữ trắng',          tl: 'On — madilim na background, puting teksto',
+    hi: 'चालू — गहरी पृष्ठभूमि, सफेद टेक्स्ट', ko: '켜짐 — 어두운 배경, 흰 텍스트',
+    ar: 'مفعّل — خلفية داكنة، نص أبيض',      fr: 'Activé — fond sombre, texte blanc',
+    pt: 'Ativado — fundo escuro, texto branco', ru: 'Вкл — тёмный фон, белый текст',
+    ja: 'オン — 暗い背景、白いテキスト',         am: 'ነቅቷል — ጨለማ ዳራ፣ ነጭ ጽሑፍ',
+  },
+  'settings.high_contrast_off': {
+    en: 'Off — increases readability',  es: 'Desactivado — mejora la legibilidad',
+    'zh-CN': '关闭 — 提高可读性',          'zh-TW': '關閉 — 提高可讀性',
+    vi: 'Tắt — tăng khả năng đọc',      tl: 'Off — pinapataas ang readability',
+    hi: 'बंद — पठनीयता बढ़ाता है',        ko: '꺼짐 — 가독성 향상',
+    ar: 'معطّل — يحسّن القراءة',          fr: 'Désactivé — améliore la lisibilité',
+    pt: 'Desativado — melhora a leitura', ru: 'Выкл — улучшает читаемость',
+    ja: 'オフ — 読みやすさを向上',           am: 'ጠፍቷል — ሊነበብነትን ያሻሽላል',
+  },
+  'settings.screen_reader': {
+    en: 'Screen Reader Support',      es: 'Soporte de Lector de Pantalla',  'zh-CN': '屏幕阅读器支持',  'zh-TW': '螢幕閱讀器支援',
+    vi: 'Hỗ trợ Đọc màn hình',        tl: 'Screen Reader Support',          hi: 'स्क्रीन रीडर समर्थन', ko: '스크린 리더 지원',
+    ar: 'دعم قارئ الشاشة',            fr: "Support Lecteur d'Écran",        pt: 'Suporte a Leitor de Tela', ru: 'Поддержка скринридера',
+    ja: 'スクリーンリーダー対応',         am: 'የስክሪን አንባቢ ድጋፍ',
+  },
+  'settings.screen_reader_desc': {
+    en: 'Accessibility labels enabled — compatible with VoiceOver (iOS) and TalkBack (Android)',
+    es: 'Etiquetas de accesibilidad activadas — compatible con VoiceOver y TalkBack',
+    'zh-CN': '已启用辅助功能标签 — 支持 VoiceOver 和 TalkBack',
+    'zh-TW': '已啟用輔助功能標籤 — 支援 VoiceOver 和 TalkBack',
+    vi: 'Nhãn trợ năng được bật — tương thích VoiceOver và TalkBack',
+    tl: 'Accessibility labels enabled — compatible sa VoiceOver at TalkBack',
+    hi: 'एक्सेसिबिलिटी लेबल सक्षम — VoiceOver और TalkBack के साथ संगत',
+    ko: '접근성 레이블 활성화 — VoiceOver 및 TalkBack과 호환',
+    ar: 'تسميات الوصول مفعّلة — متوافق مع VoiceOver و TalkBack',
+    fr: "Étiquettes d'accessibilité activées — compatible VoiceOver et TalkBack",
+    pt: 'Rótulos de acessibilidade ativados — compatível com VoiceOver e TalkBack',
+    ru: 'Метки доступности включены — совместимо с VoiceOver и TalkBack',
+    ja: 'アクセシビリティラベル有効 — VoiceOver と TalkBack に対応',
+    am: 'የተደራሽነት መለያዎች ነቅተዋል — VoiceOver እና TalkBack ጋር ተኳሃኝ',
+  },
+  'settings.section_tour': {
+    en: 'Tour & Help',       es: 'Tour y Ayuda',       'zh-CN': '导览与帮助',  'zh-TW': '導覽與說明',
+    vi: 'Tour & Trợ giúp',   tl: 'Tour at Tulong',     hi: 'टूर और मदद',      ko: '투어 및 도움말',
+    ar: 'الجولة والمساعدة',  fr: 'Visite & Aide',      pt: 'Tour e Ajuda',    ru: 'Тур и помощь',
+    ja: 'ツアーとヘルプ',      am: 'ጉብኝት እና እርዳታ',
+  },
+  'settings.guided_tour': {
+    en: 'Guided Tour',      es: 'Tour Guiado',     'zh-CN': '导览',      'zh-TW': '導覽',
+    vi: 'Tour hướng dẫn',   tl: 'Guided Tour',     hi: 'गाइडेड टूर',     ko: '가이드 투어',
+    ar: 'الجولة الإرشادية', fr: 'Visite Guidée',   pt: 'Tour Guiado',   ru: 'Обзорный тур',
+    ja: 'ガイドツアー',       am: 'የሚመራ ጉብኝት',
+  },
+  'settings.guided_tour_desc': {
+    en: 'Step-by-step walkthrough of every feature',  es: 'Guía paso a paso de todas las funciones',
+    'zh-CN': '逐步介绍每项功能',                         'zh-TW': '逐步介紹每項功能',
+    vi: 'Hướng dẫn từng bước mọi tính năng',          tl: 'Step-by-step na walkthrough ng bawat feature',
+    hi: 'हर सुविधा का चरण-दर-चरण विवरण',               ko: '모든 기능의 단계별 안내',
+    ar: 'جولة خطوة بخطوة لكل ميزة',                   fr: "Guide pas à pas de chaque fonctionnalité",
+    pt: 'Demonstração passo a passo de cada recurso', ru: 'Пошаговый обзор всех функций',
+    ja: 'すべての機能をステップごとに解説',                am: 'ለእያንዳንዱ ባህሪ ደረጃ በደረጃ ማሳያ',
+  },
+  'settings.expo_qr': {
+    en: 'Expo Go QR Code',   es: 'Código QR de Expo Go', 'zh-CN': 'Expo Go 二维码', 'zh-TW': 'Expo Go QR 碼',
+    vi: 'Mã QR Expo Go',     tl: 'Expo Go QR Code',      hi: 'Expo Go QR कोड',     ko: 'Expo Go QR 코드',
+    ar: 'رمز QR لـ Expo Go', fr: 'QR Code Expo Go',      pt: 'QR Code Expo Go',    ru: 'QR-код Expo Go',
+    ja: 'Expo Go QRコード',   am: 'Expo Go QR ኮድ',
+  },
+  'settings.expo_qr_desc': {
+    en: 'Scan to preview this app on your phone',  es: 'Escanear para ver la app en tu teléfono',
+    'zh-CN': '扫描以在手机上预览此应用',              'zh-TW': '掃描以在手機上預覽此應用程式',
+    vi: 'Quét để xem ứng dụng trên điện thoại',    tl: 'I-scan para ma-preview ang app sa telepono',
+    hi: 'फोन पर ऐप देखने के लिए स्कैन करें',        ko: '전화기에서 앱을 미리 보려면 스캔',
+    ar: 'امسح للمعاينة على هاتفك',                  fr: "Scanner pour prévisualiser sur votre téléphone",
+    pt: 'Escanear para visualizar no celular',      ru: 'Сканируйте для просмотра на телефоне',
+    ja: 'スキャンしてスマホでアプリをプレビュー',        am: 'በስልክህ ለማሳየት ቃኝ',
+  },
+  'settings.section_data': {
+    en: 'Data & Privacy',     es: 'Datos y Privacidad',  'zh-CN': '数据与隐私',  'zh-TW': '資料與隱私',
+    vi: 'Dữ liệu & Quyền riêng tư', tl: 'Data at Privacy', hi: 'डेटा और गोपनीयता', ko: '데이터 및 개인정보',
+    ar: 'البيانات والخصوصية', fr: 'Données et Confidentialité', pt: 'Dados e Privacidade', ru: 'Данные и конфиденц.',
+    ja: 'データとプライバシー', am: 'ውሂብ እና ግላዊነት',
+  },
+  'settings.deadlines_label': {
+    en: 'Saved Deadlines',       es: 'Plazos Guardados',     'zh-CN': '已保存的截止日期', 'zh-TW': '已儲存的截止日期',
+    vi: 'Thời hạn đã lưu',       tl: 'Nakatipong mga Deadline', hi: 'सहेजी गई समय सीमाएं', ko: '저장된 마감일',
+    ar: 'المواعيد المحفوظة',     fr: 'Délais Sauvegardés',   pt: 'Prazos Salvos',        ru: 'Сохранённые сроки',
+    ja: '保存した期限',            am: 'የተቀመጡ የጊዜ ገደቦች',
+  },
+  'settings.log_label': {
+    en: 'Encounter Log',       es: 'Registro de Encuentros', 'zh-CN': '遭遇记录',    'zh-TW': '遭遇記錄',
+    vi: 'Nhật ký Gặp gỡ',      tl: 'Talaan ng Pakikipagtagpo', hi: 'मुठभेड़ लॉग',  ko: '조우 기록',
+    ar: 'سجل المواجهات',        fr: 'Journal des Rencontres', pt: 'Registro',        ru: 'Журнал встреч',
+    ja: '遭遇ログ',               am: 'ስብሰባ መዝገብ',
+  },
+  'settings.clear_deadlines': {
+    en: 'Clear Saved Deadlines',  es: 'Borrar Plazos Guardados', 'zh-CN': '清除已保存的截止日期', 'zh-TW': '清除已儲存的截止日期',
+    vi: 'Xóa Thời hạn đã lưu',    tl: 'I-clear ang Mga Deadline',  hi: 'सहेजी गई समय सीमाएं हटाएं', ko: '저장된 마감일 삭제',
+    ar: 'مسح المواعيد المحفوظة',  fr: 'Effacer les Délais',        pt: 'Limpar Prazos Salvos',       ru: 'Очистить сроки',
+    ja: '保存した期限を削除',       am: 'የተቀመጡ የጊዜ ገደቦችን አጽዳ',
+  },
+  'settings.clear_deadlines_desc': {
+    en: 'Remove all pinned deadlines from the dashboard',  es: 'Eliminar todos los plazos del panel',
+    'zh-CN': '从仪表板删除所有固定的截止日期',               'zh-TW': '從儀表板移除所有固定的截止日期',
+    vi: 'Xóa tất cả thời hạn khỏi bảng điều khiển',       tl: 'Alisin ang lahat ng deadline mula sa dashboard',
+    hi: 'डैशबोर्ड से सभी पिन की गई समय सीमाएं हटाएं',     ko: '대시보드에서 모든 마감일 제거',
+    ar: 'إزالة جميع المواعيد من لوحة التحكم',              fr: 'Supprimer tous les délais du tableau de bord',
+    pt: 'Remover todos os prazos do painel',               ru: 'Удалить все сроки с панели',
+    ja: 'ダッシュボードから固定した期限をすべて削除',          am: 'ከዳሽቦርዱ ሁሉንም የጊዜ ገደቦች አስወግድ',
+  },
+  'settings.section_about': {
+    en: 'About',     es: 'Acerca de',  'zh-CN': '关于',  'zh-TW': '關於',
+    vi: 'Giới thiệu', tl: 'Tungkol',   hi: 'के बारे में', ko: '정보',
+    ar: 'حول',        fr: 'À propos',  pt: 'Sobre',      ru: 'О приложении',
+    ja: 'について',    am: 'ስለ',
+  },
+  'settings.privacy_row': {
+    en: 'Privacy',    es: 'Privacidad',  'zh-CN': '隐私',   'zh-TW': '隱私',
+    vi: 'Quyền riêng tư', tl: 'Privacy', hi: 'गोपनीयता',   ko: '개인정보',
+    ar: 'الخصوصية',   fr: 'Confidentialité', pt: 'Privacidade', ru: 'Конфиденциальность',
+    ja: 'プライバシー', am: 'ግላዊነት',
+  },
+  'settings.privacy_desc': {
+    en: 'All data stays on your device. Nothing is uploaded or shared.',
+    es: 'Todos los datos permanecen en tu dispositivo. Nada se sube ni comparte.',
+    'zh-CN': '所有数据留在您的设备上。不上传或分享任何内容。',
+    'zh-TW': '所有資料留在您的裝置上。不上傳或分享任何內容。',
+    vi: 'Tất cả dữ liệu ở trên thiết bị của bạn. Không tải lên hay chia sẻ gì.',
+    tl: 'Lahat ng data ay nasa iyong device. Walang ini-upload o ibinabahagi.',
+    hi: 'सभी डेटा आपके डिवाइस पर रहता है। कुछ भी अपलोड या साझा नहीं होता।',
+    ko: '모든 데이터는 기기에 저장됩니다. 업로드되거나 공유되지 않습니다.',
+    ar: 'تبقى جميع البيانات على جهازك. لا شيء يُرفع أو يُشارك.',
+    fr: "Toutes les données restent sur votre appareil. Rien n'est partagé.",
+    pt: 'Todos os dados ficam no seu dispositivo. Nada é enviado ou compartilhado.',
+    ru: 'Все данные хранятся на вашем устройстве. Ничего не загружается.',
+    ja: 'すべてのデータはデバイスに保存。アップロードや共有はされません。',
+    am: 'ሁሉም ውሂብ በእርስዎ መሳሪያ ላይ ይቀራል። ምንም ነገር አይጫነም ወይም አይጋራም።',
+  },
+  'settings.built_for': {
+    en: 'Built for the Community',    es: 'Construido para la Comunidad',  'zh-CN': '为社区而建',   'zh-TW': '為社群而建',
+    vi: 'Xây dựng cho Cộng đồng',     tl: 'Ginawa para sa Komunidad',      hi: 'समुदाय के लिए बनाया', ko: '커뮤니티를 위해 제작',
+    ar: 'مبني للمجتمع',               fr: 'Conçu pour la Communauté',      pt: 'Feito para a Comunidade', ru: 'Создано для сообщества',
+    ja: 'コミュニティのために作られました', am: 'ለማህበረሰቡ የተሰራ',
+  },
+  'settings.built_for_desc': {
+    en: 'Free legal education and assistance tools',  es: 'Herramientas gratuitas de educación legal',
+    'zh-CN': '免费法律教育和援助工具',                  'zh-TW': '免費法律教育和援助工具',
+    vi: 'Công cụ giáo dục và hỗ trợ pháp lý miễn phí', tl: 'Libreng legal na edukasyon at tulong',
+    hi: 'मुफ्त कानूनी शिक्षा और सहायता उपकरण',          ko: '무료 법률 교육 및 지원 도구',
+    ar: 'أدوات تعليم قانوني ومساعدة مجانية',            fr: "Outils gratuits d'éducation juridique",
+    pt: 'Ferramentas gratuitas de educação jurídica',   ru: 'Бесплатные инструменты правовой помощи',
+    ja: '無料の法律教育・支援ツール',                      am: 'ነፃ የህግ ትምህርት እና እርዳታ መሳሪያዎች',
+  },
+  'settings.app_desc': {
+    en: 'v1.0.0 — Multilingual legal assistance',  es: 'v1.0.0 — Asistencia legal multilingüe',
+    'zh-CN': 'v1.0.0 — 多语言法律援助',              'zh-TW': 'v1.0.0 — 多語言法律援助',
+    vi: 'v1.0.0 — Hỗ trợ pháp lý đa ngôn ngữ',    tl: 'v1.0.0 — Multilingual legal assistance',
+    hi: 'v1.0.0 — बहुभाषी कानूनी सहायता',            ko: 'v1.0.0 — 다국어 법률 지원',
+    ar: 'v1.0.0 — مساعدة قانونية متعددة اللغات',   fr: 'v1.0.0 — Assistance juridique multilingue',
+    pt: 'v1.0.0 — Assistência jurídica multilíngue', ru: 'v1.0.0 — Многоязычная правовая помощь',
+    ja: 'v1.0.0 — 多言語法律支援',                    am: 'v1.0.0 — ባለብዙ ቋንቋ የህግ እርዳታ',
+  },
+  'settings.disclaimer': {
+    en: '⚠️ Disclaimer: CivicShield Pro provides general legal information, not legal advice. Laws vary by state and situation. Always consult a licensed attorney for guidance specific to your circumstances.',
+    es: '⚠️ Aviso: CivicShield Pro proporciona información legal general, no asesoría legal. Las leyes varían. Consulte siempre a un abogado con licencia.',
+    'zh-CN': '⚠️ 免责声明：CivicShield Pro 提供一般法律信息，而非法律建议。法律因州而异，请咨询持牌律师。',
+    'zh-TW': '⚠️ 免責聲明：CivicShield Pro 提供一般法律資訊，而非法律建議。請諮詢持牌律師。',
+    vi: '⚠️ Tuyên bố từ chối: CivicShield Pro cung cấp thông tin pháp lý chung, không phải tư vấn pháp lý. Luật pháp thay đổi theo tiểu bang. Hãy tham khảo luật sư.',
+    tl: '⚠️ Disclaimer: Ang CivicShield Pro ay nagbibigay ng pangkalahatang impormasyon sa batas, hindi legal na payo. Kumonsulta sa lisensyadong abogado.',
+    hi: '⚠️ अस्वीकरण: CivicShield Pro सामान्य कानूनी जानकारी देता है, कानूनी सलाह नहीं। हमेशा लाइसेंसी वकील से परामर्श लें।',
+    ko: '⚠️ 면책조항: CivicShield Pro는 일반적인 법률 정보를 제공합니다. 법률 자문이 아닙니다. 항상 변호사와 상담하세요.',
+    ar: '⚠️ إخلاء مسؤولية: يوفر CivicShield Pro معلومات قانونية عامة وليس مشورة قانونية. استشر دائمًا محاميًا مرخصًا.',
+    fr: "⚠️ Avertissement: CivicShield Pro fournit des informations juridiques générales, pas de conseils juridiques. Consultez toujours un avocat.",
+    pt: '⚠️ Aviso: CivicShield Pro fornece informações jurídicas gerais, não aconselhamento jurídico. Consulte sempre um advogado licenciado.',
+    ru: '⚠️ Отказ от ответственности: CivicShield Pro предоставляет общую правовую информацию, а не юридическую консультацию. Обратитесь к лицензированному юристу.',
+    ja: '⚠️ 免責事項: CivicShield Pro は一般的な法律情報を提供するものであり、法律上のアドバイスではありません。常に弁護士にご相談ください。',
+    am: '⚠️ ማስጠንቀቂያ: CivicShield Pro አጠቃላይ የህግ መረጃ ይሰጣል፣ የህግ ምክር አይደለም። ሁልጊዜ የፈቃድ ጠበቃ ያማክሩ።',
+  },
+  'settings.clear_title': {
+    en: 'Clear All Data',    es: 'Borrar Todos los Datos', 'zh-CN': '清除所有数据', 'zh-TW': '清除所有資料',
+    vi: 'Xóa Tất cả Dữ liệu', tl: 'I-clear ang Lahat ng Data', hi: 'सभी डेटा हटाएं', ko: '모든 데이터 삭제',
+    ar: 'مسح جميع البيانات',  fr: 'Supprimer Toutes les Données', pt: 'Limpar Todos os Dados', ru: 'Удалить все данные',
+    ja: 'すべてのデータを削除', am: 'ሁሉንም ውሂብ አጽዳ',
+  },
+  'settings.clear_cancel': {
+    en: 'Cancel',    es: 'Cancelar', 'zh-CN': '取消',  'zh-TW': '取消',
+    vi: 'Hủy',       tl: 'Kanselahin', hi: 'रद्द करें', ko: '취소',
+    ar: 'إلغاء',     fr: 'Annuler',  pt: 'Cancelar',  ru: 'Отмена',
+    ja: 'キャンセル', am: 'ሰርዝ',
+  },
+  'settings.clear_confirm': {
+    en: 'Delete All',      es: 'Eliminar Todo',   'zh-CN': '全部删除',  'zh-TW': '全部刪除',
+    vi: 'Xóa Tất cả',      tl: 'Burahin Lahat',   hi: 'सब हटाएं',       ko: '모두 삭제',
+    ar: 'حذف الكل',        fr: 'Tout Supprimer',  pt: 'Deletar Tudo',   ru: 'Удалить всё',
+    ja: 'すべて削除',        am: 'ሁሉንም ሰርዝ',
+  },
+  'settings.cleared_title': {
+    en: 'Cleared',        es: 'Borrado',       'zh-CN': '已清除',  'zh-TW': '已清除',
+    vi: 'Đã xóa',         tl: 'Na-clear',      hi: 'साफ़ हो गया',  ko: '삭제됨',
+    ar: 'تم المسح',       fr: 'Effacé',        pt: 'Apagado',     ru: 'Удалено',
+    ja: '削除しました',     am: 'ጸድቷል',
+  },
+  'settings.cleared_msg': {
+    en: 'All saved deadlines have been deleted.',   es: 'Todos los plazos guardados han sido eliminados.',
+    'zh-CN': '所有已保存的截止日期已被删除。',         'zh-TW': '所有已儲存的截止日期已被刪除。',
+    vi: 'Tất cả thời hạn đã được xóa.',            tl: 'Lahat ng nakatipong deadline ay nabura.',
+    hi: 'सभी सहेजी गई समय सीमाएं हटा दी गई हैं।',   ko: '저장된 모든 마감일이 삭제되었습니다.',
+    ar: 'تم حذف جميع المواعيد المحفوظة.',            fr: 'Tous les délais sauvegardés ont été supprimés.',
+    pt: 'Todos os prazos salvos foram excluídos.',   ru: 'Все сохранённые сроки удалены.',
+    ja: '保存されたすべての期限が削除されました。',    am: 'ሁሉም የተቀመጡ የጊዜ ገደቦች ተሰርዘዋል።',
+  },
+
+  // ── Rights quiz extras ────────────────────────────────────────────────────────
+  'rights.general_info': {
+    en: 'This is general educational information, not legal advice. Laws vary by state and situation.',
+    es: 'Esta es información educativa general, no asesoría legal. Las leyes varían por estado.',
+    'zh-CN': '这是一般教育信息，而非法律建议。法律因州而异。',
+    'zh-TW': '這是一般教育資訊，而非法律建議。法律因州而異。',
+    vi: 'Đây là thông tin giáo dục chung, không phải tư vấn pháp lý. Luật pháp thay đổi theo tiểu bang.',
+    tl: 'Ito ay pangkalahatang impormasyon, hindi legal na payo. Nagbabago ang batas bawat estado.',
+    hi: 'यह सामान्य शैक्षिक जानकारी है, कानूनी सलाह नहीं। कानून राज्य के अनुसार अलग होते हैं।',
+    ko: '이것은 일반적인 교육 정보이며 법률 자문이 아닙니다. 법률은 주마다 다릅니다.',
+    ar: 'هذه معلومات تعليمية عامة، وليست مشورة قانونية. تختلف القوانين حسب الولاية.',
+    fr: "Ceci est une information éducative générale, pas un conseil juridique. Les lois varient selon l'État.",
+    pt: 'Esta é uma informação educacional geral, não aconselhamento jurídico. As leis variam por estado.',
+    ru: 'Это общая образовательная информация, а не юридическая консультация. Законы различаются.',
+    ja: 'これは一般的な教育情報であり、法律上のアドバイスではありません。法律は州によって異なります。',
+    am: 'ይህ አጠቃላይ ትምህርታዊ መረጃ ነው፣ የህግ ምክር አይደለም። ህጎች በግዛት ይለያያሉ።',
+  },
+  'rights.quiz_title': {
+    en: 'Know Your Rights Quiz',  es: 'Quiz: Conoce tus Derechos', 'zh-CN': '了解你的权利测验', 'zh-TW': '了解您的權利測驗',
+    vi: 'Bài kiểm tra Quyền',     tl: 'Know Your Rights Quiz',     hi: 'अपने अधिकार जानें प्रश्नोत्तरी', ko: '권리 퀴즈',
+    ar: 'اختبار: اعرف حقوقك',     fr: 'Quiz: Connaissez vos Droits', pt: 'Quiz: Conheça seus Direitos', ru: 'Викторина: права',
+    ja: '権利クイズ',               am: 'መብቶቸህን ዕወቅ ጥያቄ',
+  },
+  'rights.score_great': {
+    en: 'Great work! 🎉',  es: '¡Excelente! 🎉',    'zh-CN': '太棒了！🎉',  'zh-TW': '太棒了！🎉',
+    vi: 'Xuất sắc! 🎉',    tl: 'Napakagaling! 🎉',  hi: 'शानदार! 🎉',       ko: '훌륭합니다! 🎉',
+    ar: 'عمل رائع! 🎉',    fr: 'Excellent travail! 🎉', pt: 'Ótimo trabalho! 🎉', ru: 'Отлично! 🎉',
+    ja: '素晴らしい！🎉',   am: 'ድንቅ ሥራ! 🎉',
+  },
+  'rights.score_good': {
+    en: 'Good effort! 👍', es: '¡Buen esfuerzo! 👍',  'zh-CN': '不错！👍',   'zh-TW': '不錯！👍',
+    vi: 'Cố gắng tốt! 👍', tl: 'Magandang effort! 👍', hi: 'अच्छा प्रयास! 👍', ko: '잘 했어요! 👍',
+    ar: 'جهد جيد! 👍',     fr: 'Bon effort! 👍',       pt: 'Bom esforço! 👍',  ru: 'Хорошее усилие! 👍',
+    ja: 'よく頑張りました！👍', am: 'ጥሩ ጥረት! 👍',
+  },
+  'rights.score_keep': {
+    en: 'Keep learning 📚', es: 'Sigue aprendiendo 📚',  'zh-CN': '继续学习 📚', 'zh-TW': '繼續學習 📚',
+    vi: 'Tiếp tục học 📚',  tl: 'Magpatuloy sa pag-aaral 📚', hi: 'सीखते रहें 📚', ko: '계속 공부하세요 📚',
+    ar: 'استمر في التعلم 📚', fr: 'Continuez à apprendre 📚', pt: 'Continue aprendendo 📚', ru: 'Продолжайте учиться 📚',
+    ja: '学習を続けましょう 📚', am: 'መማሩን ቀጥሉ 📚',
+  },
+  'rights.score_great_msg': {
+    en: 'Excellent! You know your rights well.',  es: 'Excelente. Conoces bien tus derechos.',
+    'zh-CN': '优秀！您非常了解自己的权利。',           'zh-TW': '優秀！您非常了解自己的權利。',
+    vi: 'Xuất sắc! Bạn biết rõ các quyền của mình.', tl: 'Mahusay! Alam mo ang iyong mga karapatan.',
+    hi: 'उत्कृष्ट! आप अपने अधिकारों को अच्छी तरह जानते हैं।', ko: '훌륭합니다! 당신은 권리를 잘 알고 있습니다.',
+    ar: 'ممتاز! أنت تعرف حقوقك جيدًا.',             fr: 'Excellent! Vous connaissez bien vos droits.',
+    pt: 'Excelente! Você conhece bem seus direitos.', ru: 'Отлично! Вы хорошо знаете свои права.',
+    ja: '素晴らしい！あなたは権利をよく理解しています。', am: 'ድንቅ! መብቶቸህን በደንብ ታውቃለህ።',
+  },
+  'rights.score_good_msg': {
+    en: 'Good job! Review the rights sections to learn more.',  es: '¡Bien! Revisa las secciones de derechos para aprender más.',
+    'zh-CN': '做得好！查看权利部分了解更多。',                     'zh-TW': '做得好！查看權利部分以了解更多。',
+    vi: 'Làm tốt! Xem lại các phần quyền để tìm hiểu thêm.', tl: 'Magaling! Suriin ang mga seksyon ng karapatan.',
+    hi: 'अच्छा! अधिक जानने के लिए अधिकार अनुभाग देखें।',      ko: '잘 했어요! 더 배우려면 권리 섹션을 복습하세요.',
+    ar: 'أحسنت! راجع أقسام الحقوق لتعلم المزيد.',             fr: 'Bien joué! Révisez les sections des droits.',
+    pt: 'Bom trabalho! Revise as seções de direitos.', ru: 'Хорошо! Повторите разделы о правах.',
+    ja: 'よくできました！権利セクションを復習しましょう。', am: 'ጥሩ ሥራ! ተጨማሪ ለማወቅ የመብቶች ክፍሎቹን ይከልሱ።',
+  },
+  'rights.score_keep_msg': {
+    en: 'Keep studying — knowing your rights matters.',  es: 'Sigue estudiando — conocer tus derechos importa.',
+    'zh-CN': '继续学习 — 了解您的权利很重要。',            'zh-TW': '繼續學習 — 了解您的權利很重要。',
+    vi: 'Tiếp tục học — biết quyền của bạn rất quan trọng.', tl: 'Magpatuloy sa pag-aaral — mahalaga ang malaman ang iyong mga karapatan.',
+    hi: 'पढ़ते रहें — अपने अधिकार जानना महत्वपूर्ण है।', ko: '계속 공부하세요 — 권리를 아는 것이 중요합니다.',
+    ar: 'استمر في الدراسة — معرفة حقوقك مهمة.',         fr: "Continuez à étudier — connaître vos droits est important.",
+    pt: 'Continue estudando — saber seus direitos importa.', ru: 'Продолжайте учиться — знать свои права важно.',
+    ja: '学習を続けてください — 権利を知ることは大切です。', am: 'ማጥናቱን ቀጥሉ — መብቶቸህን ማወቅ አስፈላጊ ነው።',
+  },
+  'rights.correct_label': {
+    en: 'correct',   es: 'correctas',  'zh-CN': '正确',   'zh-TW': '正確',
+    vi: 'đúng',      tl: 'tama',       hi: 'सही',          ko: '정답',
+    ar: 'صحيح',      fr: 'correctes',  pt: 'corretas',    ru: 'правильных',
+    ja: '正解',       am: 'ትክክለኛ',
+  },
+
+  // ── Resources filters & alerts ────────────────────────────────────────────────
+  'resources.filter_all': {
+    en: 'All',       es: 'Todos',    'zh-CN': '全部',  'zh-TW': '全部',
+    vi: 'Tất cả',    tl: 'Lahat',    hi: 'सभी',         ko: '전체',
+    ar: 'الكل',      fr: 'Tous',     pt: 'Todos',      ru: 'Все',
+    ja: 'すべて',     am: 'ሁሉም',
+  },
+  'resources.filter_legal_aid': {
+    en: 'Legal Aid',       es: 'Ayuda Legal',     'zh-CN': '法律援助',   'zh-TW': '法律援助',
+    vi: 'Trợ giúp Pháp lý', tl: 'Legal Aid',      hi: 'कानूनी सहायता',  ko: '법률 지원',
+    ar: 'المساعدة القانونية', fr: 'Aide Juridique', pt: 'Assistência Jurídica', ru: 'Юридическая помощь',
+    ja: '法律扶助',           am: 'የህግ ድጋፍ',
+  },
+  'resources.filter_defender': {
+    en: 'Public Defender',    es: 'Defensor Público',  'zh-CN': '公设辩护人',    'zh-TW': '公設辯護人',
+    vi: 'Người bào chữa',     tl: 'Public Defender',   hi: 'सार्वजनिक बचावकर्ता', ko: '공선변호인',
+    ar: 'المدافع العام',       fr: 'Défenseur Public',  pt: 'Defensor Público',   ru: 'Государственный защитник',
+    ja: '国選弁護人',            am: 'የህዝብ ተሟጋች',
+  },
+  'resources.filter_nonprofit': {
+    en: 'Nonprofit',      es: 'Sin Fines de Lucro', 'zh-CN': '非营利',   'zh-TW': '非營利',
+    vi: 'Phi lợi nhuận',  tl: 'Non-profit',         hi: 'गैर-लाभकारी',   ko: '비영리',
+    ar: 'غير ربحية',      fr: 'À but non lucratif', pt: 'Sem fins lucrativos', ru: 'Некоммерческая',
+    ja: '非営利団体',      am: 'ለትርፍ ያልተቋቋመ',
+  },
+  'resources.filter_clinic': {
+    en: 'Legal Clinic',     es: 'Clínica Legal',   'zh-CN': '法律诊所',  'zh-TW': '法律診所',
+    vi: 'Phòng Khám Pháp', tl: 'Legal Clinic',    hi: 'कानूनी क्लिनिक', ko: '법률 클리닉',
+    ar: 'العيادة القانونية', fr: 'Clinique Juridique', pt: 'Clínica Jurídica', ru: 'Юридическая клиника',
+    ja: '法律クリニック',    am: 'የህግ ክሊኒክ',
+  },
+  'resources.filter_bar': {
+    en: 'Bar Referral',    es: 'Referencia del Colegio',  'zh-CN': '律师协会转介', 'zh-TW': '律師公會轉介',
+    vi: 'Giới thiệu Luật sư', tl: 'Bar Referral',         hi: 'बार रेफरल',         ko: '변호사 협회 추천',
+    ar: 'إحالة نقابة المحامين', fr: 'Référence du Barreau', pt: 'Referência da OAB', ru: 'Направление адвоката',
+    ja: '弁護士会紹介',       am: 'የባር ሪፈራል',
+  },
+  'resources.radius_label': {
+    en: '📍 Search Radius',       es: '📍 Radio de Búsqueda',    'zh-CN': '📍 搜索半径',   'zh-TW': '📍 搜尋半徑',
+    vi: '📍 Bán kính Tìm kiếm',   tl: '📍 Radius ng Paghahanap', hi: '📍 खोज त्रिज्या',    ko: '📍 검색 반경',
+    ar: '📍 نطاق البحث',           fr: '📍 Rayon de Recherche',   pt: '📍 Raio de Busca',   ru: '📍 Радиус поиска',
+    ja: '📍 検索範囲',              am: '📍 የፍለጋ ዙርያ',
+  },
+  'resources.radius_any': {
+    en: 'Any',    es: 'Cualquier',  'zh-CN': '任意',  'zh-TW': '任意',
+    vi: 'Bất kỳ', tl: 'Anuman',    hi: 'कोई भी',     ko: '제한 없음',
+    ar: 'أي مسافة', fr: 'Tout',    pt: 'Qualquer',  ru: 'Любой',
+    ja: '制限なし', am: 'ማንኛውም',
+  },
+  'resources.your_location': {
+    en: 'Your current location',   es: 'Tu ubicación actual',    'zh-CN': '你的当前位置',  'zh-TW': '您的目前位置',
+    vi: 'Vị trí hiện tại của bạn', tl: 'Iyong kasalukuyang lokasyon', hi: 'आपका वर्तमान स्थान', ko: '현재 위치',
+    ar: 'موقعك الحالي',             fr: 'Votre emplacement actuel', pt: 'Sua localização atual', ru: 'Ваше местоположение',
+    ja: '現在地',                   am: 'አሁን ያለህበት ቦታ',
+  },
+  'resources.perm_denied': {
+    en: 'Location access was denied. You can enter a city or ZIP code below instead.',
+    es: 'Acceso de ubicación denegado. Ingresa una ciudad o código postal.',
+    'zh-CN': '位置访问被拒绝。请在下方输入城市或邮编。',
+    'zh-TW': '位置存取被拒絕。請在下方輸入城市或郵遞區號。',
+    vi: 'Quyền truy cập vị trí bị từ chối. Nhập thành phố hoặc ZIP bên dưới.',
+    tl: 'Tinanggihan ang access sa lokasyon. Mag-enter ng city o ZIP code.',
+    hi: 'स्थान पहुँच अस्वीकार। नीचे शहर या ZIP कोड दर्ज करें।',
+    ko: '위치 접근이 거부되었습니다. 아래에 도시나 ZIP 코드를 입력하세요.',
+    ar: 'تم رفض الوصول إلى الموقع. أدخل مدينة أو رمزًا بريديًا.',
+    fr: "Accès à la localisation refusé. Entrez une ville ou un code postal.",
+    pt: 'Acesso à localização negado. Digite uma cidade ou CEP abaixo.',
+    ru: 'Доступ к местоположению запрещён. Введите город или почтовый индекс.',
+    ja: '位置情報へのアクセスが拒否されました。都市またはZIPを入力してください。',
+    am: 'ቦታ ተደራሽነት ተከልክሏል። ከዚህ በታች ከተማ ወይም ZIP ያስገቡ።',
+  },
+  'resources.location_error': {
+    en: 'Could not get location. Please try entering a city or ZIP code.',
+    es: 'No se pudo obtener la ubicación. Intenta ingresar una ciudad o ZIP.',
+    'zh-CN': '无法获取位置。请尝试输入城市或邮编。',
+    'zh-TW': '無法取得位置。請嘗試輸入城市或郵遞區號。',
+    vi: 'Không lấy được vị trí. Thử nhập thành phố hoặc mã ZIP.',
+    tl: 'Hindi makuha ang lokasyon. Subukang mag-enter ng city o ZIP.',
+    hi: 'स्थान नहीं मिला। कृपया शहर या ZIP कोड दर्ज करें।',
+    ko: '위치를 가져올 수 없습니다. 도시나 ZIP 코드를 입력해 보세요.',
+    ar: 'تعذّر الحصول على الموقع. حاول إدخال مدينة أو رمز ZIP.',
+    fr: "Impossible d'obtenir la localisation. Essayez d'entrer une ville ou un code postal.",
+    pt: 'Não foi possível obter localização. Digite uma cidade ou CEP.',
+    ru: 'Не удалось получить местоположение. Введите город или индекс.',
+    ja: '位置情報を取得できませんでした。都市またはZIPを入力してください。',
+    am: 'ቦታ ማግኘት አልተቻለም። ከተማ ወይም ZIP ያስገቡ።',
+  },
+  'resources.enter_location': {
+    en: 'Please enter a city, ZIP code, or address.',  es: 'Por favor ingresa ciudad, código postal o dirección.',
+    'zh-CN': '请输入城市、邮编或地址。',                 'zh-TW': '請輸入城市、郵遞區號或地址。',
+    vi: 'Vui lòng nhập thành phố, ZIP hoặc địa chỉ.', tl: 'Mangyaring mag-enter ng city, ZIP o address.',
+    hi: 'कृपया शहर, ZIP कोड या पता दर्ज करें।',        ko: '도시, ZIP 코드 또는 주소를 입력하세요.',
+    ar: 'الرجاء إدخال مدينة أو رمز بريدي أو عنوان.', fr: 'Entrez une ville, un code postal ou une adresse.',
+    pt: 'Digite uma cidade, CEP ou endereço.',          ru: 'Введите город, индекс или адрес.',
+    ja: '都市、ZIP、または住所を入力してください。',       am: 'ከተማ፣ ZIP ወይም አድራሻ ያስገቡ።',
+  },
+  'resources.not_found': {
+    en: 'Location Not Found',   es: 'Ubicación No Encontrada', 'zh-CN': '未找到位置', 'zh-TW': '找不到位置',
+    vi: 'Không Tìm Thấy Vị Trí', tl: 'Hindi Nahanap ang Lokasyon', hi: 'स्थान नहीं मिला', ko: '위치를 찾을 수 없음',
+    ar: 'الموقع غير موجود',    fr: 'Localisation Introuvable', pt: 'Local Não Encontrado', ru: 'Местоположение не найдено',
+    ja: '場所が見つかりません',   am: 'ቦታ አልተገኘም',
+  },
+  'resources.geocode_error': {
+    en: 'Could not geocode address. Check your internet connection.',
+    es: 'No se pudo geocodificar la dirección. Verifica tu conexión.',
+    'zh-CN': '无法对地址进行地理编码。请检查网络连接。',
+    'zh-TW': '無法對地址進行地理編碼。請檢查網路連線。',
+    vi: 'Không thể mã hóa địa chỉ. Kiểm tra kết nối internet.',
+    tl: 'Hindi ma-geocode ang address. Suriin ang iyong koneksyon sa internet.',
+    hi: 'पता जियोकोड नहीं हो सका। इंटरनेट कनेक्शन जांचें।',
+    ko: '주소를 지오코드할 수 없습니다. 인터넷 연결을 확인하세요.',
+    ar: 'تعذّر ترميز العنوان. تحقق من اتصالك بالإنترنت.',
+    fr: "Impossible de géolocaliser l'adresse. Vérifiez votre connexion.",
+    pt: 'Não foi possível geocodificar o endereço. Verifique sua conexão.',
+    ru: 'Не удалось геокодировать адрес. Проверьте соединение.',
+    ja: 'アドレスをジオコードできませんでした。インターネット接続を確認してください。',
+    am: 'አድራሻውን ማካሄድ አልተቻለም። የኢንተርኔት ግንኙነትዎን ያረጋግጡ።',
+  },
+
+  // ── Encounter log list ────────────────────────────────────────────────────────
+  'log.title': {
+    en: '🗂️ Encounter Log',         es: '🗂️ Registro de Encuentros',  'zh-CN': '🗂️ 遭遇记录',  'zh-TW': '🗂️ 遭遇記錄',
+    vi: '🗂️ Nhật Ký Gặp Gỡ',       tl: '🗂️ Talaan ng Pakikipagtagpo', hi: '🗂️ मुठभेड़ लॉग',    ko: '🗂️ 조우 기록',
+    ar: '🗂️ سجل المواجهات',         fr: '🗂️ Journal des Rencontres',  pt: '🗂️ Registro',       ru: '🗂️ Журнал встреч',
+    ja: '🗂️ 遭遇ログ',               am: '🗂️ ስብሰባ መዝገብ',
+  },
+  'log.subtitle': {
+    en: 'Private · stored on this device only',  es: 'Privado · guardado solo en este dispositivo',
+    'zh-CN': '私密 · 仅存储在此设备上',             'zh-TW': '私密 · 僅儲存在此裝置上',
+    vi: 'Riêng tư · chỉ lưu trên thiết bị này', tl: 'Pribado · nakaimbak sa device na ito lamang',
+    hi: 'निजी · केवल इस डिवाइस पर संग्रहीत',    ko: '비공개 · 이 기기에만 저장됨',
+    ar: 'خاص · مخزّن على هذا الجهاز فقط',       fr: 'Privé · stocké sur cet appareil uniquement',
+    pt: 'Privado · armazenado apenas neste dispositivo', ru: 'Приватно · хранится только на устройстве',
+    ja: 'プライベート · このデバイスのみ保存',        am: 'ግላዊ · በዚህ መሳሪያ ብቻ ተቀምጧል',
+  },
+  'log.empty_title': {
+    en: 'No encounters logged',      es: 'No hay encuentros registrados', 'zh-CN': '没有记录的遭遇', 'zh-TW': '沒有記錄的遭遇',
+    vi: 'Không có gặp gỡ nào',       tl: 'Walang naitalang pakikipagtagpo', hi: 'कोई मुठभेड़ दर्ज नहीं', ko: '기록된 조우 없음',
+    ar: 'لا توجد مواجهات مسجلة',    fr: 'Aucune rencontre enregistrée', pt: 'Nenhum encontro registrado', ru: 'Нет записей',
+    ja: '記録なし',                   am: 'ምንም ስብሰባ አልተመዘገበም',
+  },
+  'log.empty_desc': {
+    en: 'Document police interactions to protect yourself and your community. All records stay on your device.',
+    es: 'Documenta interacciones policiales para protegerte. Los registros permanecen en tu dispositivo.',
+    'zh-CN': '记录与警察的互动以保护自己和社区。所有记录保留在您的设备上。',
+    'zh-TW': '記錄與警察的互動以保護自己和社群。所有記錄保留在您的裝置上。',
+    vi: 'Ghi lại tương tác với cảnh sát để bảo vệ bạn. Tất cả hồ sơ ở trên thiết bị.',
+    tl: 'Idokumento ang pakikipag-ugnayan sa pulis. Ang lahat ng rekord ay nasa device mo.',
+    hi: 'खुद को बचाने के लिए पुलिस से बातचीत दर्ज करें। सभी रिकॉर्ड आपके डिवाइस पर रहते हैं।',
+    ko: '자신을 보호하기 위해 경찰 상호작용을 기록하세요. 모든 기록은 기기에 남습니다.',
+    ar: 'وثّق التفاعلات مع الشرطة لحماية نفسك. جميع السجلات تبقى على جهازك.',
+    fr: 'Documentez les interactions avec la police. Tous les dossiers restent sur votre appareil.',
+    pt: 'Documente interações com a polícia. Todos os registros ficam no seu dispositivo.',
+    ru: 'Документируйте взаимодействие с полицией. Все записи хранятся на устройстве.',
+    ja: '警察との交流を記録して自分を守りましょう。記録はすべてデバイスに保存されます。',
+    am: 'ራስዎን ለመጠበቅ ከፖሊስ ጋር ያለውን ግንኙነት ይመዝግቡ። ሁሉም መዛግብት በእርስዎ መሳሪያ ላይ ይቆያሉ።',
+  },
+  'log.first_btn': {
+    en: 'Log First Encounter',       es: 'Registrar Primer Encuentro', 'zh-CN': '记录第一次遭遇', 'zh-TW': '記錄第一次遭遇',
+    vi: 'Ghi Gặp gỡ Đầu tiên',       tl: 'Itala ang Unang Pakikipagtagpo', hi: 'पहली मुठभेड़ दर्ज करें', ko: '첫 조우 기록',
+    ar: 'تسجيل أول مواجهة',          fr: 'Enregistrer Première Rencontre', pt: 'Registrar Primeiro Encontro', ru: 'Записать первую встречу',
+    ja: '最初の遭遇を記録',             am: 'የመጀመሪያ ስብሰባ ይመዝግቡ',
+  },
+  'log.entry': {
+    en: 'entry',   es: 'entrada',  'zh-CN': '条',  'zh-TW': '條',
+    vi: 'mục',     tl: 'entry',    hi: 'प्रविष्टि',  ko: '건',
+    ar: 'إدخال',   fr: 'entrée',   pt: 'entrada',  ru: 'запись',
+    ja: '件',       am: 'ግቤት',
+  },
+  'log.entries': {
+    en: 'entries', es: 'entradas', 'zh-CN': '条',  'zh-TW': '條',
+    vi: 'mục',     tl: 'entries',  hi: 'प्रविष्टियां', ko: '건',
+    ar: 'إدخالات', fr: 'entrées',  pt: 'entradas', ru: 'записи',
+    ja: '件',       am: 'ግቤቶች',
+  },
+  'log.stored_device': {
+    en: 'stored on this device, never shared',  es: 'guardado en este dispositivo, nunca compartido',
+    'zh-CN': '存储在此设备上，从不分享',           'zh-TW': '儲存在此裝置上，絕不分享',
+    vi: 'lưu trên thiết bị này, không bao giờ chia sẻ', tl: 'nakaimbak sa device na ito, hindi ibinabahagi',
+    hi: 'इस डिवाइस पर संग्रहीत, कभी साझा नहीं',   ko: '이 기기에 저장됨, 공유 안 됨',
+    ar: 'مخزّن على هذا الجهاز، لم يُشارك أبدًا',  fr: 'stocké sur cet appareil, jamais partagé',
+    pt: 'armazenado neste dispositivo, nunca compartilhado', ru: 'хранится на устройстве, не передаётся',
+    ja: 'このデバイスに保存、共有なし',               am: 'በዚህ መሳሪያ ላይ ተቀምጧል፣ ፈጽሞ አይጋራም',
+  },
+  'log.delete_title': {
+    en: 'Delete Encounter',   es: 'Eliminar Encuentro',  'zh-CN': '删除遭遇',   'zh-TW': '刪除遭遇',
+    vi: 'Xóa Gặp gỡ',         tl: 'Burahin ang Pakikipagtagpo', hi: 'मुठभेड़ हटाएं', ko: '조우 삭제',
+    ar: 'حذف المواجهة',        fr: 'Supprimer la Rencontre', pt: 'Excluir Encontro', ru: 'Удалить встречу',
+    ja: '遭遇を削除',            am: 'ስብሰባ ሰርዝ',
+  },
+  'log.delete_msg': {
+    en: 'Are you sure you want to delete this log entry?',  es: '¿Seguro que quieres eliminar esta entrada?',
+    'zh-CN': '确定要删除此记录条目吗？',                       'zh-TW': '確定要刪除此記錄項目嗎？',
+    vi: 'Bạn có chắc muốn xóa mục nhật ký này không?',    tl: 'Sigurado ka bang burahin ang entry na ito?',
+    hi: 'क्या आप इस लॉग प्रविष्टि को हटाना चाहते हैं?',    ko: '이 로그 항목을 삭제하시겠습니까?',
+    ar: 'هل أنت متأكد من حذف هذا السجل؟',                  fr: 'Supprimer cette entrée du journal?',
+    pt: 'Tem certeza de que deseja excluir esta entrada?', ru: 'Удалить эту запись?',
+    ja: 'このログエントリを削除しますか？',                     am: 'ይህን የምዝገባ ግቤት ለመሰረዝ ይፈልጋሉ?',
+  },
+  'log.delete_cancel': {
+    en: 'Cancel',    es: 'Cancelar', 'zh-CN': '取消',  'zh-TW': '取消',
+    vi: 'Hủy',       tl: 'Kanselahin', hi: 'रद्द करें', ko: '취소',
+    ar: 'إلغاء',     fr: 'Annuler',  pt: 'Cancelar',  ru: 'Отмена',
+    ja: 'キャンセル', am: 'ሰርዝ',
+  },
+  'log.delete_btn': {
+    en: 'Delete',   es: 'Eliminar', 'zh-CN': '删除',  'zh-TW': '刪除',
+    vi: 'Xóa',      tl: 'Burahin',  hi: 'हटाएं',      ko: '삭제',
+    ar: 'حذف',      fr: 'Supprimer', pt: 'Excluir',  ru: 'Удалить',
+    ja: '削除',      am: 'ሰርዝ',
+  },
+  'log.officer_info': {
+    en: 'Officer Info',          es: 'Info del Oficial',   'zh-CN': '警官信息',  'zh-TW': '警官資訊',
+    vi: 'Thông tin Cảnh sát',    tl: 'Info ng Opisyal',    hi: 'अधिकारी जानकारी', ko: '경찰관 정보',
+    ar: 'معلومات الضابط',        fr: "Info de l'Officier", pt: 'Info do Agente',  ru: 'Данные сотрудника',
+    ja: '警察官情報',              am: 'የፖሊስ መረጃ',
+  },
+  'log.description_label': {
+    en: 'Description',   es: 'Descripción',  'zh-CN': '描述',   'zh-TW': '描述',
+    vi: 'Mô tả',          tl: 'Paglalarawan', hi: 'विवरण',        ko: '설명',
+    ar: 'الوصف',          fr: 'Description',  pt: 'Descrição',   ru: 'Описание',
+    ja: '説明',            am: 'መግለጫ',
+  },
+  'log.outcome_label': {
+    en: 'Outcome',    es: 'Resultado',  'zh-CN': '结果',  'zh-TW': '結果',
+    vi: 'Kết quả',    tl: 'Resulta',    hi: 'परिणाम',      ko: '결과',
+    ar: 'النتيجة',    fr: 'Résultat',   pt: 'Resultado',  ru: 'Результат',
+    ja: '結果',        am: 'ውጤት',
+  },
+  'log.at': {
+    en: 'at',    es: 'a las',  'zh-CN': '时',   'zh-TW': '時',
+    vi: 'lúc',   tl: 'sa',     hi: 'बजे',        ko: '에',
+    ar: 'في',    fr: 'à',      pt: 'às',        ru: 'в',
+    ja: '時',     am: 'ላይ',
+  },
+
+  // ── New log form ──────────────────────────────────────────────────────────────
+  'newlog.title': {
+    en: 'Log Encounter',          es: 'Registrar Encuentro',    'zh-CN': '记录遭遇',   'zh-TW': '記錄遭遇',
+    vi: 'Ghi Lại Gặp gỡ',         tl: 'Itala ang Pakikipagtagpo', hi: 'मुठभेड़ दर्ज करें', ko: '조우 기록',
+    ar: 'تسجيل المواجهة',          fr: 'Enregistrer la Rencontre', pt: 'Registrar Encontro', ru: 'Записать встречу',
+    ja: '遭遇を記録',               am: 'ስብሰባ ይመዝግቡ',
+  },
+  'newlog.save': {
+    en: 'Save',    es: 'Guardar',  'zh-CN': '保存',  'zh-TW': '儲存',
+    vi: 'Lưu',     tl: 'I-save',   hi: 'सहेजें',     ko: '저장',
+    ar: 'حفظ',     fr: 'Enregistrer', pt: 'Salvar',  ru: 'Сохранить',
+    ja: '保存',     am: 'አስቀምጥ',
+  },
+  'newlog.type_label': {
+    en: 'Encounter Type',      es: 'Tipo de Encuentro',  'zh-CN': '遭遇类型',  'zh-TW': '遭遇類型',
+    vi: 'Loại Gặp gỡ',         tl: 'Uri ng Pakikipagtagpo', hi: 'मुठभेड़ का प्रकार', ko: '조우 유형',
+    ar: 'نوع المواجهة',         fr: 'Type de Rencontre',  pt: 'Tipo de Encontro', ru: 'Тип встречи',
+    ja: '遭遇タイプ',             am: 'የስብሰባ ዓይነት',
+  },
+  'newlog.location': {
+    en: 'Location',   es: 'Ubicación',  'zh-CN': '地点',  'zh-TW': '地點',
+    vi: 'Vị trí',     tl: 'Lokasyon',   hi: 'स्थान',       ko: '위치',
+    ar: 'الموقع',     fr: 'Emplacement', pt: 'Localização', ru: 'Местоположение',
+    ja: '場所',        am: 'ቦታ',
+  },
+  'newlog.location_ph': {
+    en: 'Where did this occur?',   es: '¿Dónde ocurrió esto?',   'zh-CN': '这发生在哪里？', 'zh-TW': '這發生在哪裡？',
+    vi: 'Sự việc xảy ra ở đâu?',   tl: 'Saan ito naganap?',      hi: 'यह कहाँ हुआ?',        ko: '어디서 발생했나요?',
+    ar: 'أين حدث هذا؟',             fr: 'Où cela s\'est-il passé?', pt: 'Onde isso ocorreu?', ru: 'Где это произошло?',
+    ja: 'どこで起きましたか？',        am: 'ይህ የት ተፈጠረ?',
+  },
+  'newlog.officer': {
+    en: 'Officer Information',   es: 'Información del Oficial',  'zh-CN': '警官信息',  'zh-TW': '警官資訊',
+    vi: 'Thông tin Cảnh sát',    tl: 'Impormasyon ng Opisyal',   hi: 'अधिकारी जानकारी', ko: '경찰관 정보',
+    ar: 'معلومات الضابط',         fr: "Informations sur l'Agent", pt: 'Informações do Agente', ru: 'Данные сотрудника',
+    ja: '警察官情報',               am: 'የፖሊስ መረጃ',
+  },
+  'newlog.officer_ph': {
+    en: 'Badge number, name, unit (if known)',  es: 'Número de placa, nombre, unidad (si se sabe)',
+    'zh-CN': '警徽号、姓名、单位（如已知）',        'zh-TW': '警徽號、姓名、單位（如已知）',
+    vi: 'Số hiệu, tên, đơn vị (nếu biết)',      tl: 'Badge number, pangalan, unit (kung alam)',
+    hi: 'बैज नंबर, नाम, यूनिट (यदि पता हो)',     ko: '배지 번호, 이름, 부서 (알고 있으면)',
+    ar: 'رقم الشارة، الاسم، الوحدة (إن عُرف)',  fr: 'Numéro de badge, nom, unité (si connu)',
+    pt: 'Número do distintivo, nome, unidade',   ru: 'Номер жетона, имя, подразделение',
+    ja: 'バッジ番号、名前、部署（わかれば）',         am: 'ባጅ ቁጥር፣ ስም፣ ክፍል (ካወቁ)',
+  },
+  'newlog.description': {
+    en: 'Description *',    es: 'Descripción *',   'zh-CN': '描述 *',  'zh-TW': '描述 *',
+    vi: 'Mô tả *',           tl: 'Paglalarawan *',  hi: 'विवरण *',       ko: '설명 *',
+    ar: 'الوصف *',           fr: 'Description *',   pt: 'Descrição *',  ru: 'Описание *',
+    ja: '説明 *',             am: 'መግለጫ *',
+  },
+  'newlog.description_ph': {
+    en: 'Describe what happened in detail...',  es: 'Describe lo que sucedió en detalle...',
+    'zh-CN': '详细描述发生的事情...',               'zh-TW': '詳細描述發生的事情...',
+    vi: 'Mô tả chi tiết những gì đã xảy ra...', tl: 'Ilarawan nang detalyado kung ano ang nangyari...',
+    hi: 'विस्तार से बताएं क्या हुआ...',            ko: '무슨 일이 있었는지 자세히 설명하세요...',
+    ar: 'صف ما حدث بالتفصيل...',                  fr: 'Décrivez ce qui s\'est passé en détail...',
+    pt: 'Descreva o que aconteceu em detalhes...', ru: 'Опишите что произошло подробно...',
+    ja: '何が起きたかを詳しく説明してください...',  am: 'ምን እንደተፈጠረ በዝርዝር ይግለጹ...',
+  },
+  'newlog.description_hint': {
+    en: 'Include as many details as you remember — time, circumstances, what was said.',
+    es: 'Incluye tantos detalles como recuerdes — hora, circunstancias, lo que se dijo.',
+    'zh-CN': '包括您记得的所有细节 — 时间、情况、说了什么。',
+    'zh-TW': '包括您記得的所有細節 — 時間、情況、說了什麼。',
+    vi: 'Hãy bao gồm nhiều chi tiết — thời gian, hoàn cảnh, những gì được nói.',
+    tl: 'Isama ang maraming detalye — oras, pangyayari, kung ano ang sinabi.',
+    hi: 'जितने विवरण याद हों — समय, परिस्थितियां, क्या कहा गया — सब शामिल करें।',
+    ko: '기억하는 모든 세부 사항 — 시간, 상황, 대화 내용 등을 포함하세요.',
+    ar: 'اذكر أكبر قدر من التفاصيل — الوقت والظروف وما قيل.',
+    fr: 'Incluez le plus de détails possible — heure, circonstances, ce qui a été dit.',
+    pt: 'Inclua o máximo de detalhes — hora, circunstâncias, o que foi dito.',
+    ru: 'Включите все детали — время, обстоятельства, сказанное.',
+    ja: '覚えている詳細を — 時間、状況、言葉 — できるだけ含めてください。',
+    am: 'ያስታወሱትን ዝርዝሮች — ጊዜ፣ ሁኔታ፣ የተባለው — ያካትቱ።',
+  },
+  'newlog.outcome': {
+    en: 'Outcome',    es: 'Resultado',  'zh-CN': '结果',  'zh-TW': '結果',
+    vi: 'Kết quả',    tl: 'Resulta',    hi: 'परिणाम',      ko: '결과',
+    ar: 'النتيجة',    fr: 'Résultat',   pt: 'Resultado',  ru: 'Результат',
+    ja: '結果',        am: 'ውጤት',
+  },
+  'newlog.outcome_ph': {
+    en: 'What was the result? Any citations, arrests, searches...',
+    es: '¿Cuál fue el resultado? ¿Multas, arrestos, registros?',
+    'zh-CN': '结果是什么？有没有引用、逮捕、搜查...',
+    'zh-TW': '結果是什麼？有沒有引用、逮捕、搜查...',
+    vi: 'Kết quả là gì? Có trích dẫn, bắt giữ, tìm kiếm không...',
+    tl: 'Ano ang resulta? May citations, arrests, searches ba...',
+    hi: 'परिणाम क्या था? कोई उद्धरण, गिरफ्तारी, तलाशी...',
+    ko: '결과가 어떻게 됐나요? 인용, 체포, 수색 등...',
+    ar: 'ما كانت النتيجة؟ هل كانت هناك مخالفات أو اعتقالات أو تفتيش؟',
+    fr: 'Quel fut le résultat? Citations, arrestations, fouilles...',
+    pt: 'Qual foi o resultado? Citações, prisões, buscas...',
+    ru: 'Каков результат? Есть ли протоколы, аресты, обыски...',
+    ja: '結果は？引用、逮捕、捜索などはありましたか...',
+    am: 'ውጤቱ ምን ነበር? ምንም ጥቅሶች፣ ያዞ ወይም ፍተሻዎች...',
+  },
+  'newlog.legal_note': {
+    en: 'This record is stored only on your device and is never shared. It can be useful if you need to file a complaint or consult a lawyer.',
+    es: 'Este registro se almacena solo en tu dispositivo y nunca se comparte. Puede ser útil si necesitas presentar una queja o consultar a un abogado.',
+    'zh-CN': '此记录仅存储在您的设备上，从不共享。如果您需要提出投诉或咨询律师，这将很有用。',
+    'zh-TW': '此記錄僅儲存在您的裝置上，絕不共享。如果您需要提出投訴或諮詢律師，這將很有用。',
+    vi: 'Hồ sơ này chỉ được lưu trên thiết bị và không bao giờ chia sẻ. Hữu ích nếu cần khiếu nại hoặc tư vấn luật sư.',
+    tl: 'Ang rekord na ito ay nakaimbak lamang sa iyong device at hindi ibinabahagi. Makakatulong ito kung kailangan mong maghain ng reklamo o kumonsulta sa abogado.',
+    hi: 'यह रिकॉर्ड केवल आपके डिवाइस पर संग्रहीत है और कभी साझा नहीं किया जाता। शिकायत दर्ज करने या वकील से परामर्श में उपयोगी हो सकता है।',
+    ko: '이 기록은 기기에만 저장되며 공유되지 않습니다. 불만을 제기하거나 변호사와 상담할 때 유용합니다.',
+    ar: 'يُخزَّن هذا السجل فقط على جهازك ولا يُشارك أبدًا. قد يكون مفيدًا إذا احتجت إلى تقديم شكوى.',
+    fr: "Ce dossier est stocké uniquement sur votre appareil. Utile pour déposer une plainte ou consulter un avocat.",
+    pt: 'Este registro é armazenado apenas no seu dispositivo e nunca é compartilhado. Útil para reclamações ou consulta jurídica.',
+    ru: 'Эта запись хранится только на вашем устройстве и никогда не передаётся. Полезна при подаче жалобы или консультации с юристом.',
+    ja: 'この記録はデバイスのみに保存され、共有されません。苦情の申し立てや弁護士相談に役立ちます。',
+    am: 'ይህ መዝገብ በእርስዎ መሳሪያ ላይ ብቻ ተቀምጧል እና ፈጽሞ አይጋራም። ቅሬታ ለማስገባት ወይም ጠበቃ ለማማከር ጠቃሚ ሊሆን ይችላል።',
+  },
+  'newlog.required_msg': {
+    en: 'Please add a description of the encounter.',  es: 'Por favor agrega una descripción del encuentro.',
+    'zh-CN': '请添加遭遇描述。',                          'zh-TW': '請新增遭遇描述。',
+    vi: 'Vui lòng thêm mô tả về cuộc gặp gỡ.',        tl: 'Mangyaring magdagdag ng paglalarawan ng pakikipagtagpo.',
+    hi: 'कृपया मुठभेड़ का विवरण जोड़ें।',               ko: '조우에 대한 설명을 추가해 주세요.',
+    ar: 'الرجاء إضافة وصف للمواجهة.',                  fr: "Veuillez ajouter une description de la rencontre.",
+    pt: 'Por favor, adicione uma descrição do encontro.', ru: 'Пожалуйста, добавьте описание встречи.',
+    ja: '遭遇の説明を追加してください。',                  am: 'እባክዎ ስለ ስብሰባው መግለጫ ያክሉ።',
+  },
+  'newlog.error_msg': {
+    en: 'Failed to save encounter. Please try again.',  es: 'Error al guardar el encuentro. Inténtalo de nuevo.',
+    'zh-CN': '保存遭遇失败。请重试。',                       'zh-TW': '儲存遭遇失敗。請重試。',
+    vi: 'Không lưu được cuộc gặp. Vui lòng thử lại.', tl: 'Nabigo ang pag-save ng pakikipagtagpo. Subukan muli.',
+    hi: 'मुठभेड़ सहेजने में विफल। कृपया पुनः प्रयास करें।', ko: '조우 저장 실패. 다시 시도하세요.',
+    ar: 'فشل حفظ المواجهة. يرجى المحاولة مرة أخرى.',  fr: "Échec de l'enregistrement. Veuillez réessayer.",
+    pt: 'Falha ao salvar o encontro. Tente novamente.', ru: 'Не удалось сохранить. Попробуйте ещё раз.',
+    ja: '遭遇の保存に失敗しました。もう一度お試しください。', am: 'ስብሰባውን ማስቀመጥ አልተሳካም። እንደገና ይሞክሩ።',
+  },
+
+  // ── Encounter type labels ─────────────────────────────────────────────────────
+  'encounter.traffic_stop': {
+    en: 'Traffic Stop',     es: 'Parada de Tráfico',   'zh-CN': '交通拦停',   'zh-TW': '交通攔停',
+    vi: 'Kiểm Tra Giao Thông', tl: 'Traffic Stop',    hi: 'ट्रैफिक स्टॉप',   ko: '교통 단속',
+    ar: 'إيقاف مروري',       fr: 'Contrôle Routier',  pt: 'Parada de Trânsito', ru: 'Остановка авто',
+    ja: '交通停止',            am: 'የትራፊክ ቆም',
+  },
+  'encounter.arrest': {
+    en: 'Arrest',       es: 'Arresto',    'zh-CN': '逮捕',  'zh-TW': '逮捕',
+    vi: 'Bắt giữ',      tl: 'Pagdakip',   hi: 'गिरफ्तारी',  ko: '체포',
+    ar: 'اعتقال',       fr: 'Arrestation', pt: 'Prisão',    ru: 'Арест',
+    ja: '逮捕',          am: 'ያዞ',
+  },
+  'encounter.questioning': {
+    en: 'Questioning',   es: 'Interrogatorio', 'zh-CN': '盘问',  'zh-TW': '盤問',
+    vi: 'Thẩm vấn',      tl: 'Pagtatanong',    hi: 'पूछताछ',     ko: '심문',
+    ar: 'استجواب',       fr: 'Interrogatoire', pt: 'Interrogatório', ru: 'Допрос',
+    ja: '尋問',           am: 'ጥያቄ',
+  },
+  'encounter.citation': {
+    en: 'Citation / Ticket',     es: 'Citación / Multa',  'zh-CN': '传票/罚单', 'zh-TW': '傳票/罰單',
+    vi: 'Phiếu phạt / Vé',       tl: 'Citation / Ticket', hi: 'उद्धरण / टिकट',  ko: '소환장 / 티켓',
+    ar: 'استدعاء / مخالفة',      fr: 'Citation / Ticket', pt: 'Citação / Multa', ru: 'Повестка / Штраф',
+    ja: '呼び出し / チケット',     am: 'ጥሪ / ቲኬት',
+  },
+  'encounter.search': {
+    en: 'Search',    es: 'Registro',  'zh-CN': '搜查',  'zh-TW': '搜查',
+    vi: 'Khám xét',  tl: 'Paghalungkat', hi: 'तलाशी',   ko: '수색',
+    ar: 'تفتيش',     fr: 'Fouille',   pt: 'Busca',     ru: 'Обыск',
+    ja: '捜索',       am: 'ፍተሻ',
+  },
+  'encounter.other': {
+    en: 'Other',     es: 'Otro',      'zh-CN': '其他',  'zh-TW': '其他',
+    vi: 'Khác',      tl: 'Iba pa',    hi: 'अन्य',        ko: '기타',
+    ar: 'أخرى',      fr: 'Autre',     pt: 'Outro',      ru: 'Другое',
+    ja: 'その他',     am: 'ሌላ',
   },
 };
