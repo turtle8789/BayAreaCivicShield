@@ -24,6 +24,7 @@ import {
 } from '@/constants/forum-data';
 import { useApp } from '@/context/AppContext';
 import { useColors } from '@/hooks/useColors';
+import { useT } from '@/hooks/useTranslation';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -52,6 +53,7 @@ function PostCard({
 }) {
   const colors = useColors();
   const { fs } = useApp();
+  const { t } = useT();
   const meta = categoryMeta(post.category);
 
   // Avoid nesting <Pressable> inside <Pressable> (causes web hydration warning).
@@ -107,13 +109,13 @@ function PostCard({
         >
           <Feather name="thumbs-up" size={14} color={post.markedHelpful ? meta.color : colors.mutedForeground} />
           <Text style={{ fontSize: fs(12), fontFamily: 'Inter_500Medium', color: post.markedHelpful ? meta.color : colors.mutedForeground }}>
-            {post.helpfulCount} helpful
+            {post.helpfulCount} {t('forum.helpful')}
           </Text>
         </Pressable>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
           <Feather name="message-circle" size={14} color={colors.mutedForeground} />
           <Text style={{ fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.mutedForeground }}>
-            {post.replies.length} {post.replies.length === 1 ? 'reply' : 'replies'}
+            {post.replies.length} {post.replies.length === 1 ? t('forum.reply') : t('forum.replies')}
           </Text>
         </View>
         <Text style={{ marginLeft: 'auto', fontSize: fs(11), fontFamily: 'Inter_400Regular', color: colors.mutedForeground }}>
@@ -137,12 +139,13 @@ function PostDetail({
 }) {
   const colors = useColors();
   const { fs } = useApp();
+  const { t } = useT();
   const [replyText, setReplyText] = useState('');
   const meta = categoryMeta(post.category);
 
   const handleReply = () => {
     if (!replyText.trim()) return;
-    Alert.alert('Reply Submitted', 'Your reply has been posted. (Replies are stored locally on this device.)');
+    Alert.alert(t('forum.reply_submitted'), t('forum.reply_submitted_msg'));
     setReplyText('');
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   };
@@ -193,7 +196,7 @@ function PostDetail({
             {post.replies.length > 0 && (
               <>
                 <Text style={{ fontSize: fs(13), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase', letterSpacing: 0.7, marginBottom: 10 }}>
-                  {post.replies.length} {post.replies.length === 1 ? 'Reply' : 'Replies'}
+                  {post.replies.length} {post.replies.length === 1 ? t('forum.reply') : t('forum.replies')}
                 </Text>
                 {post.replies.map((r) => (
                   <View key={r.id} style={{ backgroundColor: colors.muted, borderRadius: 12, padding: 12, marginBottom: 8 }}>
@@ -204,7 +207,7 @@ function PostDetail({
                     <Text style={{ fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground, lineHeight: 20 }}>{r.content}</Text>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 8 }}>
                       <Feather name="thumbs-up" size={12} color={colors.mutedForeground} />
-                      <Text style={{ fontSize: fs(11), fontFamily: 'Inter_400Regular', color: colors.mutedForeground }}>{r.helpfulCount} helpful</Text>
+                      <Text style={{ fontSize: fs(11), fontFamily: 'Inter_400Regular', color: colors.mutedForeground }}>{r.helpfulCount} {t('forum.helpful')}</Text>
                     </View>
                   </View>
                 ))}
@@ -213,7 +216,7 @@ function PostDetail({
 
             {/* Reply input */}
             <Text style={{ fontSize: fs(13), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase', letterSpacing: 0.7, marginTop: 12, marginBottom: 8 }}>
-              Add a Reply
+              {t('forum.add_reply')}
             </Text>
             <View style={{ backgroundColor: colors.card, borderRadius: colors.radius, borderWidth: 1, borderColor: colors.border, marginBottom: 10, overflow: 'hidden' }}>
               <TextInput
@@ -221,7 +224,7 @@ function PostDetail({
                 value={replyText}
                 onChangeText={setReplyText}
                 multiline
-                placeholder="Share information, advice, or support…"
+                placeholder={t('forum.reply_ph')}
                 placeholderTextColor={colors.mutedForeground}
                 accessibilityLabel="Reply text"
               />
@@ -233,7 +236,7 @@ function PostDetail({
               accessibilityRole="button"
               accessibilityLabel="Post reply"
             >
-              <Text style={{ fontSize: fs(15), fontFamily: 'Inter_600SemiBold', color: '#FFFFFF' }}>Post Reply</Text>
+              <Text style={{ fontSize: fs(15), fontFamily: 'Inter_600SemiBold', color: '#FFFFFF' }}>{t('forum.post_reply_btn')}</Text>
             </Pressable>
 
             {/* Disclaimer */}
@@ -262,6 +265,7 @@ function NewPostModal({
 }) {
   const colors = useColors();
   const { fs } = useApp();
+  const { t } = useT();
   const [title, setTitle]     = useState('');
   const [content, setContent] = useState('');
   const [author, setAuthor]   = useState('Anonymous');
@@ -269,7 +273,7 @@ function NewPostModal({
 
   const handleSubmit = () => {
     if (!title.trim() || !content.trim()) {
-      Alert.alert('Required', 'Please enter a title and description.');
+      Alert.alert(t('forum.required'), t('forum.required'));
       return;
     }
     onSubmit({ title: title.trim(), content: content.trim(), author: author.trim() || 'Anonymous', category, timestamp: new Date().toISOString() });
@@ -283,18 +287,18 @@ function NewPostModal({
       <View style={{ flex: 1, backgroundColor: colors.background }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, borderBottomWidth: 1, borderBottomColor: colors.border, paddingTop: Platform.OS === 'ios' ? 50 : 20 }}>
           <Pressable onPress={onClose} hitSlop={12} style={{ marginRight: 12 }} accessibilityRole="button" accessibilityLabel="Cancel">
-            <Text style={{ fontSize: fs(15), fontFamily: 'Inter_500Medium', color: colors.mutedForeground }}>Cancel</Text>
+            <Text style={{ fontSize: fs(15), fontFamily: 'Inter_500Medium', color: colors.mutedForeground }}>{t('forum.cancel')}</Text>
           </Pressable>
-          <Text style={{ flex: 1, fontSize: fs(17), fontFamily: 'Inter_700Bold', color: colors.foreground }}>New Post</Text>
+          <Text style={{ flex: 1, fontSize: fs(17), fontFamily: 'Inter_700Bold', color: colors.foreground }}>{t('forum.new_post')}</Text>
           <Pressable onPress={handleSubmit} accessibilityRole="button" accessibilityLabel="Post">
-            <Text style={{ fontSize: fs(15), fontFamily: 'Inter_600SemiBold', color: colors.primary }}>Post</Text>
+            <Text style={{ fontSize: fs(15), fontFamily: 'Inter_600SemiBold', color: colors.primary }}>{t('forum.post_submit')}</Text>
           </Pressable>
         </View>
 
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
           <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, gap: 12, flexGrow: 1 }} keyboardShouldPersistTaps="handled">
             {/* Category */}
-            <Text style={{ fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase', letterSpacing: 0.7, marginBottom: 4 }}>Category</Text>
+            <Text style={{ fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase', letterSpacing: 0.7, marginBottom: 4 }}>{t('forum.category_label')}</Text>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 4 }}>
               {FORUM_CATEGORIES.map((cat) => (
                 <Pressable
@@ -312,13 +316,13 @@ function NewPostModal({
             </View>
 
             {/* Title */}
-            <Text style={{ fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase', letterSpacing: 0.7, marginTop: 4 }}>Title</Text>
+            <Text style={{ fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase', letterSpacing: 0.7, marginTop: 4 }}>{t('forum.title_label')}</Text>
             <View style={{ backgroundColor: colors.card, borderRadius: colors.radius, borderWidth: 1, borderColor: colors.border }}>
               <TextInput
                 style={{ fontSize: fs(15), fontFamily: 'Inter_400Regular', color: colors.foreground, padding: 12 }}
                 value={title}
                 onChangeText={setTitle}
-                placeholder="What's your question or experience?"
+                placeholder={t('forum.title_ph')}
                 placeholderTextColor={colors.mutedForeground}
                 maxLength={120}
                 accessibilityLabel="Post title"
@@ -326,21 +330,21 @@ function NewPostModal({
             </View>
 
             {/* Content */}
-            <Text style={{ fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase', letterSpacing: 0.7 }}>Details</Text>
+            <Text style={{ fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase', letterSpacing: 0.7 }}>{t('forum.details_label')}</Text>
             <View style={{ backgroundColor: colors.card, borderRadius: colors.radius, borderWidth: 1, borderColor: colors.border }}>
               <TextInput
                 style={{ fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground, padding: 12, minHeight: 120, textAlignVertical: 'top' }}
                 value={content}
                 onChangeText={setContent}
                 multiline
-                placeholder="Share your experience, question, or advice…"
+                placeholder={t('forum.details_ph')}
                 placeholderTextColor={colors.mutedForeground}
                 accessibilityLabel="Post content"
               />
             </View>
 
             {/* Author */}
-            <Text style={{ fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase', letterSpacing: 0.7 }}>Display Name</Text>
+            <Text style={{ fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase', letterSpacing: 0.7 }}>{t('forum.display_name')}</Text>
             <View style={{ backgroundColor: colors.card, borderRadius: colors.radius, borderWidth: 1, borderColor: colors.border }}>
               <TextInput
                 style={{ fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground, padding: 12 }}
@@ -371,6 +375,7 @@ export default function ForumScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { forumPosts, addForumPost, toggleForumHelpful, fs } = useApp();
+  const { t } = useT();
   const topPad = Platform.OS === 'web' ? 20 : insets.top;
 
   const [filter, setFilter] = useState<ForumCategory | 'all'>('all');
@@ -422,10 +427,10 @@ export default function ForumScreen() {
           <Pressable onPress={() => router.back()} hitSlop={10} style={{ marginRight: 10 }} accessibilityLabel="Back" accessibilityRole="button">
             <Feather name="arrow-left" size={22} color={colors.foreground} />
           </Pressable>
-          <Text style={styles.headerTitle} accessibilityRole="header">💬 Community</Text>
+          <Text style={styles.headerTitle} accessibilityRole="header">{t('forum.title')}</Text>
           <Pressable style={styles.newPostBtn} onPress={() => setShowNewPost(true)} accessibilityRole="button" accessibilityLabel="New post">
             <Feather name="edit-3" size={14} color="#FFFFFF" />
-            <Text style={styles.newPostText}>Post</Text>
+            <Text style={styles.newPostText}>{t('forum.post_btn')}</Text>
           </Pressable>
         </View>
 
@@ -436,7 +441,7 @@ export default function ForumScreen() {
             style={styles.searchInput}
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholder="Search discussions…"
+            placeholder={t('forum.search_ph')}
             placeholderTextColor={colors.mutedForeground}
             accessibilityLabel="Search forum"
           />
@@ -450,7 +455,7 @@ export default function ForumScreen() {
         {/* Category filter */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterRow}>
           <Pressable style={[styles.filterBtn, filter === 'all' && styles.filterBtnActive]} onPress={() => setFilter('all')} accessibilityRole="tab" accessibilityState={{ selected: filter === 'all' }}>
-            <Text style={[styles.filterText, filter === 'all' && styles.filterTextActive]}>All</Text>
+            <Text style={[styles.filterText, filter === 'all' && styles.filterTextActive]}>{t('forum.filter_all')}</Text>
           </Pressable>
           {FORUM_CATEGORIES.map((cat) => (
             <Pressable
@@ -472,9 +477,9 @@ export default function ForumScreen() {
         {sorted.length === 0 ? (
           <View style={styles.emptyState}>
             <Text style={{ fontSize: 36 }}>💬</Text>
-            <Text style={styles.emptyText}>No posts yet in this category.{'\n'}Be the first to share!</Text>
+            <Text style={styles.emptyText}>{t('forum.no_posts')}</Text>
             <Pressable style={[styles.newPostBtn, { marginTop: 8 }]} onPress={() => setShowNewPost(true)} accessibilityRole="button">
-              <Text style={styles.newPostText}>Start a Discussion</Text>
+              <Text style={styles.newPostText}>{t('forum.start_discussion')}</Text>
             </Pressable>
           </View>
         ) : (

@@ -13,6 +13,7 @@ import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useApp } from '@/context/AppContext';
 import { useColors } from '@/hooks/useColors';
+import { useT } from '@/hooks/useTranslation';
 
 const { width } = Dimensions.get('window');
 
@@ -101,6 +102,7 @@ export default function TourScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { setTourCompleted, fs } = useApp();
+  const { t } = useT();
   const [step, setStep] = useState(0);
 
   const topPad = Platform.OS === 'web' ? 67 : insets.top;
@@ -273,7 +275,7 @@ export default function TourScreen() {
       {/* Header */}
       <View style={styles.header}>
         <Pressable style={styles.skipBtn} onPress={handleFinish} accessibilityLabel="Skip tour" accessibilityRole="button">
-          <Text style={styles.skipText}>Skip</Text>
+          <Text style={styles.skipText}>{t('tour.skip')}</Text>
         </Pressable>
         <View style={styles.stepIndicator}>
           {STEPS.map((_, i) => (
@@ -314,7 +316,7 @@ export default function TourScreen() {
         {current.tab && (
           <Pressable style={styles.tryBtn} onPress={goToFeature} accessibilityLabel={`Go to ${current.title}`} accessibilityRole="button">
             <Feather name={current.icon as never} size={16} color={current.color} />
-            <Text style={styles.tryBtnText}>Try {current.title} Now →</Text>
+            <Text style={styles.tryBtnText}>{t('tour.try_now')}</Text>
           </Pressable>
         )}
       </View>
@@ -328,14 +330,14 @@ export default function TourScreen() {
           accessibilityRole="button"
         >
           <Text style={styles.nextBtnText}>
-            {isLast ? '✅ Get Started!' : 'Next'}
+            {isLast ? t('tour.get_started') : t('tour.next')}
           </Text>
           {!isLast && <Feather name="arrow-right" size={18} color="#FFFFFF" />}
         </Pressable>
 
         {!isFirst && (
           <Pressable style={styles.backBtn} onPress={handleBack} accessibilityLabel="Previous step" accessibilityRole="button">
-            <Text style={styles.backBtnText}>← Back</Text>
+            <Text style={styles.backBtnText}>{t('tour.back')}</Text>
           </Pressable>
         )}
       </View>

@@ -23,6 +23,7 @@ import {
 } from '@/constants/resource-hub-data';
 import { useApp } from '@/context/AppContext';
 import { useColors } from '@/hooks/useColors';
+import { useT } from '@/hooks/useTranslation';
 
 async function openUrl(url: string) {
   try {
@@ -48,6 +49,7 @@ export default function ResourceHubScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { fs } = useApp();
+  const { t } = useT();
   const topPad = Platform.OS === 'web' ? 20 : insets.top;
 
   const [filter, setFilter] = useState<HubCategory | 'all'>('all');
@@ -111,7 +113,7 @@ export default function ResourceHubScreen() {
         return (
           <View style={styles.emptyState}>
             <Text style={{ fontSize: 36 }}>🔍</Text>
-            <Text style={styles.emptyTxt}>No resources found.{'\n'}Try a different search term or category.</Text>
+            <Text style={styles.emptyTxt}>{t('hub.not_found')}</Text>
           </View>
         );
       }
@@ -144,9 +146,9 @@ export default function ResourceHubScreen() {
           <Pressable onPress={() => router.back()} hitSlop={10} style={{ marginRight: 10 }} accessibilityRole="button" accessibilityLabel="Back">
             <Feather name="arrow-left" size={22} color={colors.foreground} />
           </Pressable>
-          <Text style={styles.headerTitle} accessibilityRole="header">📚 Resource Hub</Text>
+          <Text style={styles.headerTitle} accessibilityRole="header">{t('hub.title')}</Text>
         </View>
-        <Text style={styles.headerSub}>{HUB_RESOURCES.length} curated free legal resources</Text>
+        <Text style={styles.headerSub}>{HUB_RESOURCES.length} {t('hub.curated_count')}</Text>
 
         <View style={styles.searchBar}>
           <Feather name="search" size={15} color={colors.mutedForeground} />
@@ -154,7 +156,7 @@ export default function ResourceHubScreen() {
             style={styles.searchInput}
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholder="Search resources…"
+            placeholder={t('hub.search_ph')}
             placeholderTextColor={colors.mutedForeground}
             accessibilityLabel="Search resources"
           />
@@ -165,7 +167,7 @@ export default function ResourceHubScreen() {
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterRow}>
           <Pressable style={[styles.filterBtn, filter === 'all' && styles.filterActive]} onPress={() => setFilter('all')} accessibilityRole="tab" accessibilityState={{ selected: filter === 'all' }}>
-            <Text style={[styles.filterText, filter === 'all' && styles.filterTextActive]}>All</Text>
+            <Text style={[styles.filterText, filter === 'all' && styles.filterTextActive]}>{t('hub.filter_all')}</Text>
           </Pressable>
           {HUB_CATEGORIES.map((cat) => (
             <Pressable key={cat.value} style={[styles.filterBtn, filter === cat.value && styles.filterActive]} onPress={() => setFilter(cat.value)} accessibilityRole="tab" accessibilityState={{ selected: filter === cat.value }}>
@@ -186,6 +188,7 @@ export default function ResourceHubScreen() {
 }
 
 function ResourceCard({ resource, styles, colors, fs }: { resource: (typeof HUB_RESOURCES)[0]; styles: any; colors: any; fs: (n: number) => number }) {
+  const { t } = useT();
   const r = resource;
   const cat = HUB_CATEGORIES.find((c) => c.value === r.category)!;
   return (
@@ -193,13 +196,13 @@ function ResourceCard({ resource, styles, colors, fs }: { resource: (typeof HUB_
       <View style={styles.cardTop}>
         <Text style={styles.cardName}>{r.name}</Text>
         <View style={r.free ? styles.freeBadge : styles.paidBadge}>
-          <Text style={r.free ? styles.freeBadgeTxt : styles.paidBadgeTxt}>{r.free ? 'FREE' : 'PAID'}</Text>
+          <Text style={r.free ? styles.freeBadgeTxt : styles.paidBadgeTxt}>{r.free ? t('hub.free') : t('hub.paid')}</Text>
         </View>
       </View>
       <Text style={styles.desc}>{r.description}</Text>
       <View style={styles.tags}>
-        {r.tags.slice(0, 3).map((t: string) => (
-          <View key={t} style={styles.tag}><Text style={styles.tagText}>{t}</Text></View>
+        {r.tags.slice(0, 3).map((tag: string) => (
+          <View key={tag} style={styles.tag}><Text style={styles.tagText}>{tag}</Text></View>
         ))}
       </View>
       <View style={styles.btnRow}>
@@ -210,7 +213,7 @@ function ResourceCard({ resource, styles, colors, fs }: { resource: (typeof HUB_
           accessibilityLabel={`Open ${r.name}`}
         >
           <Feather name="external-link" size={14} color="#FFFFFF" />
-          <Text style={styles.openBtnTxt}>Open Website</Text>
+          <Text style={styles.openBtnTxt}>{t('hub.open_website')}</Text>
         </Pressable>
         {r.phone && (
           <Pressable
@@ -220,7 +223,7 @@ function ResourceCard({ resource, styles, colors, fs }: { resource: (typeof HUB_
             accessibilityLabel={`Call ${r.name}: ${r.phone}`}
           >
             <Feather name="phone" size={14} color="#FFFFFF" />
-            <Text style={styles.callBtnTxt}>Call</Text>
+            <Text style={styles.callBtnTxt}>{t('hub.call')}</Text>
           </Pressable>
         )}
       </View>
