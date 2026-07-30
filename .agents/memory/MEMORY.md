@@ -1,2 +1,3 @@
-- [CivicShield Pro architecture](civicshield-architecture.md) — Expo mobile-only app, no backend; all persistence via AsyncStorage; five context keys. Last push: 313727f (2026-07-30).
+- [CivicShield Pro architecture](civicshield-architecture.md) — Expo mobile-only app, no backend; all persistence via AsyncStorage; five context keys.
 - [Nested Pressable on web](nested-pressable-web.md) — avoid nesting Pressable inside Pressable; split into body + sibling footer Pressables instead.
+- [RTL support pattern](rtl-support.md) — RTL added via isRTL flag on Language, exposed from AppContext, consumed via useRTL hook; apply rowDir/arrowIcon/backIcon to layout rows.

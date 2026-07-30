@@ -13,6 +13,7 @@ import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useApp } from '@/context/AppContext';
 import { useColors } from '@/hooks/useColors';
+import { useRTL } from '@/hooks/useRTL';
 import { useT } from '@/hooks/useTranslation';
 
 const { width } = Dimensions.get('window');
@@ -103,6 +104,7 @@ export default function TourScreen() {
   const insets = useSafeAreaInsets();
   const { setTourCompleted, fs } = useApp();
   const { t } = useT();
+  const { rowDir, arrowIcon } = useRTL();
   const [step, setStep] = useState(0);
 
   const topPad = Platform.OS === 'web' ? 67 : insets.top;
@@ -149,7 +151,7 @@ export default function TourScreen() {
       paddingTop: topPad + 12,
       paddingHorizontal: 20,
       paddingBottom: 12,
-      flexDirection: 'row',
+      flexDirection: rowDir,
       alignItems: 'center',
       justifyContent: 'space-between',
     },
@@ -165,7 +167,7 @@ export default function TourScreen() {
       color: colors.mutedForeground,
     },
     stepIndicator: {
-      flexDirection: 'row',
+      flexDirection: rowDir,
       gap: 6,
       alignItems: 'center',
     },
@@ -213,7 +215,7 @@ export default function TourScreen() {
       borderWidth: 1,
       borderColor: current.color + '30',
       padding: 14,
-      flexDirection: 'row',
+      flexDirection: rowDir,
       gap: 10,
       marginBottom: 24,
     },
@@ -225,7 +227,7 @@ export default function TourScreen() {
       lineHeight: 19,
     },
     tryBtn: {
-      flexDirection: 'row',
+      flexDirection: rowDir,
       alignItems: 'center',
       justifyContent: 'center',
       gap: 8,
@@ -250,7 +252,7 @@ export default function TourScreen() {
       paddingVertical: 16,
       alignItems: 'center',
       justifyContent: 'center',
-      flexDirection: 'row',
+      flexDirection: rowDir,
       gap: 8,
     },
     nextBtnText: {
@@ -332,7 +334,7 @@ export default function TourScreen() {
           <Text style={styles.nextBtnText}>
             {isLast ? t('tour.get_started') : t('tour.next')}
           </Text>
-          {!isLast && <Feather name="arrow-right" size={18} color="#FFFFFF" />}
+          {!isLast && <Feather name={arrowIcon} size={18} color="#FFFFFF" />}
         </Pressable>
 
         {!isFirst && (

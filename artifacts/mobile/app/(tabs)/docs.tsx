@@ -19,6 +19,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useApp } from '@/context/AppContext';
 import { useColors } from '@/hooks/useColors';
+import { useRTL } from '@/hooks/useRTL';
 import { useT } from '@/hooks/useTranslation';
 
 // ─── OCR via OCR.space free API ───────────────────────────────────────────────
@@ -146,9 +147,10 @@ function ResultSection({
 }) {
   const colors = useColors();
   const { fs } = useApp();
+  const { rowDir } = useRTL();
   return (
     <View style={{ marginBottom: 16 }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+      <View style={{ flexDirection: rowDir, alignItems: 'center', gap: 6, marginBottom: 8 }}>
         <Feather name={icon as never} size={15} color={color} />
         <Text
           style={{ fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase', letterSpacing: 0.7 }}
@@ -184,6 +186,7 @@ export default function DocsScreen() {
   const insets = useSafeAreaInsets();
   const { addDeadline, pendingDocText, setPendingDocText, fs } = useApp();
   const { t } = useT();
+  const { rowDir } = useRTL();
   const topPad = Platform.OS === 'web' ? 67 : insets.top;
 
   const [inputText, setInputText] = useState('');
@@ -348,7 +351,7 @@ export default function DocsScreen() {
     },
     headerTitle: { fontSize: fs(22), fontFamily: 'Inter_700Bold', color: colors.foreground },
     headerSub: { fontSize: fs(13), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginTop: 2, marginBottom: 12 },
-    subTabRow: { flexDirection: 'row' },
+    subTabRow: { flexDirection: rowDir },
     subTab: { flex: 1, paddingVertical: 10, alignItems: 'center', borderBottomWidth: 2, borderBottomColor: 'transparent' },
     subTabActive: { borderBottomColor: colors.primary },
     subTabText: { fontSize: fs(14), fontFamily: 'Inter_500Medium', color: colors.mutedForeground },
@@ -356,23 +359,23 @@ export default function DocsScreen() {
     scroll: { flex: 1 },
     scrollContent: { padding: 16, paddingBottom: Platform.OS === 'web' ? 34 : 100, flexGrow: 1 },
     card: { backgroundColor: colors.card, borderRadius: colors.radius, borderWidth: 1, borderColor: colors.border, marginBottom: 12, overflow: 'hidden' },
-    cardHeader: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, paddingTop: 12, marginBottom: 4, gap: 6 },
+    cardHeader: { flexDirection: rowDir, alignItems: 'center', paddingHorizontal: 14, paddingTop: 12, marginBottom: 4, gap: 6 },
     cardLabel: { flex: 1, fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase', letterSpacing: 0.6 },
     charCount: { fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.mutedForeground },
     textInput: { fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground, paddingHorizontal: 14, paddingBottom: 14, minHeight: 130, textAlignVertical: 'top' },
-    actionRow: { flexDirection: 'row', gap: 8, marginBottom: 12 },
-    actionBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, borderRadius: colors.radius, paddingVertical: 11, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.card },
+    actionRow: { flexDirection: rowDir, gap: 8, marginBottom: 12 },
+    actionBtn: { flex: 1, flexDirection: rowDir, alignItems: 'center', justifyContent: 'center', gap: 6, borderRadius: colors.radius, paddingVertical: 11, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.card },
     actionBtnText: { fontSize: fs(13), fontFamily: 'Inter_500Medium', color: colors.foreground },
-    analyzeBtn: { backgroundColor: colors.primary, borderRadius: colors.radius, paddingVertical: 15, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 8, marginBottom: 16 },
+    analyzeBtn: { backgroundColor: colors.primary, borderRadius: colors.radius, paddingVertical: 15, alignItems: 'center', justifyContent: 'center', flexDirection: rowDir, gap: 8, marginBottom: 16 },
     analyzeBtnDisabled: { opacity: 0.5 },
     analyzeBtnText: { fontSize: fs(16), fontFamily: 'Inter_600SemiBold', color: '#FFFFFF' },
-    resultHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 },
+    resultHeader: { flexDirection: rowDir, alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 },
     resultTitle: { fontSize: fs(16), fontFamily: 'Inter_700Bold', color: colors.foreground },
     iconBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: colors.muted, alignItems: 'center', justifyContent: 'center' },
-    saveDashBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#C9A050', borderRadius: colors.radius, paddingVertical: 13, paddingHorizontal: 16, justifyContent: 'center', marginBottom: 16 },
+    saveDashBtn: { flexDirection: rowDir, alignItems: 'center', gap: 8, backgroundColor: '#C9A050', borderRadius: colors.radius, paddingVertical: 13, paddingHorizontal: 16, justifyContent: 'center', marginBottom: 16 },
     saveDashText: { fontSize: fs(14), fontFamily: 'Inter_600SemiBold', color: '#FFFFFF' },
     qrContainer: { alignItems: 'center', backgroundColor: colors.card, borderRadius: colors.radius, borderWidth: 1, borderColor: colors.border, padding: 20, marginBottom: 16 },
-    tipCard: { backgroundColor: colors.primary + '0F', borderRadius: colors.radius, padding: 14, borderWidth: 1, borderColor: colors.primary + '20', flexDirection: 'row', gap: 10, marginBottom: 12 },
+    tipCard: { backgroundColor: colors.primary + '0F', borderRadius: colors.radius, padding: 14, borderWidth: 1, borderColor: colors.primary + '20', flexDirection: rowDir, gap: 10, marginBottom: 12 },
     tipText: { flex: 1, fontSize: fs(13), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, lineHeight: 20 },
     ocrOverlay: { backgroundColor: colors.card, borderRadius: colors.radius, borderWidth: 1, borderColor: colors.border, padding: 20, alignItems: 'center', gap: 10, marginBottom: 12 },
   });
@@ -470,7 +473,7 @@ export default function DocsScreen() {
             <Text style={styles.resultTitle} accessibilityRole="header">
               {t('docs.results')} {totalFound > 0 ? `(${totalFound})` : ''}
             </Text>
-            <View style={{ flexDirection: 'row', gap: 8 }}>
+            <View style={{ flexDirection: rowDir, gap: 8 }}>
               <Pressable style={styles.iconBtn} onPress={() => setShowQR((p) => !p)} accessibilityLabel="Toggle QR code" accessibilityRole="button">
                 <Feather name="grid" size={16} color={colors.foreground} />
               </Pressable>

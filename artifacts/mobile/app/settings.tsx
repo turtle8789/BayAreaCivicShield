@@ -16,6 +16,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LanguagePicker } from '@/components/LanguagePicker';
 import { FontSizeLevel, useApp } from '@/context/AppContext';
 import { useColors } from '@/hooks/useColors';
+import { useRTL } from '@/hooks/useRTL';
 import { useT } from '@/hooks/useTranslation';
 
 function SettingsRow({
@@ -33,9 +34,10 @@ function SettingsRow({
 }) {
   const colors = useColors();
   const { fs } = useApp();
+  const { rowDir, arrowIcon } = useRTL();
   return (
     <Pressable
-      style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 14, paddingHorizontal: 16, gap: 14 }}
+      style={{ flexDirection: rowDir, alignItems: 'center', paddingVertical: 14, paddingHorizontal: 16, gap: 14 }}
       onPress={onPress}
       accessibilityRole={onPress ? 'button' : 'none'}
       accessibilityLabel={label}
@@ -52,7 +54,7 @@ function SettingsRow({
           </Text>
         )}
       </View>
-      {right ?? (onPress ? <Feather name="chevron-right" size={16} color={colors.mutedForeground} /> : null)}
+      {right ?? (onPress ? <Feather name={arrowIcon} size={16} color={colors.mutedForeground} /> : null)}
     </Pressable>
   );
 }
@@ -62,6 +64,7 @@ export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
   const topPad = Platform.OS === 'web' ? 67 : insets.top;
   const { t } = useT();
+  const { rowDir } = useRTL();
 
   const {
     language, setLanguage,
@@ -107,7 +110,7 @@ export default function SettingsScreen() {
     header: {
       paddingTop: topPad + 12, paddingHorizontal: 20, paddingBottom: 16,
       borderBottomWidth: 1, borderBottomColor: colors.border,
-      flexDirection: 'row', alignItems: 'center', gap: 12,
+      flexDirection: rowDir, alignItems: 'center', gap: 12,
     },
     headerTitle: { flex: 1, fontSize: fs(20), fontFamily: 'Inter_700Bold', color: colors.foreground },
     scroll: { flex: 1 },
@@ -122,7 +125,7 @@ export default function SettingsScreen() {
       borderColor: colors.border, marginHorizontal: 16, overflow: 'hidden',
     },
     divider: { height: 1, backgroundColor: colors.border, marginLeft: 66 },
-    fontRow: { flexDirection: 'row', gap: 8, paddingHorizontal: 16, paddingVertical: 14 },
+    fontRow: { flexDirection: rowDir, gap: 8, paddingHorizontal: 16, paddingVertical: 14 },
     fontChip: {
       flex: 1, alignItems: 'center', paddingVertical: 10, borderRadius: 10,
       borderWidth: 1.5, borderColor: colors.border, backgroundColor: colors.muted, gap: 4,
@@ -136,7 +139,7 @@ export default function SettingsScreen() {
       marginHorizontal: 16, marginBottom: 8, borderRadius: colors.radius, overflow: 'hidden',
       borderWidth: 1, borderColor: colors.border,
     },
-    hcRow: { flexDirection: 'row' },
+    hcRow: { flexDirection: rowDir },
     hcSwatch: { flex: 1, height: 28 },
     versionText: {
       fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.mutedForeground,
@@ -178,7 +181,7 @@ export default function SettingsScreen() {
         <View style={styles.card}>
           {/* Font size chips */}
           <View style={{ paddingHorizontal: 16, paddingTop: 14, paddingBottom: 4 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14, marginBottom: 12 }}>
+            <View style={{ flexDirection: rowDir, alignItems: 'center', gap: 14, marginBottom: 12 }}>
               <View style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: colors.primary + '18', alignItems: 'center', justifyContent: 'center' }}>
                 <Feather name="type" size={18} color={colors.primary} />
               </View>

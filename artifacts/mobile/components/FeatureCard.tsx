@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useColors } from '@/hooks/useColors';
+import { useRTL } from '@/hooks/useRTL';
 
 type IconSet = 'feather' | 'ionicons' | 'material';
 
@@ -19,6 +20,7 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export function FeatureCard({ title, description, iconName, iconSet = 'feather', accentColor, onPress }: FeatureCardProps) {
   const colors = useColors();
+  const { rowDir, arrowIcon } = useRTL();
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -53,7 +55,7 @@ export function FeatureCard({ title, description, iconName, iconSet = 'feather',
       marginBottom: 12,
       borderWidth: 1,
       borderColor: colors.border,
-      flexDirection: 'row',
+      flexDirection: rowDir,
       alignItems: 'center',
       gap: 14,
     },
@@ -99,7 +101,7 @@ export function FeatureCard({ title, description, iconName, iconSet = 'feather',
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.description} numberOfLines={2}>{description}</Text>
         </View>
-        <Feather name="chevron-right" size={18} color={colors.mutedForeground} style={styles.arrow} />
+        <Feather name={arrowIcon} size={18} color={colors.mutedForeground} style={styles.arrow} />
       </View>
     </AnimatedPressable>
   );

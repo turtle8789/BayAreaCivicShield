@@ -18,6 +18,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CATEGORY_COLORS, CATEGORY_LABELS, CRISIS_HOTLINES, Hotline } from '@/constants/crisis-hotlines';
 import { LEGAL_RESOURCES, LegalResource, ResourceType, TYPE_LABELS } from '@/constants/legal-resources';
 import { useColors } from '@/hooks/useColors';
+import { useRTL } from '@/hooks/useRTL';
 import { useT } from '@/hooks/useTranslation';
 
 type Tab = 'hotlines' | 'resources' | 'nearby';
@@ -63,6 +64,7 @@ async function openGoogleMaps(lat: number, lon: number, name: string) {
 function HotlineCard({ hotline }: { hotline: Hotline }) {
   const colors = useColors();
   const { t } = useT();
+  const { rowDir } = useRTL();
   const categoryColor = CATEGORY_COLORS[hotline.category];
 
   const callNumber = async () => {
@@ -78,7 +80,7 @@ function HotlineCard({ hotline }: { hotline: Hotline }) {
 
   return (
     <View style={{ backgroundColor: colors.card, borderRadius: colors.radius, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: colors.border }}>
-      <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 6 }}>
+      <View style={{ flexDirection: rowDir, alignItems: 'flex-start', gap: 10, marginBottom: 6 }}>
         <View style={{ paddingHorizontal: 8, paddingVertical: 3, borderRadius: 20, backgroundColor: categoryColor }}>
           <Text style={{ fontSize: 11, fontFamily: 'Inter_600SemiBold', color: '#FFFFFF' }}>
             {CATEGORY_LABELS[hotline.category]}
@@ -95,7 +97,7 @@ function HotlineCard({ hotline }: { hotline: Hotline }) {
         {hotline.description}
       </Text>
       <Pressable
-        style={{ flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: categoryColor + '14', borderRadius: 10, paddingVertical: 10, paddingHorizontal: 14, alignSelf: 'flex-start' }}
+        style={{ flexDirection: rowDir, alignItems: 'center', gap: 6, backgroundColor: categoryColor + '14', borderRadius: 10, paddingVertical: 10, paddingHorizontal: 14, alignSelf: 'flex-start' }}
         onPress={callNumber}
         accessibilityLabel={`${t('common.call')} ${hotline.number}`}
         accessibilityRole="button"
@@ -120,6 +122,7 @@ function ResourceCard({
 }) {
   const colors = useColors();
   const { t } = useT();
+  const { rowDir } = useRTL();
 
   const callPhone = async () => {
     const url = `tel:${resource.phone.replace(/[^0-9+]/g, '')}`;
@@ -140,7 +143,7 @@ function ResourceCard({
 
   return (
     <View style={{ backgroundColor: colors.card, borderRadius: colors.radius, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: colors.border }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+      <View style={{ flexDirection: rowDir, alignItems: 'center', gap: 8, marginBottom: 6 }}>
         <View style={{ paddingHorizontal: 8, paddingVertical: 3, borderRadius: 20, backgroundColor: colors.primary + '18' }}>
           <Text style={{ fontSize: 11, fontFamily: 'Inter_500Medium', color: colors.primary }}>
             {TYPE_LABELS[resource.type]}
@@ -168,16 +171,16 @@ function ResourceCard({
           📍 {resource.address}
         </Text>
       ) : null}
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 10 }}>
+      <View style={{ flexDirection: rowDir, flexWrap: 'wrap', gap: 6, marginBottom: 10 }}>
         {resource.serves.map((s) => (
           <View key={s} style={{ backgroundColor: colors.muted, borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3 }}>
             <Text style={{ fontSize: 11, fontFamily: 'Inter_400Regular', color: colors.mutedForeground }}>{s}</Text>
           </View>
         ))}
       </View>
-      <View style={{ flexDirection: 'row', gap: 8 }}>
+      <View style={{ flexDirection: rowDir, gap: 8 }}>
         <Pressable
-          style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, borderRadius: 10, paddingVertical: 10, backgroundColor: colors.primary + '0F', borderWidth: 1, borderColor: colors.primary + '30' }}
+          style={{ flex: 1, flexDirection: rowDir, alignItems: 'center', justifyContent: 'center', gap: 6, borderRadius: 10, paddingVertical: 10, backgroundColor: colors.primary + '0F', borderWidth: 1, borderColor: colors.primary + '30' }}
           onPress={callPhone}
           accessibilityRole="button"
           accessibilityLabel={t('common.call')}
@@ -186,7 +189,7 @@ function ResourceCard({
           <Text style={{ fontSize: 13, fontFamily: 'Inter_500Medium', color: colors.primary }}>{t('common.call')}</Text>
         </Pressable>
         <Pressable
-          style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, borderRadius: 10, paddingVertical: 10, backgroundColor: colors.muted, borderWidth: 1, borderColor: colors.border }}
+          style={{ flex: 1, flexDirection: rowDir, alignItems: 'center', justifyContent: 'center', gap: 6, borderRadius: 10, paddingVertical: 10, backgroundColor: colors.muted, borderWidth: 1, borderColor: colors.border }}
           onPress={openWebsite}
           accessibilityRole="button"
           accessibilityLabel={t('common.website')}
@@ -195,7 +198,7 @@ function ResourceCard({
           <Text style={{ fontSize: 13, fontFamily: 'Inter_500Medium', color: colors.mutedForeground }}>{t('common.website')}</Text>
         </Pressable>
         <Pressable
-          style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, borderRadius: 10, paddingVertical: 10, backgroundColor: '#5A9E6F14', borderWidth: 1, borderColor: '#5A9E6F30' }}
+          style={{ flex: 1, flexDirection: rowDir, alignItems: 'center', justifyContent: 'center', gap: 6, borderRadius: 10, paddingVertical: 10, backgroundColor: '#5A9E6F14', borderWidth: 1, borderColor: '#5A9E6F30' }}
           onPress={() => openGoogleMaps(resource.lat, resource.lon, resource.name)}
           accessibilityRole="button"
           accessibilityLabel={t('common.open_maps')}
@@ -228,9 +231,10 @@ function TypeFilterChips({
 }) {
   const colors = useColors();
   const { t } = useT();
+  const { rowDir } = useRTL();
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 12 }}>
-      <View style={{ flexDirection: 'row', gap: 8, paddingRight: 8 }}>
+      <View style={{ flexDirection: rowDir, gap: 8, paddingRight: 8 }}>
         {TYPE_FILTER_OPTIONS.map((opt) => {
           const active = selected === opt.value;
           const label = t(opt.labelKey as any);
@@ -266,6 +270,7 @@ function TypeFilterChips({
 function FindNearbyTab() {
   const colors = useColors();
   const { t } = useT();
+  const { rowDir } = useRTL();
 
   const [loading, setLoading]         = useState(false);
   const [userLat, setUserLat]         = useState<number | null>(null);
@@ -359,7 +364,7 @@ function FindNearbyTab() {
           📍 {t('resources.find_near_you')}
         </Text>
         <Pressable
-          style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: colors.primary, borderRadius: 10, paddingVertical: 12, marginBottom: 10, opacity: loading ? 0.6 : 1 }}
+          style={{ flexDirection: rowDir, alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: colors.primary, borderRadius: 10, paddingVertical: 12, marginBottom: 10, opacity: loading ? 0.6 : 1 }}
           onPress={useMyLocation}
           disabled={loading}
           accessibilityRole="button"
@@ -373,7 +378,7 @@ function FindNearbyTab() {
         <Text style={{ fontSize: 12, fontFamily: 'Inter_400Regular', color: colors.mutedForeground, textAlign: 'center', marginBottom: 10 }}>
           {t('resources.enter_city_zip')}
         </Text>
-        <View style={{ flexDirection: 'row', gap: 8 }}>
+        <View style={{ flexDirection: rowDir, gap: 8 }}>
           <TextInput
             style={{ flex: 1, backgroundColor: colors.muted, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14, fontFamily: 'Inter_400Regular', color: colors.foreground, borderWidth: 1, borderColor: colors.border }}
             value={manualZip}
@@ -400,7 +405,7 @@ function FindNearbyTab() {
         <>
           {/* Location label */}
           {locationName ? (
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+            <View style={{ flexDirection: rowDir, alignItems: 'center', gap: 6, marginBottom: 10 }}>
               <Feather name="map-pin" size={13} color={colors.primary} />
               <Text style={{ fontSize: 13, fontFamily: 'Inter_500Medium', color: colors.mutedForeground, flex: 1 }}>
                 {t('resources.showing_near')} {locationName}
@@ -409,7 +414,7 @@ function FindNearbyTab() {
               {userLat !== null && userLon !== null && (
                 <Pressable
                   onPress={() => openGoogleMaps(userLat!, userLon!, 'Legal Aid Near Me')}
-                  style={{ flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#5A9E6F14', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 5 }}
+                  style={{ flexDirection: rowDir, alignItems: 'center', gap: 4, backgroundColor: '#5A9E6F14', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 5 }}
                   accessibilityRole="button"
                   accessibilityLabel={t('common.open_maps')}
                 >
@@ -428,7 +433,7 @@ function FindNearbyTab() {
               📍 Search Radius
             </Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <View style={{ flexDirection: 'row', gap: 6, paddingRight: 8 }}>
+              <View style={{ flexDirection: rowDir, gap: 6, paddingRight: 8 }}>
                 {RADIUS_OPTIONS.map((opt) => {
                   const active = radiusMiles === opt.value;
                   return (
@@ -477,7 +482,7 @@ function FindNearbyTab() {
       )}
 
       {!searched && !loading && (
-        <View style={{ backgroundColor: colors.primary + '0F', borderRadius: colors.radius, padding: 14, borderWidth: 1, borderColor: colors.primary + '20', flexDirection: 'row', gap: 10 }}>
+        <View style={{ backgroundColor: colors.primary + '0F', borderRadius: colors.radius, padding: 14, borderWidth: 1, borderColor: colors.primary + '20', flexDirection: rowDir, gap: 10 }}>
           <Feather name="map" size={16} color={colors.primary} />
           <Text style={{ flex: 1, fontSize: 13, fontFamily: 'Inter_400Regular', color: colors.mutedForeground, lineHeight: 19 }}>
             {t('resources.search_tip')}
@@ -494,6 +499,7 @@ export default function ResourcesScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { t } = useT();
+  const { rowDir } = useRTL();
   const topPad = Platform.OS === 'web' ? 67 : insets.top;
   const [activeTab, setActiveTab] = useState<Tab>('hotlines');
 
@@ -513,14 +519,14 @@ export default function ResourcesScreen() {
     header:            { paddingTop: topPad + 12, paddingHorizontal: 20, paddingBottom: 0, borderBottomWidth: 1, borderBottomColor: colors.border },
     headerTitle:       { fontSize: 22, fontFamily: 'Inter_700Bold', color: colors.foreground },
     headerSub:         { fontSize: 13, fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginTop: 2, marginBottom: 12 },
-    tabRow:            { flexDirection: 'row' },
+    tabRow:            { flexDirection: rowDir },
     tabBtn:            { flex: 1, paddingVertical: 10, alignItems: 'center', borderBottomWidth: 2, borderBottomColor: 'transparent' },
     tabBtnActive:      { borderBottomColor: colors.primary },
     tabBtnText:        { fontSize: 13, fontFamily: 'Inter_500Medium', color: colors.mutedForeground },
     tabBtnTextActive:  { color: colors.primary, fontFamily: 'Inter_600SemiBold' },
     scroll:            { flex: 1 },
     scrollContent:     { padding: 16, paddingBottom: Platform.OS === 'web' ? 34 : 100, flexGrow: 1 },
-    emergencyCard:     { backgroundColor: '#E05252', borderRadius: colors.radius, padding: 16, marginBottom: 16, flexDirection: 'row', alignItems: 'center', gap: 12 },
+    emergencyCard:     { backgroundColor: '#E05252', borderRadius: colors.radius, padding: 16, marginBottom: 16, flexDirection: rowDir, alignItems: 'center', gap: 12 },
   });
 
   return (

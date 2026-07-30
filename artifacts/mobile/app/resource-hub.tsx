@@ -23,6 +23,7 @@ import {
 } from '@/constants/resource-hub-data';
 import { useApp } from '@/context/AppContext';
 import { useColors } from '@/hooks/useColors';
+import { useRTL } from '@/hooks/useRTL';
 import { useT } from '@/hooks/useTranslation';
 
 async function openUrl(url: string) {
@@ -50,6 +51,7 @@ export default function ResourceHubScreen() {
   const insets = useSafeAreaInsets();
   const { fs } = useApp();
   const { t } = useT();
+  const { rowDir, backIcon } = useRTL();
   const topPad = Platform.OS === 'web' ? 20 : insets.top;
 
   const [filter, setFilter] = useState<HubCategory | 'all'>('all');
@@ -69,12 +71,12 @@ export default function ResourceHubScreen() {
   const styles = StyleSheet.create({
     container:  { flex: 1, backgroundColor: colors.background },
     header:     { paddingTop: topPad + 12, paddingHorizontal: 20, paddingBottom: 0, borderBottomWidth: 1, borderBottomColor: colors.border },
-    headerRow:  { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
+    headerRow:  { flexDirection: rowDir, alignItems: 'center', marginBottom: 12 },
     headerTitle:{ flex: 1, fontSize: fs(22), fontFamily: 'Inter_700Bold', color: colors.foreground },
     headerSub:  { fontSize: fs(13), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginBottom: 12 },
-    searchBar:  { backgroundColor: colors.muted, borderRadius: 10, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, marginBottom: 12, gap: 8 },
+    searchBar:  { backgroundColor: colors.muted, borderRadius: 10, flexDirection: rowDir, alignItems: 'center', paddingHorizontal: 12, marginBottom: 12, gap: 8 },
     searchInput:{ flex: 1, fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground, paddingVertical: 9 },
-    filterRow:  { flexDirection: 'row', paddingBottom: 0 },
+    filterRow:  { flexDirection: rowDir, paddingBottom: 0 },
     filterBtn:  { paddingHorizontal: 12, paddingVertical: 10, marginRight: 4, borderBottomWidth: 2, borderBottomColor: 'transparent' },
     filterActive:{ borderBottomColor: colors.primary },
     filterText: { fontSize: fs(12), fontFamily: 'Inter_500Medium', color: colors.mutedForeground },
@@ -82,27 +84,27 @@ export default function ResourceHubScreen() {
     scroll:     { flex: 1 },
     scrollContent: { padding: 16, paddingBottom: Platform.OS === 'web' ? 80 : 110, flexGrow: 1 },
     card:       { backgroundColor: colors.card, borderRadius: colors.radius, borderWidth: 1, borderColor: colors.border, marginBottom: 10, padding: 14 },
-    cardTop:    { flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 8 },
+    cardTop:    { flexDirection: rowDir, alignItems: 'flex-start', gap: 10, marginBottom: 8 },
     cardName:   { flex: 1, fontSize: fs(15), fontFamily: 'Inter_600SemiBold', color: colors.foreground, lineHeight: 21 },
     freeBadge:  { backgroundColor: '#5A9E6F18', borderRadius: 20, paddingHorizontal: 8, paddingVertical: 3 },
     freeBadgeTxt:{ fontSize: fs(10), fontFamily: 'Inter_600SemiBold', color: '#5A9E6F' },
     paidBadge:  { backgroundColor: colors.muted, borderRadius: 20, paddingHorizontal: 8, paddingVertical: 3 },
     paidBadgeTxt:{ fontSize: fs(10), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground },
     desc:       { fontSize: fs(13), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, lineHeight: 18, marginBottom: 10 },
-    tags:       { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 10 },
+    tags:       { flexDirection: rowDir, flexWrap: 'wrap', gap: 6, marginBottom: 10 },
     tag:        { backgroundColor: colors.muted, borderRadius: 20, paddingHorizontal: 8, paddingVertical: 3 },
     tagText:    { fontSize: fs(11), fontFamily: 'Inter_400Regular', color: colors.mutedForeground },
-    btnRow:     { flexDirection: 'row', gap: 8 },
-    openBtn:    { flex: 1, backgroundColor: colors.primary, borderRadius: 10, paddingVertical: 10, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 6 },
+    btnRow:     { flexDirection: rowDir, gap: 8 },
+    openBtn:    { flex: 1, backgroundColor: colors.primary, borderRadius: 10, paddingVertical: 10, alignItems: 'center', flexDirection: rowDir, justifyContent: 'center', gap: 6 },
     openBtnTxt: { fontSize: fs(13), fontFamily: 'Inter_600SemiBold', color: '#FFFFFF' },
-    callBtn:    { backgroundColor: '#5A9E6F', borderRadius: 10, paddingVertical: 10, paddingHorizontal: 14, flexDirection: 'row', alignItems: 'center', gap: 5 },
+    callBtn:    { backgroundColor: '#5A9E6F', borderRadius: 10, paddingVertical: 10, paddingHorizontal: 14, flexDirection: rowDir, alignItems: 'center', gap: 5 },
     callBtnTxt: { fontSize: fs(13), fontFamily: 'Inter_600SemiBold', color: '#FFFFFF' },
     disclaimer: { backgroundColor: colors.muted, borderRadius: colors.radius, padding: 12, marginTop: 8 },
     disclaimerTxt: { fontSize: fs(11), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, lineHeight: 16 },
     emptyState: { alignItems: 'center', paddingVertical: 40, gap: 8 },
     emptyTxt:   { fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, textAlign: 'center' },
     catSection: { marginBottom: 6, marginTop: 4 },
-    catHeader:  { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 },
+    catHeader:  { flexDirection: rowDir, alignItems: 'center', gap: 6, marginBottom: 8 },
     catTitle:   { fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase', letterSpacing: 0.7 },
   });
 
@@ -144,7 +146,7 @@ export default function ResourceHubScreen() {
       <View style={styles.header}>
         <View style={styles.headerRow}>
           <Pressable onPress={() => router.back()} hitSlop={10} style={{ marginRight: 10 }} accessibilityRole="button" accessibilityLabel="Back">
-            <Feather name="arrow-left" size={22} color={colors.foreground} />
+            <Feather name={backIcon} size={22} color={colors.foreground} />
           </Pressable>
           <Text style={styles.headerTitle} accessibilityRole="header">{t('hub.title')}</Text>
         </View>

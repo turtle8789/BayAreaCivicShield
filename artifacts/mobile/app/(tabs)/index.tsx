@@ -16,6 +16,7 @@ import { FeatureCard } from '@/components/FeatureCard';
 import { LanguagePicker } from '@/components/LanguagePicker';
 import { useApp } from '@/context/AppContext';
 import { useColors } from '@/hooks/useColors';
+import { useRTL } from '@/hooks/useRTL';
 import { useT } from '@/hooks/useTranslation';
 
 export default function HomeScreen() {
@@ -30,6 +31,7 @@ export default function HomeScreen() {
     fs,
   } = useApp();
   const { t } = useT();
+  const { rowDir, arrowIcon } = useRTL();
   const [showLangPicker, setShowLangPicker] = useState(false);
 
   const topPad    = Platform.OS === 'web' ? 67 : insets.top;
@@ -102,39 +104,39 @@ export default function HomeScreen() {
       borderBottomWidth: 1, borderBottomColor: colors.border,
       backgroundColor: colors.background,
     },
-    headerRow:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-    logoRow:      { flexDirection: 'row', alignItems: 'center', gap: 10 },
+    headerRow:    { flexDirection: rowDir, alignItems: 'center', justifyContent: 'space-between' },
+    logoRow:      { flexDirection: rowDir, alignItems: 'center', gap: 10 },
     logoImage:    { width: 40, height: 40, borderRadius: 8 },
     appName:      { fontSize: fs(22), fontFamily: 'Inter_700Bold', color: colors.primary, letterSpacing: -0.4 },
     tagline:      { fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginTop: 1 },
-    headerActions:{ flexDirection: 'row', alignItems: 'center', gap: 8 },
-    langBtn:      { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.muted, borderRadius: 20, paddingHorizontal: 11, paddingVertical: 6, gap: 5 },
+    headerActions:{ flexDirection: rowDir, alignItems: 'center', gap: 8 },
+    langBtn:      { flexDirection: rowDir, alignItems: 'center', backgroundColor: colors.muted, borderRadius: 20, paddingHorizontal: 11, paddingVertical: 6, gap: 5 },
     langBtnText:  { fontSize: fs(12), fontFamily: 'Inter_500Medium', color: colors.foreground },
     iconBtn:      { width: 34, height: 34, borderRadius: 17, backgroundColor: colors.muted, alignItems: 'center', justifyContent: 'center' },
     // Settings row below the logo — more prominent
-    settingsRow:  { flexDirection: 'row', gap: 8, marginTop: 10 },
-    settingsChip: { flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: colors.muted, borderRadius: 20, paddingHorizontal: 11, paddingVertical: 6 },
+    settingsRow:  { flexDirection: rowDir, gap: 8, marginTop: 10 },
+    settingsChip: { flexDirection: rowDir, alignItems: 'center', gap: 5, backgroundColor: colors.muted, borderRadius: 20, paddingHorizontal: 11, paddingVertical: 6 },
     settingsChipText: { fontSize: fs(12), fontFamily: 'Inter_500Medium', color: colors.mutedForeground },
 
     scroll:        { flex: 1 },
     scrollContent: { padding: 16, paddingBottom: bottomPad, flexGrow: 1 },
 
     // Deadlines
-    deadlineSectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },
+    deadlineSectionHeader: { flexDirection: rowDir, alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },
     deadlineSectionTitle:  { fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: '#C9A050', textTransform: 'uppercase', letterSpacing: 0.8 },
-    clearAllBtn:  { flexDirection: 'row', alignItems: 'center', gap: 4 },
+    clearAllBtn:  { flexDirection: rowDir, alignItems: 'center', gap: 4 },
     clearAllText: { fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.mutedForeground },
     deadlineCard: { backgroundColor: '#C9A050' + '12', borderRadius: colors.radius, borderWidth: 1, borderColor: '#C9A050' + '40', padding: 12, marginBottom: 8 },
     deadlineText: { fontSize: fs(13), fontFamily: 'Inter_500Medium', color: colors.foreground, lineHeight: 18 },
     deadlineSource:{ fontSize: fs(11), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginTop: 2 },
 
     // Emergency
-    emergencyBanner: { backgroundColor: '#E05252', borderRadius: colors.radius, flexDirection: 'row', alignItems: 'center', padding: 14, marginBottom: 14, gap: 10 },
+    emergencyBanner: { backgroundColor: '#E05252', borderRadius: colors.radius, flexDirection: rowDir, alignItems: 'center', padding: 14, marginBottom: 14, gap: 10 },
     emergencyText:   { flex: 1, fontSize: fs(14), fontFamily: 'Inter_600SemiBold', color: '#FFFFFF' },
     emergencyNumber: { fontSize: fs(20), fontFamily: 'Inter_700Bold', color: '#FFFFFF' },
 
     // Tour
-    tourBtn:     { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#C9A050' + '18', borderRadius: colors.radius, borderWidth: 1, borderColor: '#C9A050' + '40', padding: 12, marginBottom: 14 },
+    tourBtn:     { flexDirection: rowDir, alignItems: 'center', gap: 8, backgroundColor: '#C9A050' + '18', borderRadius: colors.radius, borderWidth: 1, borderColor: '#C9A050' + '40', padding: 12, marginBottom: 14 },
     tourBtnText: { flex: 1, fontSize: fs(13), fontFamily: 'Inter_500Medium', color: '#C9A050' },
 
     sectionTitle: { fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 12 },
@@ -215,7 +217,7 @@ export default function HomeScreen() {
         {savedDeadlines.length > 0 && (
           <View style={{ marginBottom: 14 }}>
             <View style={styles.deadlineSectionHeader}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <View style={{ flexDirection: rowDir, alignItems: 'center', gap: 6 }}>
                 <Feather name="calendar" size={14} color="#C9A050" />
                 <Text style={styles.deadlineSectionTitle} accessibilityRole="header">
                   {t('home.saved_deadlines')} ({savedDeadlines.length})
@@ -234,8 +236,8 @@ export default function HomeScreen() {
             {savedDeadlines.map((d) => (
               <View key={d.id} style={styles.deadlineCard}>
                 {/* Header row: ⚠️ label + dismiss button */}
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+                <View style={{ flexDirection: rowDir, alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                  <View style={{ flexDirection: rowDir, alignItems: 'center', gap: 5 }}>
                     <Text style={{ fontSize: fs(11), fontFamily: 'Inter_700Bold', color: '#C9A050', letterSpacing: 0.6 }}>
                       {t('home.important_date')}
                     </Text>
@@ -254,7 +256,7 @@ export default function HomeScreen() {
                 <Text style={styles.deadlineText}>{d.text}</Text>
 
                 {/* Footer row: source · date  +  View Case Details → */}
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
+                <View style={{ flexDirection: rowDir, alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
                   <Text style={styles.deadlineSource}>
                     {d.source} · {new Date(d.savedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                   </Text>
@@ -265,14 +267,14 @@ export default function HomeScreen() {
                         router.push('/(tabs)/docs');
                         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                       }}
-                      style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}
+                      style={{ flexDirection: rowDir, alignItems: 'center', gap: 3 }}
                       accessibilityRole="button"
                       accessibilityLabel="View case details"
                     >
                       <Text style={{ fontSize: fs(11), fontFamily: 'Inter_600SemiBold', color: colors.primary }}>
                         {t('home.view_case')}
                       </Text>
-                      <Feather name="chevron-right" size={12} color={colors.primary} />
+                      <Feather name={arrowIcon} size={12} color={colors.primary} />
                     </Pressable>
                   ) : null}
                 </View>

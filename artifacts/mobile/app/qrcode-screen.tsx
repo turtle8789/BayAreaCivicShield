@@ -15,6 +15,7 @@ import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import QRCode from 'react-native-qrcode-svg';
 import { useColors } from '@/hooks/useColors';
+import { useRTL } from '@/hooks/useRTL';
 import { useT } from '@/hooks/useTranslation';
 
 // ─── Derive the Expo Go connection URL ───────────────────────────────────────
@@ -43,6 +44,7 @@ export default function QRCodeScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { t } = useT();
+  const { rowDir, backIcon } = useRTL();
   const topPad = Platform.OS === 'web' ? 67 : insets.top;
 
   const expoUrl = getExpoGoUrl();
@@ -67,10 +69,10 @@ export default function QRCodeScreen() {
       <View style={{
         paddingTop: topPad + 12, paddingHorizontal: 20, paddingBottom: 16,
         borderBottomWidth: 1, borderBottomColor: colors.border,
-        flexDirection: 'row', alignItems: 'center', gap: 12,
+        flexDirection: rowDir, alignItems: 'center', gap: 12,
       }}>
         <Pressable onPress={() => router.back()} hitSlop={12} accessibilityRole="button" accessibilityLabel={t('common.back')}>
-          <Feather name="arrow-left" size={22} color={colors.foreground} />
+          <Feather name={backIcon} size={22} color={colors.foreground} />
         </Pressable>
         <Text style={{ flex: 1, fontSize: 20, fontFamily: 'Inter_700Bold', color: colors.foreground }}>
           {t('qr.title')}
@@ -110,7 +112,7 @@ export default function QRCodeScreen() {
         </View>
 
         {/* Status indicator */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 20 }}>
+        <View style={{ flexDirection: rowDir, alignItems: 'center', gap: 8, marginBottom: 20 }}>
           <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: isRealUrl ? '#5A9E6F' : '#C9A050' }} />
           <Text style={{ fontSize: 13, fontFamily: 'Inter_500Medium', color: isRealUrl ? '#5A9E6F' : '#C9A050' }}>
             {isRealUrl ? 'Live dev server detected' : 'Connect to a dev server first'}
@@ -128,10 +130,10 @@ export default function QRCodeScreen() {
         </View>
 
         {/* Action buttons */}
-        <View style={{ flexDirection: 'row', gap: 10, width: '100%', marginBottom: 24 }}>
+        <View style={{ flexDirection: rowDir, gap: 10, width: '100%', marginBottom: 24 }}>
           <Pressable
             style={({ pressed }) => ({
-              flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7,
+              flex: 1, flexDirection: rowDir, alignItems: 'center', justifyContent: 'center', gap: 7,
               backgroundColor: copied ? '#5A9E6F' : colors.primary,
               borderRadius: colors.radius, paddingVertical: 13,
               opacity: pressed ? 0.88 : 1,
@@ -148,7 +150,7 @@ export default function QRCodeScreen() {
           {Platform.OS !== 'web' && (
             <Pressable
               style={({ pressed }) => ({
-                flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7,
+                flex: 1, flexDirection: rowDir, alignItems: 'center', justifyContent: 'center', gap: 7,
                 backgroundColor: colors.muted, borderRadius: colors.radius, paddingVertical: 13,
                 borderWidth: 1, borderColor: colors.border,
                 opacity: pressed ? 0.85 : 1,
@@ -174,7 +176,7 @@ export default function QRCodeScreen() {
             'Open Expo Go → tap "Scan QR Code" → scan the code above.',
             'The app will load live on your phone with hot-reload.',
           ].map((step, i) => (
-            <View key={i} style={{ flexDirection: 'row', gap: 12, marginBottom: i < 3 ? 10 : 0 }}>
+            <View key={i} style={{ flexDirection: rowDir, gap: 12, marginBottom: i < 3 ? 10 : 0 }}>
               <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: colors.primary + '20', alignItems: 'center', justifyContent: 'center', marginTop: 1 }}>
                 <Text style={{ fontSize: 12, fontFamily: 'Inter_700Bold', color: colors.primary }}>{i + 1}</Text>
               </View>

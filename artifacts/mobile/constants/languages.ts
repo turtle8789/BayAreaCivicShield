@@ -2,6 +2,8 @@ export interface Language {
   code: string;
   name: string;
   nativeName: string;
+  /** True for languages written right-to-left (Arabic, Urdu, Hebrew, etc.) */
+  isRTL?: boolean;
 }
 
 export const LANGUAGES: Language[] = [
@@ -13,7 +15,7 @@ export const LANGUAGES: Language[] = [
   { code: 'tl',    name: 'Tagalog',              nativeName: 'Tagalog' },
   { code: 'hi',    name: 'Hindi',                nativeName: 'हिन्दी' },
   { code: 'ko',    name: 'Korean',               nativeName: '한국어' },
-  { code: 'ar',    name: 'Arabic',               nativeName: 'العربية' },
+  { code: 'ar',    name: 'Arabic',               nativeName: 'العربية', isRTL: true },
   { code: 'fr',    name: 'French',               nativeName: 'Français' },
   { code: 'pt',    name: 'Portuguese',           nativeName: 'Português' },
   { code: 'ru',    name: 'Russian',              nativeName: 'Русский' },
@@ -25,7 +27,7 @@ export const LANGUAGES: Language[] = [
   { code: 'ta',    name: 'Tamil',                nativeName: 'தமிழ்' },
   { code: 'bn',    name: 'Bengali',              nativeName: 'বাংলা' },
   { code: 'id',    name: 'Indonesian',           nativeName: 'Bahasa Indonesia' },
-  { code: 'ur',    name: 'Urdu',                 nativeName: 'اردو' },
+  { code: 'ur',    name: 'Urdu',                 nativeName: 'اردو', isRTL: true },
   { code: 'tr',    name: 'Turkish',              nativeName: 'Türkçe' },
   { code: 'sw',    name: 'Swahili',              nativeName: 'Kiswahili' },
   { code: 'it',    name: 'Italian',              nativeName: 'Italiano' },

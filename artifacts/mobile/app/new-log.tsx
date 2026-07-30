@@ -15,6 +15,7 @@ import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { EncounterType, useApp } from '@/context/AppContext';
 import { useColors } from '@/hooks/useColors';
+import { useRTL } from '@/hooks/useRTL';
 import { useT } from '@/hooks/useTranslation';
 
 const ENCOUNTER_TYPES: EncounterType[] = [
@@ -27,6 +28,7 @@ export default function NewLogScreen() {
   const topPad = Platform.OS === 'web' ? 67 : insets.top;
   const { addEncounter, fs } = useApp();
   const { t } = useT();
+  const { rowDir, textStyle } = useRTL();
 
   const [type, setType] = useState<EncounterType>('traffic_stop');
   const [location, setLocation] = useState('');
@@ -63,7 +65,7 @@ export default function NewLogScreen() {
     header: {
       paddingTop: topPad + 12, paddingHorizontal: 20, paddingBottom: 16,
       borderBottomWidth: 1, borderBottomColor: colors.border,
-      flexDirection: 'row', alignItems: 'center', gap: 12,
+      flexDirection: rowDir, alignItems: 'center', gap: 12,
     },
     headerTitle: { flex: 1, fontSize: fs(20), fontFamily: 'Inter_700Bold', color: colors.foreground },
     saveBtn: { backgroundColor: colors.primary, borderRadius: 20, paddingVertical: 8, paddingHorizontal: 16, opacity: saving ? 0.6 : 1 },
@@ -74,7 +76,7 @@ export default function NewLogScreen() {
       fontSize: fs(13), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground,
       textTransform: 'uppercase', letterSpacing: 0.7, marginBottom: 8, marginTop: 20,
     },
-    typeGrid:             { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+    typeGrid:             { flexDirection: rowDir, flexWrap: 'wrap', gap: 8 },
     typeChip:             { borderRadius: 20, paddingVertical: 8, paddingHorizontal: 14, borderWidth: 1.5, borderColor: colors.border, backgroundColor: colors.card },
     typeChipSelected:     { borderColor: colors.primary, backgroundColor: colors.primary + '14' },
     typeChipText:         { fontSize: fs(13), fontFamily: 'Inter_500Medium', color: colors.mutedForeground },
@@ -83,7 +85,7 @@ export default function NewLogScreen() {
     input:      { fontSize: fs(15), fontFamily: 'Inter_400Regular', color: colors.foreground, padding: 14 },
     textArea:   { minHeight: 100, textAlignVertical: 'top' },
     hint:       { fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginTop: 4 },
-    legalNote:  { backgroundColor: colors.primary + '0F', borderRadius: colors.radius, padding: 14, marginTop: 24, borderWidth: 1, borderColor: colors.primary + '20', flexDirection: 'row', gap: 10 },
+    legalNote:  { backgroundColor: colors.primary + '0F', borderRadius: colors.radius, padding: 14, marginTop: 24, borderWidth: 1, borderColor: colors.primary + '20', flexDirection: rowDir, gap: 10 },
     legalNoteText: { flex: 1, fontSize: fs(13), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, lineHeight: 19 },
   });
 
@@ -120,7 +122,7 @@ export default function NewLogScreen() {
         <Text style={styles.sectionLabel}>{t('newlog.location')}</Text>
         <View style={styles.inputWrap}>
           <TextInput
-            style={styles.input}
+            style={[styles.input, textStyle]}
             value={location}
             onChangeText={setLocation}
             placeholder={t('newlog.location_ph')}
@@ -132,7 +134,7 @@ export default function NewLogScreen() {
         <Text style={styles.sectionLabel}>{t('newlog.officer')}</Text>
         <View style={styles.inputWrap}>
           <TextInput
-            style={styles.input}
+            style={[styles.input, textStyle]}
             value={officerInfo}
             onChangeText={setOfficerInfo}
             placeholder={t('newlog.officer_ph')}
@@ -144,7 +146,7 @@ export default function NewLogScreen() {
         <Text style={styles.sectionLabel}>{t('newlog.description')}</Text>
         <View style={styles.inputWrap}>
           <TextInput
-            style={[styles.input, styles.textArea]}
+            style={[styles.input, styles.textArea, textStyle]}
             value={description}
             onChangeText={setDescription}
             placeholder={t('newlog.description_ph')}
@@ -158,7 +160,7 @@ export default function NewLogScreen() {
         <Text style={styles.sectionLabel}>{t('newlog.outcome')}</Text>
         <View style={styles.inputWrap}>
           <TextInput
-            style={[styles.input, styles.textArea]}
+            style={[styles.input, styles.textArea, textStyle]}
             value={outcome}
             onChangeText={setOutcome}
             placeholder={t('newlog.outcome_ph')}

@@ -12,6 +12,7 @@ import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Language, LANGUAGES } from '@/constants/languages';
 import { useColors } from '@/hooks/useColors';
+import { useRTL } from '@/hooks/useRTL';
 
 interface LanguagePickerProps {
   visible: boolean;
@@ -23,6 +24,7 @@ interface LanguagePickerProps {
 export function LanguagePicker({ visible, selectedCode, onSelect, onClose }: LanguagePickerProps) {
   const colors = useColors();
   const insets = useSafeAreaInsets();
+  const { rowDir } = useRTL();
   const [query, setQuery] = useState('');
 
   const filtered = LANGUAGES.filter(
@@ -54,7 +56,7 @@ export function LanguagePicker({ visible, selectedCode, onSelect, onClose }: Lan
       marginBottom: 16,
     },
     header: {
-      flexDirection: 'row',
+      flexDirection: rowDir,
       alignItems: 'center',
       paddingHorizontal: 20,
       marginBottom: 12,
@@ -66,7 +68,7 @@ export function LanguagePicker({ visible, selectedCode, onSelect, onClose }: Lan
       color: colors.foreground,
     },
     searchWrap: {
-      flexDirection: 'row',
+      flexDirection: rowDir,
       alignItems: 'center',
       backgroundColor: colors.muted,
       borderRadius: 12,
@@ -83,7 +85,7 @@ export function LanguagePicker({ visible, selectedCode, onSelect, onClose }: Lan
       color: colors.foreground,
     },
     item: {
-      flexDirection: 'row',
+      flexDirection: rowDir,
       alignItems: 'center',
       paddingHorizontal: 20,
       paddingVertical: 14,

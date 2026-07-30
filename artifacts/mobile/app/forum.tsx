@@ -24,6 +24,7 @@ import {
 } from '@/constants/forum-data';
 import { useApp } from '@/context/AppContext';
 import { useColors } from '@/hooks/useColors';
+import { useRTL } from '@/hooks/useRTL';
 import { useT } from '@/hooks/useTranslation';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -54,6 +55,7 @@ function PostCard({
   const colors = useColors();
   const { fs } = useApp();
   const { t } = useT();
+  const { rowDir } = useRTL();
   const meta = categoryMeta(post.category);
 
   // Avoid nesting <Pressable> inside <Pressable> (causes web hydration warning).
@@ -79,8 +81,8 @@ function PostCard({
         accessibilityLabel={`Open post: ${post.title}`}
       >
         {/* Category tag + time */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-          <View style={{ backgroundColor: meta.color + '18', borderRadius: 20, paddingHorizontal: 9, paddingVertical: 3, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+        <View style={{ flexDirection: rowDir, alignItems: 'center', gap: 6, marginBottom: 8 }}>
+          <View style={{ backgroundColor: meta.color + '18', borderRadius: 20, paddingHorizontal: 9, paddingVertical: 3, flexDirection: rowDir, alignItems: 'center', gap: 4 }}>
             <Text style={{ fontSize: fs(12) }}>{meta.emoji}</Text>
             <Text style={{ fontSize: fs(11), fontFamily: 'Inter_600SemiBold', color: meta.color }}>{meta.label}</Text>
           </View>
@@ -99,10 +101,10 @@ function PostCard({
       </Pressable>
 
       {/* Footer — separate from the body Pressable to avoid nested buttons */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: 14, paddingBottom: 12 }}>
+      <View style={{ flexDirection: rowDir, alignItems: 'center', gap: 14, paddingHorizontal: 14, paddingBottom: 12 }}>
         <Pressable
           onPress={onHelpful}
-          style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
+          style={{ flexDirection: rowDir, alignItems: 'center', gap: 4 }}
           accessibilityLabel={`Mark helpful. ${post.helpfulCount} found helpful`}
           accessibilityRole="button"
           hitSlop={6}
@@ -112,7 +114,7 @@ function PostCard({
             {post.helpfulCount} {t('forum.helpful')}
           </Text>
         </Pressable>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+        <View style={{ flexDirection: rowDir, alignItems: 'center', gap: 4 }}>
           <Feather name="message-circle" size={14} color={colors.mutedForeground} />
           <Text style={{ fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.mutedForeground }}>
             {post.replies.length} {post.replies.length === 1 ? t('forum.reply') : t('forum.replies')}
@@ -140,6 +142,7 @@ function PostDetail({
   const colors = useColors();
   const { fs } = useApp();
   const { t } = useT();
+  const { rowDir, textStyle } = useRTL();
   const [replyText, setReplyText] = useState('');
   const meta = categoryMeta(post.category);
 
@@ -154,12 +157,12 @@ function PostDetail({
     <Modal visible animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
       <View style={{ flex: 1, backgroundColor: colors.background }}>
         {/* Header */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, borderBottomWidth: 1, borderBottomColor: colors.border, paddingTop: Platform.OS === 'ios' ? 50 : 20 }}>
+        <View style={{ flexDirection: rowDir, alignItems: 'center', padding: 16, borderBottomWidth: 1, borderBottomColor: colors.border, paddingTop: Platform.OS === 'ios' ? 50 : 20 }}>
           <Pressable onPress={onClose} hitSlop={12} style={{ marginRight: 12 }} accessibilityLabel="Close" accessibilityRole="button">
             <Feather name="x" size={22} color={colors.foreground} />
           </Pressable>
           <View
-            style={{ backgroundColor: meta.color + '18', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4, flexDirection: 'row', alignItems: 'center', gap: 4 }}
+            style={{ backgroundColor: meta.color + '18', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4, flexDirection: rowDir, alignItems: 'center', gap: 4 }}
           >
             <Text>{meta.emoji}</Text>
             <Text style={{ fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: meta.color }}>{meta.label}</Text>
@@ -171,13 +174,13 @@ function PostDetail({
             <Text style={{ fontSize: fs(20), fontFamily: 'Inter_700Bold', color: colors.foreground, lineHeight: 27, marginBottom: 8 }}>
               {post.title}
             </Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+            <View style={{ flexDirection: rowDir, alignItems: 'center', gap: 10, marginBottom: 14 }}>
               <Text style={{ fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.mutedForeground }}>
                 {post.author} · {timeAgo(post.timestamp)}
               </Text>
               <Pressable
                 onPress={onHelpful}
-                style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginLeft: 'auto' }}
+                style={{ flexDirection: rowDir, alignItems: 'center', gap: 4, marginLeft: 'auto' }}
                 accessibilityRole="button"
                 accessibilityLabel="Mark helpful"
               >
@@ -188,7 +191,7 @@ function PostDetail({
               </Pressable>
             </View>
 
-            <Text style={{ fontSize: fs(15), fontFamily: 'Inter_400Regular', color: colors.foreground, lineHeight: 23, marginBottom: 20 }}>
+            <Text style={[{ fontSize: fs(15), fontFamily: 'Inter_400Regular', color: colors.foreground, lineHeight: 23, marginBottom: 20 }, textStyle]}>
               {post.content}
             </Text>
 
@@ -200,12 +203,12 @@ function PostDetail({
                 </Text>
                 {post.replies.map((r) => (
                   <View key={r.id} style={{ backgroundColor: colors.muted, borderRadius: 12, padding: 12, marginBottom: 8 }}>
-                    <View style={{ flexDirection: 'row', marginBottom: 6 }}>
+                    <View style={{ flexDirection: rowDir, marginBottom: 6 }}>
                       <Text style={{ fontSize: fs(13), fontFamily: 'Inter_600SemiBold', color: colors.foreground, flex: 1 }}>{r.author}</Text>
                       <Text style={{ fontSize: fs(11), fontFamily: 'Inter_400Regular', color: colors.mutedForeground }}>{timeAgo(r.timestamp)}</Text>
                     </View>
-                    <Text style={{ fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground, lineHeight: 20 }}>{r.content}</Text>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 8 }}>
+                    <Text style={[{ fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground, lineHeight: 20 }, textStyle]}>{r.content}</Text>
+                    <View style={{ flexDirection: rowDir, alignItems: 'center', gap: 4, marginTop: 8 }}>
                       <Feather name="thumbs-up" size={12} color={colors.mutedForeground} />
                       <Text style={{ fontSize: fs(11), fontFamily: 'Inter_400Regular', color: colors.mutedForeground }}>{r.helpfulCount} {t('forum.helpful')}</Text>
                     </View>
@@ -220,7 +223,7 @@ function PostDetail({
             </Text>
             <View style={{ backgroundColor: colors.card, borderRadius: colors.radius, borderWidth: 1, borderColor: colors.border, marginBottom: 10, overflow: 'hidden' }}>
               <TextInput
-                style={{ fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground, padding: 12, minHeight: 90, textAlignVertical: 'top' }}
+                style={[{ fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground, padding: 12, minHeight: 90, textAlignVertical: 'top' }, textStyle]}
                 value={replyText}
                 onChangeText={setReplyText}
                 multiline
@@ -266,6 +269,7 @@ function NewPostModal({
   const colors = useColors();
   const { fs } = useApp();
   const { t } = useT();
+  const { rowDir, textStyle } = useRTL();
   const [title, setTitle]     = useState('');
   const [content, setContent] = useState('');
   const [author, setAuthor]   = useState('Anonymous');
@@ -285,7 +289,7 @@ function NewPostModal({
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
       <View style={{ flex: 1, backgroundColor: colors.background }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, borderBottomWidth: 1, borderBottomColor: colors.border, paddingTop: Platform.OS === 'ios' ? 50 : 20 }}>
+        <View style={{ flexDirection: rowDir, alignItems: 'center', padding: 16, borderBottomWidth: 1, borderBottomColor: colors.border, paddingTop: Platform.OS === 'ios' ? 50 : 20 }}>
           <Pressable onPress={onClose} hitSlop={12} style={{ marginRight: 12 }} accessibilityRole="button" accessibilityLabel="Cancel">
             <Text style={{ fontSize: fs(15), fontFamily: 'Inter_500Medium', color: colors.mutedForeground }}>{t('forum.cancel')}</Text>
           </Pressable>
@@ -299,7 +303,7 @@ function NewPostModal({
           <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, gap: 12, flexGrow: 1 }} keyboardShouldPersistTaps="handled">
             {/* Category */}
             <Text style={{ fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase', letterSpacing: 0.7, marginBottom: 4 }}>{t('forum.category_label')}</Text>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 4 }}>
+            <View style={{ flexDirection: rowDir, flexWrap: 'wrap', gap: 8, marginBottom: 4 }}>
               {FORUM_CATEGORIES.map((cat) => (
                 <Pressable
                   key={cat.value}
@@ -319,7 +323,7 @@ function NewPostModal({
             <Text style={{ fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase', letterSpacing: 0.7, marginTop: 4 }}>{t('forum.title_label')}</Text>
             <View style={{ backgroundColor: colors.card, borderRadius: colors.radius, borderWidth: 1, borderColor: colors.border }}>
               <TextInput
-                style={{ fontSize: fs(15), fontFamily: 'Inter_400Regular', color: colors.foreground, padding: 12 }}
+                style={[{ fontSize: fs(15), fontFamily: 'Inter_400Regular', color: colors.foreground, padding: 12 }, textStyle]}
                 value={title}
                 onChangeText={setTitle}
                 placeholder={t('forum.title_ph')}
@@ -333,7 +337,7 @@ function NewPostModal({
             <Text style={{ fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase', letterSpacing: 0.7 }}>{t('forum.details_label')}</Text>
             <View style={{ backgroundColor: colors.card, borderRadius: colors.radius, borderWidth: 1, borderColor: colors.border }}>
               <TextInput
-                style={{ fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground, padding: 12, minHeight: 120, textAlignVertical: 'top' }}
+                style={[{ fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground, padding: 12, minHeight: 120, textAlignVertical: 'top' }, textStyle]}
                 value={content}
                 onChangeText={setContent}
                 multiline
@@ -347,7 +351,7 @@ function NewPostModal({
             <Text style={{ fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase', letterSpacing: 0.7 }}>{t('forum.display_name')}</Text>
             <View style={{ backgroundColor: colors.card, borderRadius: colors.radius, borderWidth: 1, borderColor: colors.border }}>
               <TextInput
-                style={{ fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground, padding: 12 }}
+                style={[{ fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground, padding: 12 }, textStyle]}
                 value={author}
                 onChangeText={setAuthor}
                 placeholder="Anonymous"
@@ -376,6 +380,7 @@ export default function ForumScreen() {
   const insets = useSafeAreaInsets();
   const { forumPosts, addForumPost, toggleForumHelpful, fs } = useApp();
   const { t } = useT();
+  const { rowDir, backIcon } = useRTL();
   const topPad = Platform.OS === 'web' ? 20 : insets.top;
 
   const [filter, setFilter] = useState<ForumCategory | 'all'>('all');
@@ -401,13 +406,13 @@ export default function ForumScreen() {
   const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
     header: { paddingTop: topPad + 12, paddingHorizontal: 20, paddingBottom: 0, borderBottomWidth: 1, borderBottomColor: colors.border },
-    headerRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
+    headerRow: { flexDirection: rowDir, alignItems: 'center', marginBottom: 12 },
     headerTitle: { flex: 1, fontSize: fs(22), fontFamily: 'Inter_700Bold', color: colors.foreground },
-    newPostBtn: { flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: colors.primary, borderRadius: 20, paddingHorizontal: 13, paddingVertical: 8 },
+    newPostBtn: { flexDirection: rowDir, alignItems: 'center', gap: 5, backgroundColor: colors.primary, borderRadius: 20, paddingHorizontal: 13, paddingVertical: 8 },
     newPostText: { fontSize: fs(13), fontFamily: 'Inter_600SemiBold', color: '#FFFFFF' },
-    searchBar: { backgroundColor: colors.muted, borderRadius: 10, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, marginBottom: 12, gap: 8 },
+    searchBar: { backgroundColor: colors.muted, borderRadius: 10, flexDirection: rowDir, alignItems: 'center', paddingHorizontal: 12, marginBottom: 12, gap: 8 },
     searchInput: { flex: 1, fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground, paddingVertical: 9 },
-    filterRow: { flexDirection: 'row', paddingBottom: 0 },
+    filterRow: { flexDirection: rowDir, paddingBottom: 0 },
     filterBtn: { paddingHorizontal: 14, paddingVertical: 10, marginRight: 4, borderBottomWidth: 2, borderBottomColor: 'transparent' },
     filterBtnActive: { borderBottomColor: colors.primary },
     filterText: { fontSize: fs(13), fontFamily: 'Inter_500Medium', color: colors.mutedForeground },
@@ -425,7 +430,7 @@ export default function ForumScreen() {
       <View style={styles.header}>
         <View style={styles.headerRow}>
           <Pressable onPress={() => router.back()} hitSlop={10} style={{ marginRight: 10 }} accessibilityLabel="Back" accessibilityRole="button">
-            <Feather name="arrow-left" size={22} color={colors.foreground} />
+            <Feather name={backIcon} size={22} color={colors.foreground} />
           </Pressable>
           <Text style={styles.headerTitle} accessibilityRole="header">{t('forum.title')}</Text>
           <Pressable style={styles.newPostBtn} onPress={() => setShowNewPost(true)} accessibilityRole="button" accessibilityLabel="New post">

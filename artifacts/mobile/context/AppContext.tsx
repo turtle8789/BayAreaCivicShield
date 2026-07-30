@@ -70,6 +70,7 @@ interface AppContextValue {
   // Language
   language: Language;
   setLanguage: (lang: Language) => Promise<void>;
+  isRTL: boolean;
 
   // Encounters
   encounters: Encounter[];
@@ -168,7 +169,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (hc)      setHighContrastState(hc === 'true');
       if (forum)   setForumPosts(JSON.parse(forum) as ForumPost[]);
       if (helpful) setHelpfulIds(new Set(JSON.parse(helpful) as string[]));
-      if (lang)    setLanguageState(getLanguageByCode(lang));
+      if (lang) {
+        const loaded = getLanguageByCode(lang);
+        setLanguageState(loaded);
+      }
     }).catch(() => {});
   }, []);
 
@@ -294,10 +298,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     markedHelpful: helpfulIds.has(p.id),
   }));
 
+  const isRTL = !!language.isRTL;
+
   return (
     <AppContext.Provider
       value={{
-        language, setLanguage,
+        language, setLanguage, isRTL,
         encounters, addEncounter, deleteEncounter,
         translateText, isTranslating,
         savedDeadlines, addDeadline, removeDeadline, clearDeadlines,

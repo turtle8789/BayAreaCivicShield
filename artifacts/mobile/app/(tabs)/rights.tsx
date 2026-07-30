@@ -12,6 +12,7 @@ import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { QUIZ_QUESTIONS, RIGHTS_CATEGORIES, RightsCategory } from '@/constants/rights-data';
 import { useColors } from '@/hooks/useColors';
+import { useRTL } from '@/hooks/useRTL';
 import { useT } from '@/hooks/useTranslation';
 
 // ─── Rights Category Card ─────────────────────────────────────────────────────
@@ -19,6 +20,7 @@ import { useT } from '@/hooks/useTranslation';
 function CategoryCard({ category, onPress }: { category: RightsCategory; onPress: () => void }) {
   const colors = useColors();
   const { t } = useT();
+  const { rowDir, arrowIcon } = useRTL();
 
   return (
     <Pressable
@@ -29,7 +31,7 @@ function CategoryCard({ category, onPress }: { category: RightsCategory; onPress
         marginBottom: 10,
         borderWidth: 1,
         borderColor: colors.border,
-        flexDirection: 'row' as const,
+        flexDirection: rowDir as 'row' | 'row-reverse',
         alignItems: 'center' as const,
         gap: 12,
         opacity: pressed ? 0.85 : 1,
@@ -49,7 +51,7 @@ function CategoryCard({ category, onPress }: { category: RightsCategory; onPress
           {category.rights.length} {t('rights.key_rights')}
         </Text>
       </View>
-      <Feather name="chevron-right" size={18} color={colors.mutedForeground} />
+      <Feather name={arrowIcon} size={18} color={colors.mutedForeground} />
     </Pressable>
   );
 }
@@ -60,6 +62,7 @@ function RightsDetail({ category, onBack }: { category: RightsCategory; onBack: 
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { t } = useT();
+  const { rowDir, backIcon } = useRTL();
   const topPad = Platform.OS === 'web' ? 67 : insets.top;
 
   return (
@@ -67,10 +70,10 @@ function RightsDetail({ category, onBack }: { category: RightsCategory; onBack: 
       <View style={{
         paddingTop: topPad + 12, paddingHorizontal: 20, paddingBottom: 16,
         borderBottomWidth: 1, borderBottomColor: colors.border,
-        flexDirection: 'row', alignItems: 'center', gap: 12,
+        flexDirection: rowDir, alignItems: 'center', gap: 12,
       }}>
         <Pressable onPress={onBack} hitSlop={12} accessibilityLabel={t('common.back')} accessibilityRole="button">
-          <Feather name="arrow-left" size={22} color={colors.foreground} />
+          <Feather name={backIcon} size={22} color={colors.foreground} />
         </Pressable>
         <Text style={{ flex: 1, fontSize: 20, fontFamily: 'Inter_700Bold', color: colors.foreground }}>
           {category.title}
@@ -78,7 +81,7 @@ function RightsDetail({ category, onBack }: { category: RightsCategory; onBack: 
       </View>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20, paddingBottom: Platform.OS === 'web' ? 34 : 24, flexGrow: 1 }}>
         {category.rights.map((right, i) => (
-          <View key={i} style={{ flexDirection: 'row', gap: 12, marginBottom: 16 }}>
+          <View key={i} style={{ flexDirection: rowDir, gap: 12, marginBottom: 16 }}>
             <View style={{ width: 8, height: 8, borderRadius: 4, marginTop: 7, backgroundColor: category.color }} />
             <Text style={{ flex: 1, fontSize: 15, fontFamily: 'Inter_400Regular', color: colors.foreground, lineHeight: 22 }}>
               {right}
@@ -101,6 +104,7 @@ function QuizScreen({ onBack }: { onBack: () => void }) {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { t } = useT();
+  const { rowDir, backIcon } = useRTL();
   const topPad = Platform.OS === 'web' ? 67 : insets.top;
 
   const [currentIdx, setCurrentIdx]     = useState(0);
@@ -141,7 +145,7 @@ function QuizScreen({ onBack }: { onBack: () => void }) {
 
   const styles = StyleSheet.create({
     container:        { flex: 1, backgroundColor: colors.background },
-    header:           { paddingTop: topPad + 12, paddingHorizontal: 20, paddingBottom: 16, borderBottomWidth: 1, borderBottomColor: colors.border, flexDirection: 'row', alignItems: 'center', gap: 12 },
+    header:           { paddingTop: topPad + 12, paddingHorizontal: 20, paddingBottom: 16, borderBottomWidth: 1, borderBottomColor: colors.border, flexDirection: rowDir, alignItems: 'center', gap: 12 },
     headerTitle:      { flex: 1, fontSize: 20, fontFamily: 'Inter_700Bold', color: colors.foreground },
     progressText:     { fontSize: 14, fontFamily: 'Inter_500Medium', color: colors.mutedForeground },
     scrollContent:    { padding: 20, paddingBottom: Platform.OS === 'web' ? 34 : 24, flexGrow: 1 },
@@ -153,7 +157,7 @@ function QuizScreen({ onBack }: { onBack: () => void }) {
     optionWrong:      { borderColor: colors.destructive, backgroundColor: colors.destructive + '10' },
     optionText:       { fontSize: 15, fontFamily: 'Inter_400Regular', color: colors.foreground, lineHeight: 21 },
     // Feedback banner
-    feedbackBanner:   { borderRadius: colors.radius, paddingVertical: 12, paddingHorizontal: 16, marginBottom: 12, flexDirection: 'row', alignItems: 'center', gap: 10 },
+    feedbackBanner:   { borderRadius: colors.radius, paddingVertical: 12, paddingHorizontal: 16, marginBottom: 12, flexDirection: rowDir, alignItems: 'center', gap: 10 },
     feedbackText:     { fontSize: 16, fontFamily: 'Inter_700Bold' },
     feedbackSub:      { fontSize: 13, fontFamily: 'Inter_400Regular', marginTop: 1 },
     explanation:      { backgroundColor: colors.muted, borderRadius: colors.radius, padding: 14, marginBottom: 12 },
@@ -181,7 +185,7 @@ function QuizScreen({ onBack }: { onBack: () => void }) {
       <View style={styles.container}>
         <View style={styles.header}>
           <Pressable onPress={onBack} hitSlop={12} accessibilityRole="button" accessibilityLabel={t('common.back')}>
-            <Feather name="arrow-left" size={22} color={colors.foreground} />
+            <Feather name={backIcon} size={22} color={colors.foreground} />
           </Pressable>
           <Text style={styles.headerTitle}>{t('rights.quiz_complete')}</Text>
         </View>
@@ -204,7 +208,7 @@ function QuizScreen({ onBack }: { onBack: () => void }) {
     <View style={styles.container}>
       <View style={styles.header}>
         <Pressable onPress={onBack} hitSlop={12} accessibilityRole="button" accessibilityLabel={t('common.back')}>
-          <Feather name="arrow-left" size={22} color={colors.foreground} />
+          <Feather name={backIcon} size={22} color={colors.foreground} />
         </Pressable>
         <Text style={styles.headerTitle}>{t('rights.quiz_title')}</Text>
         <Text style={styles.progressText}>{currentIdx + 1}/{total}</Text>
@@ -217,8 +221,8 @@ function QuizScreen({ onBack }: { onBack: () => void }) {
         </View>
 
         {/* Score running tally */}
-        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 12 }}>
-          <View style={{ backgroundColor: colors.primary + '14', borderRadius: 20, paddingHorizontal: 12, paddingVertical: 4, flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+        <View style={{ flexDirection: rowDir, justifyContent: 'flex-end', marginBottom: 12 }}>
+          <View style={{ backgroundColor: colors.primary + '14', borderRadius: 20, paddingHorizontal: 12, paddingVertical: 4, flexDirection: rowDir, alignItems: 'center', gap: 5 }}>
             <Feather name="award" size={13} color={colors.primary} />
             <Text style={{ fontSize: 13, fontFamily: 'Inter_600SemiBold', color: colors.primary }}>
               {score} / {currentIdx + (selectedAnswer !== null ? 1 : 0)}
@@ -247,7 +251,7 @@ function QuizScreen({ onBack }: { onBack: () => void }) {
               accessibilityLabel={`Option ${i + 1}: ${opt}`}
               disabled={selectedAnswer !== null}
             >
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+              <View style={{ flexDirection: rowDir, alignItems: 'center', gap: 10 }}>
                 {selectedAnswer !== null && i === question.correctIndex && (
                   <Feather name="check-circle" size={17} color="#5A9E6F" />
                 )}
@@ -314,6 +318,7 @@ export default function RightsScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { t } = useT();
+  const { rowDir, arrowIcon } = useRTL();
   const topPad = Platform.OS === 'web' ? 67 : insets.top;
 
   const [view, setView] = useState<RightsView>('list');
@@ -352,7 +357,7 @@ export default function RightsScreen() {
             borderRadius: colors.radius,
             padding: 16,
             marginBottom: 20,
-            flexDirection: 'row' as const,
+            flexDirection: rowDir,
             alignItems: 'center' as const,
             gap: 12,
             opacity: pressed ? 0.9 : 1,
@@ -370,7 +375,7 @@ export default function RightsScreen() {
               {t('rights.quiz_banner_sub')}
             </Text>
           </View>
-          <Feather name="chevron-right" size={20} color="#FFFFFF" />
+          <Feather name={arrowIcon} size={20} color="#FFFFFF" />
         </Pressable>
 
         <Text style={{ fontSize: 13, fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 12 }} accessibilityRole="header">

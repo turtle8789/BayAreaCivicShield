@@ -20,6 +20,7 @@ import { LANGUAGES, Language } from '@/constants/languages';
 import { RIGHTS_CATEGORIES, RightsCategory } from '@/constants/rights-data';
 import { useApp } from '@/context/AppContext';
 import { useColors } from '@/hooks/useColors';
+import { useRTL } from '@/hooks/useRTL';
 import { useT } from '@/hooks/useTranslation';
 
 // ── Pre-scripted officer-facing texts (always English) ────────────────────────
@@ -116,6 +117,7 @@ export default function TranslateScreen() {
   const insets  = useSafeAreaInsets();
   const { fs }  = useApp();
   const { t }   = useT();
+  const { rowDir, textStyle } = useRTL();
   const topPad  = Platform.OS === 'web' ? 67 : insets.top;
 
   // Language selection
@@ -282,9 +284,9 @@ export default function TranslateScreen() {
     headerTitle: { fontSize: fs(22), fontFamily: 'Inter_700Bold', color: colors.foreground },
     headerSub:   { fontSize: fs(13), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginTop: 2 },
 
-    langRow:     { flexDirection: 'row', alignItems: 'center', marginTop: 12, gap: 10 },
+    langRow:     { flexDirection: rowDir, alignItems: 'center', marginTop: 12, gap: 10 },
     langLabel:   { fontSize: fs(13), fontFamily: 'Inter_500Medium', color: colors.mutedForeground },
-    langBtn:     { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: colors.card,
+    langBtn:     { flexDirection: rowDir, alignItems: 'center', gap: 6, backgroundColor: colors.card,
                    borderRadius: 20, borderWidth: 1, borderColor: colors.border,
                    paddingVertical: 7, paddingHorizontal: 14 },
     langBtnText: { fontSize: fs(14), fontFamily: 'Inter_600SemiBold', color: colors.foreground },
@@ -295,7 +297,7 @@ export default function TranslateScreen() {
     // Clip card
     card:        { backgroundColor: colors.card, borderRadius: colors.radius, borderWidth: 1,
                    borderColor: colors.border, marginBottom: 16, overflow: 'hidden' },
-    cardHead:    { flexDirection: 'row', alignItems: 'center', gap: 10,
+    cardHead:    { flexDirection: rowDir, alignItems: 'center', gap: 10,
                    backgroundColor: colors.primary + '14', paddingHorizontal: 16, paddingVertical: 12,
                    borderBottomWidth: 1, borderBottomColor: colors.border },
     cardBadge:   { width: 28, height: 28, borderRadius: 14, backgroundColor: colors.primary,
@@ -309,21 +311,21 @@ export default function TranslateScreen() {
                     textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 6 },
     scriptInput:  { fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground,
                     backgroundColor: colors.background, borderRadius: 8, borderWidth: 1,
-                    borderColor: colors.border, padding: 12, minHeight: 90, textAlignVertical: 'top' },
+                    borderColor: colors.border, padding: 12, minHeight: 90, textAlignVertical: 'top', ...textStyle },
     transBox:     { backgroundColor: colors.primary + '0F', borderRadius: 8, padding: 12,
                     marginTop: 10, borderWidth: 1, borderColor: colors.primary + '25' },
-    transText:    { fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground, lineHeight: 21 },
+    transText:    { fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground, lineHeight: 21, ...textStyle },
     transLabel:   { fontSize: fs(11), fontFamily: 'Inter_600SemiBold', color: colors.primary,
                     marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5 },
 
-    playBtn:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
+    playBtn:      { flexDirection: rowDir, alignItems: 'center', justifyContent: 'center', gap: 8,
                     backgroundColor: colors.primary, borderRadius: colors.radius,
                     paddingVertical: 12, paddingHorizontal: 20, marginTop: 14 },
     playBtnText:  { fontSize: fs(14), fontFamily: 'Inter_600SemiBold', color: '#FFFFFF' },
     playBtnSecondary: { backgroundColor: colors.accent ?? '#C9A050' },
 
-    micRow:       { flexDirection: 'row', gap: 10, marginBottom: 12 },
-    micBtn:       { flexDirection: 'row', alignItems: 'center', gap: 6, borderRadius: 20,
+    micRow:       { flexDirection: rowDir, gap: 10, marginBottom: 12 },
+    micBtn:       { flexDirection: rowDir, alignItems: 'center', gap: 6, borderRadius: 20,
                     paddingVertical: 9, paddingHorizontal: 16, borderWidth: 1.5 },
     micActive:    { backgroundColor: '#E0525214', borderColor: '#E05252' },
     micIdle:      { backgroundColor: colors.muted, borderColor: colors.border },
@@ -331,9 +333,9 @@ export default function TranslateScreen() {
 
     officerInput: { fontSize: fs(15), fontFamily: 'Inter_400Regular', color: colors.foreground,
                     backgroundColor: colors.background, borderRadius: 8, borderWidth: 1,
-                    borderColor: colors.border, padding: 12, minHeight: 80, textAlignVertical: 'top' },
+                    borderColor: colors.border, padding: 12, minHeight: 80, textAlignVertical: 'top', ...textStyle },
 
-    getAdviceBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
+    getAdviceBtn: { flexDirection: rowDir, alignItems: 'center', justifyContent: 'center', gap: 8,
                     backgroundColor: colors.foreground, borderRadius: colors.radius,
                     paddingVertical: 12, marginTop: 12 },
     getAdviceTxt: { fontSize: fs(14), fontFamily: 'Inter_600SemiBold', color: colors.background },
@@ -343,14 +345,14 @@ export default function TranslateScreen() {
     adviceCat:    { fontSize: fs(13), fontFamily: 'Inter_700Bold', color: colors.primary,
                     marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.5 },
     adviceLine:   { fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground,
-                    lineHeight: 22, marginBottom: 4 },
+                    lineHeight: 22, marginBottom: 4, ...textStyle },
 
-    capturedBox:  { flexDirection: 'row', alignItems: 'flex-start', gap: 6,
+    capturedBox:  { flexDirection: rowDir, alignItems: 'flex-start', gap: 6,
                     backgroundColor: '#5A9E6F14', borderRadius: 8, padding: 10, marginBottom: 10,
                     borderWidth: 1, borderColor: '#5A9E6F40' },
     capturedTxt:  { flex: 1, fontSize: fs(13), fontFamily: 'Inter_400Regular', color: colors.foreground },
 
-    listeningBadge: { flexDirection: 'row', alignItems: 'center', gap: 6,
+    listeningBadge: { flexDirection: rowDir, alignItems: 'center', gap: 6,
                       backgroundColor: '#E0525214', borderRadius: 20, alignSelf: 'flex-start',
                       paddingHorizontal: 12, paddingVertical: 6, marginBottom: 10 },
     listeningDot:   { width: 8, height: 8, borderRadius: 4, backgroundColor: '#E05252' },

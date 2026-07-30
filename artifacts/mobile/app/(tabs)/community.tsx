@@ -34,6 +34,7 @@ import {
 } from '@/constants/resource-hub-data';
 import { useApp } from '@/context/AppContext';
 import { useColors } from '@/hooks/useColors';
+import { useRTL } from '@/hooks/useRTL';
 import { useT } from '@/hooks/useTranslation';
 
 type MainTab = 'forum' | 'hub';
@@ -71,6 +72,7 @@ async function openUrl(url: string) {
 function ForumTab() {
   const colors   = useColors();
   const { t } = useT();
+  const { rowDir, textStyle } = useRTL();
   const { fs, forumPosts, addForumPost, toggleForumHelpful, helpfulIds } = useApp() as any;
   const allPosts = [...forumPosts.filter((p: ForumPost) => p.isUserPost), ...SEED_POSTS];
 
@@ -113,10 +115,10 @@ function ForumTab() {
   return (
     <>
       {/* Search */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: colors.muted, borderRadius: 12, marginBottom: 10, paddingHorizontal: 12, height: 42, gap: 8, borderWidth: 1, borderColor: colors.border }}>
+      <View style={{ flexDirection: rowDir, alignItems: 'center', backgroundColor: colors.muted, borderRadius: 12, marginBottom: 10, paddingHorizontal: 12, height: 42, gap: 8, borderWidth: 1, borderColor: colors.border }}>
         <Feather name="search" size={15} color={colors.mutedForeground} />
         <TextInput
-          style={{ flex: 1, fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground }}
+          style={[{ flex: 1, fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground }, textStyle]}
           value={search}
           onChangeText={setSearch}
           placeholder={t('community.search_forum')}
@@ -131,14 +133,14 @@ function ForumTab() {
 
       {/* Category chips */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
-        <View style={{ flexDirection: 'row', gap: 6, paddingRight: 8 }}>
+        <View style={{ flexDirection: rowDir, gap: 6, paddingRight: 8 }}>
           {[{ value: 'all' as const, label: 'All', emoji: '📋' }, ...FORUM_CATEGORIES].map((c) => {
             const active = catFilter === c.value;
             return (
               <Pressable
                 key={c.value}
                 onPress={() => { setCatFilter(c.value as ForumCategory | 'all'); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
-                style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1.5, borderColor: active ? colors.primary : colors.border, backgroundColor: active ? colors.primary + '14' : colors.muted }}
+                style={{ flexDirection: rowDir, alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1.5, borderColor: active ? colors.primary : colors.border, backgroundColor: active ? colors.primary + '14' : colors.muted }}
               >
                 <Text style={{ fontSize: fs(11) }}>{c.emoji}</Text>
                 <Text style={{ fontSize: fs(12), fontFamily: active ? 'Inter_600SemiBold' : 'Inter_400Regular', color: active ? colors.primary : colors.mutedForeground }}>
@@ -157,8 +159,8 @@ function ForumTab() {
         return (
           <View key={p.id} style={{ backgroundColor: colors.card, borderRadius: colors.radius, borderWidth: 1, borderColor: colors.border, marginBottom: 10, overflow: 'hidden' }}>
             <Pressable onPress={() => setDetailPost(p)} style={{ padding: 14 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                <View style={{ backgroundColor: meta.color + '18', borderRadius: 20, paddingHorizontal: 8, paddingVertical: 3, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+              <View style={{ flexDirection: rowDir, alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                <View style={{ backgroundColor: meta.color + '18', borderRadius: 20, paddingHorizontal: 8, paddingVertical: 3, flexDirection: rowDir, alignItems: 'center', gap: 4 }}>
                   <Text style={{ fontSize: 11 }}>{meta.emoji}</Text>
                   <Text style={{ fontSize: fs(11), fontFamily: 'Inter_600SemiBold', color: meta.color }}>{meta.label}</Text>
                 </View>
@@ -167,17 +169,17 @@ function ForumTab() {
               <Text style={{ fontSize: fs(15), fontFamily: 'Inter_600SemiBold', color: colors.foreground, lineHeight: 21, marginBottom: 4 }}>{p.title}</Text>
               <Text style={{ fontSize: fs(13), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, lineHeight: 19 }} numberOfLines={2}>{p.content}</Text>
             </Pressable>
-            <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, paddingBottom: 12, gap: 16 }}>
+            <View style={{ flexDirection: rowDir, alignItems: 'center', paddingHorizontal: 14, paddingBottom: 12, gap: 16 }}>
               <Pressable
                 onPress={() => { toggleForumHelpful?.(p.id); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
-                style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}
+                style={{ flexDirection: rowDir, alignItems: 'center', gap: 5 }}
               >
                 <Feather name="thumbs-up" size={14} color={helpful ? colors.primary : colors.mutedForeground} />
                 <Text style={{ fontSize: fs(12), fontFamily: 'Inter_500Medium', color: helpful ? colors.primary : colors.mutedForeground }}>
                   {p.helpfulCount + (helpful && !p.markedHelpful ? 1 : 0)} 👍
                 </Text>
               </Pressable>
-              <Pressable onPress={() => setDetailPost(p)} style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+              <Pressable onPress={() => setDetailPost(p)} style={{ flexDirection: rowDir, alignItems: 'center', gap: 5 }}>
                 <Feather name="message-circle" size={14} color={colors.mutedForeground} />
                 <Text style={{ fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.mutedForeground }}>
                   {p.replies.length} {p.replies.length === 1 ? 'reply' : 'replies'}
@@ -221,7 +223,7 @@ function ForumTab() {
       {/* FAB */}
       <Pressable
         onPress={() => setShowNew(true)}
-        style={{ position: 'absolute', bottom: 16, right: 0, backgroundColor: colors.primary, borderRadius: 24, paddingHorizontal: 18, paddingVertical: 12, flexDirection: 'row', alignItems: 'center', gap: 6, elevation: 4 }}
+        style={{ position: 'absolute', bottom: 16, right: 0, backgroundColor: colors.primary, borderRadius: 24, paddingHorizontal: 18, paddingVertical: 12, flexDirection: rowDir, alignItems: 'center', gap: 6, elevation: 4 }}
         accessibilityRole="button"
         accessibilityLabel="Create new post"
       >
@@ -237,14 +239,15 @@ function ForumTab() {
 function DetailView({ post, onClose }: { post: ForumPost; onClose: () => void }) {
   const colors = useColors();
   const { fs } = useApp();
+  const { rowDir, textStyle } = useRTL();
   const meta = catMeta(post.category);
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, borderBottomWidth: 1, borderBottomColor: colors.border, paddingTop: Platform.OS === 'ios' ? 50 : 20 }}>
+      <View style={{ flexDirection: rowDir, alignItems: 'center', padding: 16, borderBottomWidth: 1, borderBottomColor: colors.border, paddingTop: Platform.OS === 'ios' ? 50 : 20 }}>
         <Pressable onPress={onClose} hitSlop={12} style={{ marginRight: 12 }} accessibilityRole="button" accessibilityLabel="Close">
           <Feather name="x" size={22} color={colors.foreground} />
         </Pressable>
-        <View style={{ backgroundColor: meta.color + '18', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+        <View style={{ backgroundColor: meta.color + '18', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4, flexDirection: rowDir, alignItems: 'center', gap: 4 }}>
           <Text>{meta.emoji}</Text>
           <Text style={{ fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: meta.color }}>{meta.label}</Text>
         </View>
@@ -252,10 +255,10 @@ function DetailView({ post, onClose }: { post: ForumPost; onClose: () => void })
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, paddingBottom: 60, flexGrow: 1 }}>
         <Text style={{ fontSize: fs(20), fontFamily: 'Inter_700Bold', color: colors.foreground, lineHeight: 27, marginBottom: 8 }}>{post.title}</Text>
         <Text style={{ fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginBottom: 16 }}>{post.author} · {timeAgo(post.timestamp)}</Text>
-        <Text style={{ fontSize: fs(15), fontFamily: 'Inter_400Regular', color: colors.foreground, lineHeight: 23, marginBottom: 20 }}>{post.content}</Text>
+        <Text style={[{ fontSize: fs(15), fontFamily: 'Inter_400Regular', color: colors.foreground, lineHeight: 23, marginBottom: 20 }, textStyle]}>{post.content}</Text>
         {post.replies.map((r, i) => (
           <View key={i} style={{ backgroundColor: colors.muted, borderRadius: 10, padding: 12, marginBottom: 10, borderWidth: 1, borderColor: colors.border }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+            <View style={{ flexDirection: rowDir, alignItems: 'center', gap: 8, marginBottom: 4 }}>
               <Text style={{ fontSize: fs(13), fontFamily: 'Inter_600SemiBold', color: colors.foreground }}>{r.author}</Text>
               <Text style={{ fontSize: fs(11), fontFamily: 'Inter_400Regular', color: colors.mutedForeground }}>{timeAgo(r.timestamp)}</Text>
             </View>
@@ -273,9 +276,10 @@ function NewPostView({ title, setTitle, body, setBody, cat, setCat, submitting, 
   const colors = useColors();
   const { t } = useT();
   const { fs } = useApp();
+  const { rowDir, textStyle } = useRTL();
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, borderBottomWidth: 1, borderBottomColor: colors.border, paddingTop: Platform.OS === 'ios' ? 50 : 20 }}>
+      <View style={{ flexDirection: rowDir, alignItems: 'center', padding: 16, borderBottomWidth: 1, borderBottomColor: colors.border, paddingTop: Platform.OS === 'ios' ? 50 : 20 }}>
         <Pressable onPress={onClose} hitSlop={12} style={{ marginRight: 12 }}><Feather name="x" size={22} color={colors.foreground} /></Pressable>
         <Text style={{ flex: 1, fontSize: fs(17), fontFamily: 'Inter_700Bold', color: colors.foreground }}>{t('community.new_post')}</Text>
         <Pressable onPress={onSubmit} disabled={submitting} style={{ backgroundColor: colors.primary, borderRadius: 20, paddingHorizontal: 16, paddingVertical: 7, opacity: submitting ? 0.6 : 1 }}>
@@ -286,9 +290,9 @@ function NewPostView({ title, setTitle, body, setBody, cat, setCat, submitting, 
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, gap: 12, flexGrow: 1 }} keyboardShouldPersistTaps="handled">
           <Text style={{ fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase' }}>Category</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <View style={{ flexDirection: 'row', gap: 6 }}>
+            <View style={{ flexDirection: rowDir, gap: 6 }}>
               {FORUM_CATEGORIES.map((c) => (
-                <Pressable key={c.value} onPress={() => setCat(c.value)} style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 7, borderRadius: 20, borderWidth: 1.5, borderColor: cat === c.value ? colors.primary : colors.border, backgroundColor: cat === c.value ? colors.primary + '14' : colors.muted }}>
+                <Pressable key={c.value} onPress={() => setCat(c.value)} style={{ flexDirection: rowDir, alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 7, borderRadius: 20, borderWidth: 1.5, borderColor: cat === c.value ? colors.primary : colors.border, backgroundColor: cat === c.value ? colors.primary + '14' : colors.muted }}>
                   <Text style={{ fontSize: 12 }}>{c.emoji}</Text>
                   <Text style={{ fontSize: fs(12), fontFamily: cat === c.value ? 'Inter_600SemiBold' : 'Inter_400Regular', color: cat === c.value ? colors.primary : colors.mutedForeground }}>{c.label}</Text>
                 </Pressable>
@@ -296,10 +300,10 @@ function NewPostView({ title, setTitle, body, setBody, cat, setCat, submitting, 
             </View>
           </ScrollView>
           <Text style={{ fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase' }}>Title *</Text>
-          <TextInput style={{ backgroundColor: colors.muted, borderRadius: 10, padding: 12, fontSize: fs(15), fontFamily: 'Inter_400Regular', color: colors.foreground, borderWidth: 1, borderColor: colors.border }} value={title} onChangeText={setTitle} placeholder="What's your question or story?" placeholderTextColor={colors.mutedForeground} />
+          <TextInput style={[{ backgroundColor: colors.muted, borderRadius: 10, padding: 12, fontSize: fs(15), fontFamily: 'Inter_400Regular', color: colors.foreground, borderWidth: 1, borderColor: colors.border }, textStyle]} value={title} onChangeText={setTitle} placeholder="What's your question or story?" placeholderTextColor={colors.mutedForeground} />
           <Text style={{ fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase' }}>Details *</Text>
-          <TextInput style={{ backgroundColor: colors.muted, borderRadius: 10, padding: 12, fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground, minHeight: 140, textAlignVertical: 'top', borderWidth: 1, borderColor: colors.border }} value={body} onChangeText={setBody} placeholder="Share the full situation…" placeholderTextColor={colors.mutedForeground} multiline />
-          <View style={{ backgroundColor: colors.primary + '10', borderRadius: 10, padding: 12, flexDirection: 'row', gap: 8 }}>
+          <TextInput style={[{ backgroundColor: colors.muted, borderRadius: 10, padding: 12, fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground, minHeight: 140, textAlignVertical: 'top', borderWidth: 1, borderColor: colors.border }, textStyle]} value={body} onChangeText={setBody} placeholder="Share the full situation…" placeholderTextColor={colors.mutedForeground} multiline />
+          <View style={{ backgroundColor: colors.primary + '10', borderRadius: 10, padding: 12, flexDirection: rowDir, gap: 8 }}>
             <Feather name="lock" size={14} color={colors.primary} />
             <Text style={{ flex: 1, fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, lineHeight: 18 }}>Posts are anonymous. Do not include personal identifying information.</Text>
           </View>
@@ -315,6 +319,7 @@ function HubTab() {
   const colors = useColors();
   const { t } = useT();
   const { fs } = useApp();
+  const { rowDir, textStyle } = useRTL();
   const [filter, setFilter]   = useState<HubCategory | 'all'>('all');
   const [search, setSearch]   = useState('');
 
@@ -328,10 +333,10 @@ function HubTab() {
   return (
     <>
       {/* Search */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: colors.muted, borderRadius: 12, marginBottom: 10, paddingHorizontal: 12, height: 42, gap: 8, borderWidth: 1, borderColor: colors.border }}>
+      <View style={{ flexDirection: rowDir, alignItems: 'center', backgroundColor: colors.muted, borderRadius: 12, marginBottom: 10, paddingHorizontal: 12, height: 42, gap: 8, borderWidth: 1, borderColor: colors.border }}>
         <Feather name="search" size={15} color={colors.mutedForeground} />
         <TextInput
-          style={{ flex: 1, fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground }}
+          style={[{ flex: 1, fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground }, textStyle]}
           value={search} onChangeText={setSearch}
           placeholder={t('community.search_hub')}
           placeholderTextColor={colors.mutedForeground}
@@ -341,12 +346,12 @@ function HubTab() {
 
       {/* Category tabs */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 12 }}>
-        <View style={{ flexDirection: 'row', gap: 6, paddingRight: 8 }}>
+        <View style={{ flexDirection: rowDir, gap: 6, paddingRight: 8 }}>
           {[{ value: 'all' as const, label: 'All', emoji: '📋' }, ...HUB_CATEGORIES].map((c) => {
             const active = filter === c.value;
             return (
               <Pressable key={c.value} onPress={() => { setFilter(c.value as HubCategory | 'all'); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
-                style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1.5, borderColor: active ? colors.primary : colors.border, backgroundColor: active ? colors.primary + '14' : colors.muted }}>
+                style={{ flexDirection: rowDir, alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1.5, borderColor: active ? colors.primary : colors.border, backgroundColor: active ? colors.primary + '14' : colors.muted }}>
                 <Text style={{ fontSize: 11 }}>{c.emoji}</Text>
                 <Text style={{ fontSize: fs(12), fontFamily: active ? 'Inter_600SemiBold' : 'Inter_400Regular', color: active ? colors.primary : colors.mutedForeground }}>{c.label}</Text>
               </Pressable>
@@ -361,27 +366,27 @@ function HubTab() {
 
       {filtered.map((r) => (
         <View key={r.id} style={{ backgroundColor: colors.card, borderRadius: colors.radius, borderWidth: 1, borderColor: colors.border, marginBottom: 10, padding: 14 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 6 }}>
+          <View style={{ flexDirection: rowDir, alignItems: 'flex-start', gap: 10, marginBottom: 6 }}>
             <Text style={{ flex: 1, fontSize: fs(15), fontFamily: 'Inter_600SemiBold', color: colors.foreground, lineHeight: 21 }}>{r.name}</Text>
             <View style={{ backgroundColor: r.free ? '#5A9E6F18' : colors.muted, borderRadius: 20, paddingHorizontal: 8, paddingVertical: 3 }}>
               <Text style={{ fontSize: fs(10), fontFamily: 'Inter_600SemiBold', color: r.free ? '#5A9E6F' : colors.mutedForeground }}>{r.free ? t('community.free_badge') : 'PAID'}</Text>
             </View>
           </View>
           <Text style={{ fontSize: fs(13), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, lineHeight: 18, marginBottom: 8 }}>{r.description}</Text>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 5, marginBottom: 10 }}>
+          <View style={{ flexDirection: rowDir, flexWrap: 'wrap', gap: 5, marginBottom: 10 }}>
             {r.tags.slice(0, 4).map((tag) => (
               <View key={tag} style={{ backgroundColor: colors.muted, borderRadius: 20, paddingHorizontal: 8, paddingVertical: 3 }}>
                 <Text style={{ fontSize: fs(11), fontFamily: 'Inter_400Regular', color: colors.mutedForeground }}>{tag}</Text>
               </View>
             ))}
           </View>
-          <View style={{ flexDirection: 'row', gap: 8 }}>
-            <Pressable onPress={() => openUrl(r.url.startsWith('http') ? r.url : `https://${r.url}`)} style={{ flex: 1, backgroundColor: colors.primary, borderRadius: 10, paddingVertical: 10, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 6 }}>
+          <View style={{ flexDirection: rowDir, gap: 8 }}>
+            <Pressable onPress={() => openUrl(r.url.startsWith('http') ? r.url : `https://${r.url}`)} style={{ flex: 1, backgroundColor: colors.primary, borderRadius: 10, paddingVertical: 10, alignItems: 'center', flexDirection: rowDir, justifyContent: 'center', gap: 6 }}>
               <Feather name="external-link" size={14} color="#FFFFFF" />
               <Text style={{ fontSize: fs(13), fontFamily: 'Inter_600SemiBold', color: '#FFFFFF' }}>{t('community.open_website')}</Text>
             </Pressable>
             {r.phone && (
-              <Pressable onPress={() => Linking.openURL(`tel:${r.phone!.replace(/\D/g, '')}`).catch(() => {})} style={{ backgroundColor: '#5A9E6F14', borderRadius: 10, paddingVertical: 10, paddingHorizontal: 16, alignItems: 'center', flexDirection: 'row', gap: 6 }}>
+              <Pressable onPress={() => Linking.openURL(`tel:${r.phone!.replace(/\D/g, '')}`).catch(() => {})} style={{ backgroundColor: '#5A9E6F14', borderRadius: 10, paddingVertical: 10, paddingHorizontal: 16, alignItems: 'center', flexDirection: rowDir, gap: 6 }}>
                 <Feather name="phone" size={14} color="#5A9E6F" />
                 <Text style={{ fontSize: fs(13), fontFamily: 'Inter_600SemiBold', color: '#5A9E6F' }}>Call</Text>
               </Pressable>
@@ -400,6 +405,7 @@ export default function CommunityScreen() {
   const insets  = useSafeAreaInsets();
   const { t }   = useT();
   const { fs }  = useApp();
+  const { rowDir } = useRTL();
   const topPad  = Platform.OS === 'web' ? 67 : insets.top;
   const [tab, setTab] = useState<MainTab>('forum');
 
@@ -408,8 +414,8 @@ export default function CommunityScreen() {
     header:      { paddingTop: topPad + 12, paddingHorizontal: 20, paddingBottom: 0, borderBottomWidth: 1, borderBottomColor: colors.border },
     headerTitle: { fontSize: fs(22), fontFamily: 'Inter_700Bold', color: colors.foreground },
     headerSub:   { fontSize: fs(13), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginTop: 2, marginBottom: 12 },
-    tabRow:      { flexDirection: 'row', marginBottom: 0 },
-    tabBtn:      { flex: 1, paddingVertical: 10, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 6, borderBottomWidth: 2, borderBottomColor: 'transparent' },
+    tabRow:      { flexDirection: rowDir, marginBottom: 0 },
+    tabBtn:      { flex: 1, paddingVertical: 10, alignItems: 'center', flexDirection: rowDir, justifyContent: 'center', gap: 6, borderBottomWidth: 2, borderBottomColor: 'transparent' },
     tabBtnActive:{ borderBottomColor: colors.primary },
     tabBtnText:  { fontSize: fs(14), fontFamily: 'Inter_500Medium', color: colors.mutedForeground },
     tabBtnTextA: { color: colors.primary, fontFamily: 'Inter_600SemiBold' },
