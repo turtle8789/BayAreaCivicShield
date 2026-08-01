@@ -81,6 +81,8 @@ export type I18nKey =
   | 'log.entry' | 'log.entries' | 'log.stored_device'
   | 'log.delete_title' | 'log.delete_msg' | 'log.delete_cancel' | 'log.delete_btn'
   | 'log.officer_info' | 'log.description_label' | 'log.outcome_label' | 'log.at'
+  | 'log.export_btn' | 'log.export_error' | 'log.export_empty' | 'log.export_title'
+  | 'log.location_label'
   // New log form
   | 'newlog.title' | 'newlog.save' | 'newlog.type_label'
   | 'newlog.location' | 'newlog.location_ph'
@@ -2171,6 +2173,60 @@ export const TRANSLATIONS: Translations = {
     ja: '時',     am: 'ላይ',
     te: 'వద్ద',   pa: 'ਵਿਖੇ',   ta: 'இல்',   bn: 'এ',   id: 'di',   ur: 'پر',   tr: 'şu saatte',
     sw: 'saa',   it: 'alle',   th: 'ที่',   ms: 'pada',   ne: 'मा',   so: 'ee',   ht: 'nan',
+  },
+
+  'log.export_btn': {
+    en: 'Export PDF',  es: 'Exportar PDF',  'zh-CN': '导出 PDF',  'zh-TW': '匯出 PDF',
+    vi: 'Xuất PDF',    tl: 'I-export ang PDF',  hi: 'PDF निर्यात करें',  ko: 'PDF 내보내기',
+    ar: 'تصدير PDF',   fr: 'Exporter PDF',  pt: 'Exportar PDF',  ru: 'Экспорт PDF',
+    ja: 'PDFで出力',   am: 'PDF ላክ',
+    te: 'PDF ఎగుమతి చేయండి',  pa: 'PDF ਨਿਰਯਾਤ ਕਰੋ',  ta: 'PDF ஏற்றுமதி செய்',  bn: 'PDF রপ্তানি করুন',
+    id: 'Ekspor PDF',  ur: 'PDF برآمد کریں',  tr: 'PDF Dışa Aktar',
+    sw: 'Hamisha PDF',  it: 'Esporta PDF',  th: 'ส่งออก PDF',  ms: 'Eksport PDF',
+    ne: 'PDF निर्यात गर्नुहोस्',  so: 'Dhofi PDF',  ht: 'Ekspòte PDF',
+  },
+  'log.export_title': {
+    en: 'Encounter Log',  es: 'Registro de Encuentros',  'zh-CN': '遭遇记录',  'zh-TW': '遭遇記錄',
+    vi: 'Nhật ký Gặp gỡ',  tl: 'Talaan ng Pakikipagtagpo',  hi: 'मुठभेड़ लॉग',  ko: '조우 기록',
+    ar: 'سجل المواجهات',  fr: 'Journal des Rencontres',  pt: 'Registro de Encontros',  ru: 'Журнал встреч',
+    ja: '遭遇記録',  am: 'ስብሰባ ምዝገባ',
+    te: 'సంపర్కం లాగ్',  pa: 'ਮੁਲਾਕਾਤ ਲਾਗ',  ta: 'சந்திப்பு பதிவு',  bn: 'সাক্ষাৎ লগ',
+    id: 'Log Interaksi',  ur: 'مڈبھیڑ لاگ',  tr: 'Karşılaşma Günlüğü',
+    sw: 'Kumbukumbu ya Tukio',  it: 'Registro incontri',  th: 'บันทึกเหตุการณ์',  ms: 'Log Pertemuan',
+    ne: 'भेटघाट लग',  so: 'Diiwaanka Kulanka',  ht: 'Jounal Rankont',
+  },
+  'log.export_empty': {
+    en: 'No encounters to export.',  es: 'No hay encuentros para exportar.',  'zh-CN': '没有可导出的遭遇。',  'zh-TW': '沒有可匯出的遭遇。',
+    vi: 'Không có gặp gỡ nào để xuất.',  tl: 'Walang pakikipagtagpo para i-export.',  hi: 'निर्यात करने के लिए कोई मुठभेड़ नहीं।',  ko: '내보낼 조우가 없습니다.',
+    ar: 'لا توجد مواجهات للتصدير.',  fr: 'Aucune rencontre à exporter.',  pt: 'Nenhum encontro para exportar.',  ru: 'Нет встреч для экспорта.',
+    ja: 'エクスポートする遭遇がありません。',  am: 'ለመላክ ምንም ስብሰባ የለም።',
+    te: 'ఎగుమతి చేయడానికి సంపర్కాలు లేవు.',  pa: 'ਨਿਰਯਾਤ ਕਰਨ ਲਈ ਕੋਈ ਮੁਲਾਕਾਤ ਨਹੀਂ।',  ta: 'ஏற்றுமதி செய்ய சந்திப்புகள் இல்லை.',  bn: 'রপ্তানি করার জন্য কোনো সাক্ষাৎ নেই।',
+    id: 'Tidak ada interaksi untuk diekspor.',  ur: 'برآمد کرنے کے لیے کوئی مڈبھیڑ نہیں۔',  tr: 'Dışa aktarılacak karşılaşma yok.',
+    sw: 'Hakuna matukio ya kuhamisha.',  it: 'Nessun incontro da esportare.',  th: 'ไม่มีเหตุการณ์ที่จะส่งออก',  ms: 'Tiada pertemuan untuk dieksport.',
+    ne: 'निर्यात गर्न कुनै भेटघाट छैन।',  so: 'Ma jiro kulano la dhoofiyo.',  ht: 'Pa gen rankont pou ekspòte.',
+  },
+  'log.export_error': {
+    en: 'Could not generate PDF. Please try again.',  es: 'No se pudo generar el PDF. Inténtalo de nuevo.',
+    'zh-CN': '无法生成 PDF，请重试。',  'zh-TW': '無法產生 PDF，請重試。',
+    vi: 'Không thể tạo PDF. Vui lòng thử lại.',  tl: 'Hindi ma-generate ang PDF. Subukang muli.',
+    hi: 'PDF बनाने में विफल। कृपया पुनः प्रयास करें।',  ko: 'PDF를 생성할 수 없습니다. 다시 시도해 주세요.',
+    ar: 'تعذّر إنشاء PDF. حاول مرة أخرى.',  fr: 'Impossible de générer le PDF. Réessayez.',
+    pt: 'Não foi possível gerar o PDF. Tente novamente.',  ru: 'Не удалось создать PDF. Попробуйте ещё раз.',
+    ja: 'PDFを生成できませんでした。もう一度お試しください。',  am: 'PDF ማፍጠን አልተቻለም። እንደገና ይሞክሩ።',
+    te: 'PDF సృష్టించలేకపోయింది. దయచేసి మళ్ళీ ప్రయత్నించండి.',  pa: 'PDF ਬਣਾਉਣ ਵਿੱਚ ਅਸਫਲ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।',
+    ta: 'PDF உருவாக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.',  bn: 'PDF তৈরি করা যায়নি। আবার চেষ্টা করুন।',
+    id: 'Gagal membuat PDF. Silakan coba lagi.',  ur: 'PDF بنانے میں ناکام۔ دوبارہ کوشش کریں۔',  tr: 'PDF oluşturulamadı. Lütfen tekrar deneyin.',
+    sw: 'Imeshindwa kutengeneza PDF. Jaribu tena.',  it: 'Impossibile generare il PDF. Riprova.',
+    th: 'ไม่สามารถสร้าง PDF ได้ กรุณาลองใหม่',  ms: 'Gagal menjana PDF. Sila cuba lagi.',
+    ne: 'PDF बनाउन सकिएन। कृपया पुनः प्रयास गर्नुहोस्।',  so: 'PDF lama samayn karo. Fadlan isku day mar kale.',  ht: 'Pa ka jenere PDF. Tanpri eseye ankò.',
+  },
+  'log.location_label': {
+    en: 'Location',  es: 'Ubicación',  'zh-CN': '地点',  'zh-TW': '地點',
+    vi: 'Địa điểm',  tl: 'Lokasyon',  hi: 'स्थान',  ko: '위치',
+    ar: 'الموقع',  fr: 'Lieu',  pt: 'Local',  ru: 'Место',
+    ja: '場所',  am: 'ቦታ',
+    te: 'స్థానం',  pa: 'ਸਥਾਨ',  ta: 'இடம்',  bn: 'স্থান',  id: 'Lokasi',  ur: 'مقام',  tr: 'Konum',
+    sw: 'Mahali',  it: 'Luogo',  th: 'สถานที่',  ms: 'Lokasi',  ne: 'स्थान',  so: 'Goobta',  ht: 'Kote',
   },
 
   // ── New log form ──────────────────────────────────────────────────────────────

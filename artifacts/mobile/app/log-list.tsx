@@ -11,8 +11,10 @@ import {
 import { router } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
+import * as Print from 'expo-print';
+import * as Sharing from 'expo-sharing';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Encounter, useApp } from '@/context/AppContext';
+import { Encounter, ENCOUNTER_TYPE_LABELS, useApp } from '@/context/AppContext';
 import { useColors } from '@/hooks/useColors';
 import { useRTL } from '@/hooks/useRTL';
 import { useT } from '@/hooks/useTranslation';
@@ -112,6 +114,63 @@ function EncounterCard({ encounter, onDelete }: { encounter: Encounter; onDelete
   );
 }
 
+function buildEncounterHtml(encounters: Encounter[], exportTitle: string): string {
+  const now = new Date().toLocaleDateString(undefined, {
+    month: 'long', day: 'numeric', year: 'numeric',
+  });
+
+  const rows = encounters.map((enc) => {
+    const date = new Date(enc.date);
+    const dateStr = date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+    const timeStr = date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+    const typeLabel = ENCOUNTER_TYPE_LABELS[enc.type] ?? enc.type;
+
+    const fields: Array<{ label: string; value: string }> = [
+      { label: 'Date & Time', value: `${dateStr} at ${timeStr}` },
+      { label: 'Type', value: typeLabel },
+    ];
+    if (enc.location)    fields.push({ label: 'Location',     value: enc.location });
+    if (enc.officerInfo) fields.push({ label: 'Officer Info', value: enc.officerInfo });
+    if (enc.description) fields.push({ label: 'Description',  value: enc.description });
+    if (enc.outcome)     fields.push({ label: 'Outcome',      value: enc.outcome });
+
+    const fieldRows = fields.map(f => `
+      <tr>
+        <td class="label">${f.label}</td>
+        <td class="value">${f.value.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</td>
+      </tr>`).join('');
+
+    return `
+      <div class="entry">
+        <table>${fieldRows}</table>
+      </div>`;
+  }).join('');
+
+  return `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  body { font-family: -apple-system, Helvetica, Arial, sans-serif; margin: 0; padding: 32px; color: #111; }
+  h1 { font-size: 22px; font-weight: 700; margin: 0 0 4px; color: #111; }
+  .meta { font-size: 12px; color: #666; margin-bottom: 28px; }
+  .entry { border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px; margin-bottom: 16px; break-inside: avoid; }
+  table { width: 100%; border-collapse: collapse; }
+  td { padding: 5px 8px; font-size: 13px; vertical-align: top; }
+  td.label { color: #666; font-weight: 600; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; width: 110px; padding-top: 7px; }
+  td.value { color: #111; line-height: 1.5; }
+  .footer { margin-top: 32px; font-size: 11px; color: #999; border-top: 1px solid #e0e0e0; padding-top: 12px; }
+</style>
+</head>
+<body>
+  <h1>${exportTitle}</h1>
+  <div class="meta">Generated on ${now} · ${encounters.length} ${encounters.length === 1 ? 'entry' : 'entries'}</div>
+  ${rows}
+  <div class="footer">CivicShield Pro · Encounter Log · This document is for personal legal reference only.</div>
+</body>
+</html>`;
+}
+
 export default function LogListScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
@@ -120,10 +179,42 @@ export default function LogListScreen() {
   const { encounters, deleteEncounter, fs } = useApp();
   const { t } = useT();
   const { rowDir, backIcon } = useRTL();
+  const [isExporting, setIsExporting] = useState(false);
 
   const navigateToNew = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     router.push('/new-log');
+  };
+
+  const handleExport = async () => {
+    if (encounters.length === 0) {
+      Alert.alert(t('log.export_btn'), t('log.export_empty'));
+      return;
+    }
+    if (isExporting) return;
+
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setIsExporting(true);
+    try {
+      const html = buildEncounterHtml(encounters, t('log.export_title'));
+      const { uri } = await Print.printToFileAsync({ html, base64: false });
+
+      const canShare = await Sharing.isAvailableAsync();
+      if (canShare) {
+        await Sharing.shareAsync(uri, {
+          mimeType: 'application/pdf',
+          dialogTitle: t('log.export_title'),
+          UTI: 'com.adobe.pdf',
+        });
+      } else {
+        // Web fallback: open the print dialog
+        await Print.printAsync({ html });
+      }
+    } catch {
+      Alert.alert(t('log.export_btn'), t('log.export_error'));
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   const styles = StyleSheet.create({
@@ -137,6 +228,7 @@ export default function LogListScreen() {
     headerTitle:  { fontSize: fs(22), fontFamily: 'Inter_700Bold', color: colors.foreground },
     headerSub:    { fontSize: fs(13), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginTop: 2 },
     addBtn:       { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center' },
+    exportBtn:    { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.muted, alignItems: 'center', justifyContent: 'center' },
     listContent:  { padding: 16, paddingBottom: bottomPad + 24 },
     countText:    { fontSize: fs(13), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, paddingHorizontal: 16, paddingTop: 12, paddingBottom: 4 },
     emptyWrap:    { alignItems: 'center', justifyContent: 'center', paddingTop: 80, gap: 12 },
@@ -159,6 +251,11 @@ export default function LogListScreen() {
           <Text style={styles.headerTitle}>{t('log.title')}</Text>
           <Text style={styles.headerSub}>{t('log.subtitle')}</Text>
         </View>
+        {encounters.length > 0 && (
+          <Pressable style={styles.exportBtn} onPress={handleExport} disabled={isExporting}>
+            <Feather name="share" size={18} color={isExporting ? colors.mutedForeground : colors.foreground} />
+          </Pressable>
+        )}
         <Pressable style={styles.addBtn} onPress={navigateToNew}>
           <Feather name="plus" size={22} color="#FFFFFF" />
         </Pressable>
