@@ -57,6 +57,7 @@
   },
   "dependencies": {
     "expo-clipboard": "^8.0.8",
+    "expo-local-authentication": "~17.0.8",
     "expo-print": "^57.0.1",
     "expo-sharing": "^57.0.8",
     "expo-speech": "~14.0.8",

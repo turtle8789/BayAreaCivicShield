@@ -14,9 +14,17 @@
       "backgroundColor": "#F0A0B8"
     },
     "ios": {
-      "supportsTablet": false
+      "supportsTablet": false,
+      "infoPlist": {
+        "NSFaceIDUsageDescription": "CivicShield Pro uses Face ID to unlock the app quickly and securely."
+      }
     },
-    "android": {},
+    "android": {
+      "permissions": [
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.USE_FINGERPRINT"
+      ]
+    },
     "web": {
       "favicon": "./assets/images/icon.png"
     },
