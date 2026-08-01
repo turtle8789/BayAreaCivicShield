@@ -117,6 +117,8 @@ export type I18nKey =
   | 'community.title' | 'community.share' | 'community.anon_note'
   | 'community.link_error_title' | 'community.link_error_msg'
   | 'community.missing_fields_title' | 'community.missing_fields_msg'
+  // Community relative timestamps ({n} is replaced with the numeric value)
+  | 'community.time_just_now' | 'community.time_m_ago' | 'community.time_h_ago' | 'community.time_d_ago'
   // New log alert titles
   | 'newlog.required_title' | 'newlog.error_title'
   // Tour step content
@@ -4391,5 +4393,48 @@ export const TRANSLATIONS: Translations = {
     pt: 'Como este app roda no Replit, você pode precisar usar a opção "Inserir URL manualmente" do Expo Go e colar a URL acima — o scan do QR requer que o telefone alcance o endereço do túnel Replit.',
     ru: 'Поскольку это приложение работает на Replit, вам может понадобиться использовать опцию «Ввести URL вручную» в Expo Go и вставить URL выше — сканирование QR-кода требует, чтобы телефон мог подключиться к адресу туннеля Replit.',
     ja: 'このアプリはReplit上で動作するため、Expo Goの「URLを手動で入力」オプションを使用して上記のURLを貼り付ける必要がある場合があります — QRコードスキャンにはスマートフォンがReplitトンネルアドレスにアクセスできる必要があります。',
+  },
+
+  // ── Community relative timestamps ──────────────────────────────────────────
+  // {n} is replaced at runtime with the numeric value.
+  'community.time_just_now': {
+    en: 'just now',         es: 'ahora mismo',       'zh-CN': '刚刚',          'zh-TW': '剛剛',
+    vi: 'vừa xong',         tl: 'kamakailan',         hi: 'अभी-अभी',            ko: '방금',
+    ar: 'الآن',              fr: 'à l\'instant',       pt: 'agora',              ru: 'только что',
+    ja: 'たった今',           am: 'ልክ አሁን',
+    te: 'ఇప్పుడే',           pa: 'ਹੁਣੇ',               ta: 'இப்போதே',            bn: 'এইমাত্র',
+    id: 'baru saja',         ur: 'ابھی',               tr: 'az önce',
+    sw: 'sasa hivi',         it: 'ora',                th: 'เมื่อกี้',            ms: 'baru sahaja',
+    ne: 'भर्खरै',            so: 'hadda',              ht: 'kounye a',
+  },
+  'community.time_m_ago': {
+    en: '{n}m ago',          es: 'hace {n}m',          'zh-CN': '{n}分钟前',      'zh-TW': '{n}分鐘前',
+    vi: '{n} phút trước',    tl: '{n}m nakalipas',     hi: '{n}मि पहले',          ko: '{n}분 전',
+    ar: 'منذ {n} د',         fr: 'il y a {n}m',        pt: 'há {n}m',            ru: '{n} мин. назад',
+    ja: '{n}分前',            am: 'ከ{n} ደቂቃ በፊት',
+    te: '{n}నిమి ముందు',      pa: '{n}ਮਿੰ ਪਹਿਲਾਂ',     ta: '{n}நிமி முன்',        bn: '{n}মিনিট আগে',
+    id: '{n} mnt lalu',      ur: '{n}م پہلے',          tr: '{n}d önce',
+    sw: '{n}dk iliyopita',   it: '{n}m fa',            th: '{n}นาทีที่แล้ว',      ms: '{n}min lalu',
+    ne: '{n}मि अघि',         so: '{n}d kahor',         ht: '{n}min pase',
+  },
+  'community.time_h_ago': {
+    en: '{n}h ago',          es: 'hace {n}h',          'zh-CN': '{n}小时前',      'zh-TW': '{n}小時前',
+    vi: '{n} giờ trước',     tl: '{n}h nakalipas',     hi: '{n}घं पहले',          ko: '{n}시간 전',
+    ar: 'منذ {n} س',         fr: 'il y a {n}h',        pt: 'há {n}h',            ru: '{n} ч. назад',
+    ja: '{n}時間前',          am: 'ከ{n} ሰ/ሙ በፊት',
+    te: '{n}గం ముందు',        pa: '{n}ਘੰ ਪਹਿਲਾਂ',       ta: '{n}மணி முன்',         bn: '{n}ঘন্টা আগে',
+    id: '{n} jam lalu',      ur: '{n}گ پہلے',          tr: '{n}s önce',
+    sw: '{n}sa iliyopita',   it: '{n}h fa',            th: '{n}ชม.ที่แล้ว',       ms: '{n}j lalu',
+    ne: '{n}घ अघि',          so: '{n}s kahor',         ht: '{n}h pase',
+  },
+  'community.time_d_ago': {
+    en: '{n}d ago',          es: 'hace {n}d',          'zh-CN': '{n}天前',         'zh-TW': '{n}天前',
+    vi: '{n} ngày trước',    tl: '{n}d nakalipas',     hi: '{n}दिन पहले',          ko: '{n}일 전',
+    ar: 'منذ {n} ي',         fr: 'il y a {n}j',        pt: 'há {n}d',             ru: '{n} д. назад',
+    ja: '{n}日前',            am: 'ከ{n} ቀን በፊት',
+    te: '{n}రో ముందు',        pa: '{n}ਦਿਨ ਪਹਿਲਾਂ',      ta: '{n}நாள் முன்',         bn: '{n}দিন আগে',
+    id: '{n} hr lalu',       ur: '{n}دن پہلے',         tr: '{n}g önce',
+    sw: '{n}s iliyopita',    it: '{n}g fa',            th: '{n}วันที่แล้ว',        ms: '{n}h lalu',
+    ne: '{n}दिन अघि',        so: '{n}m kahor',         ht: '{n}j pase',
   },
 };

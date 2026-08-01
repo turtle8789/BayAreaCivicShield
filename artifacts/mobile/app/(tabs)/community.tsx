@@ -32,6 +32,7 @@ import {
   HUB_RESOURCES,
   HubCategory,
 } from '@/constants/resource-hub-data';
+import { I18nKey } from '@/constants/i18n';
 import { useApp } from '@/context/AppContext';
 import { useColors } from '@/hooks/useColors';
 import { useRTL } from '@/hooks/useRTL';
@@ -41,12 +42,12 @@ type MainTab = 'forum' | 'hub';
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
-function timeAgo(iso: string): string {
+function timeAgo(iso: string, t: (key: I18nKey) => string): string {
   const diff = (Date.now() - new Date(iso).getTime()) / 1000;
-  if (diff < 60)    return 'just now';
-  if (diff < 3600)  return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  return `${Math.floor(diff / 86400)}d ago`;
+  if (diff < 60)    return t('community.time_just_now');
+  if (diff < 3600)  return t('community.time_m_ago').replace('{n}', String(Math.floor(diff / 60)));
+  if (diff < 86400) return t('community.time_h_ago').replace('{n}', String(Math.floor(diff / 3600)));
+  return t('community.time_d_ago').replace('{n}', String(Math.floor(diff / 86400)));
 }
 
 function catMeta(cat: ForumCategory) {
@@ -164,7 +165,7 @@ function ForumTab() {
                   <Text style={{ fontSize: 11 }}>{meta.emoji}</Text>
                   <Text style={{ fontSize: fs(11), fontFamily: 'Inter_600SemiBold', color: meta.color }}>{meta.label}</Text>
                 </View>
-                <Text style={{ fontSize: fs(11), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginLeft: 'auto' }}>{timeAgo(p.timestamp)}</Text>
+                <Text style={{ fontSize: fs(11), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginLeft: 'auto' }}>{timeAgo(p.timestamp, t)}</Text>
               </View>
               <Text style={{ fontSize: fs(15), fontFamily: 'Inter_600SemiBold', color: colors.foreground, lineHeight: 21, marginBottom: 4 }}>{p.title}</Text>
               <Text style={{ fontSize: fs(13), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, lineHeight: 19 }} numberOfLines={2}>{p.content}</Text>
@@ -239,6 +240,7 @@ function ForumTab() {
 function DetailView({ post, onClose }: { post: ForumPost; onClose: () => void }) {
   const colors = useColors();
   const { fs } = useApp();
+  const { t } = useT();
   const { rowDir, textStyle } = useRTL();
   const meta = catMeta(post.category);
   return (
@@ -254,13 +256,13 @@ function DetailView({ post, onClose }: { post: ForumPost; onClose: () => void })
       </View>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, paddingBottom: 60, flexGrow: 1 }}>
         <Text style={{ fontSize: fs(20), fontFamily: 'Inter_700Bold', color: colors.foreground, lineHeight: 27, marginBottom: 8 }}>{post.title}</Text>
-        <Text style={{ fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginBottom: 16 }}>{post.author} · {timeAgo(post.timestamp)}</Text>
+        <Text style={{ fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginBottom: 16 }}>{post.author} · {timeAgo(post.timestamp, t)}</Text>
         <Text style={[{ fontSize: fs(15), fontFamily: 'Inter_400Regular', color: colors.foreground, lineHeight: 23, marginBottom: 20 }, textStyle]}>{post.content}</Text>
         {post.replies.map((r, i) => (
           <View key={i} style={{ backgroundColor: colors.muted, borderRadius: 10, padding: 12, marginBottom: 10, borderWidth: 1, borderColor: colors.border }}>
             <View style={{ flexDirection: rowDir, alignItems: 'center', gap: 8, marginBottom: 4 }}>
               <Text style={{ fontSize: fs(13), fontFamily: 'Inter_600SemiBold', color: colors.foreground }}>{r.author}</Text>
-              <Text style={{ fontSize: fs(11), fontFamily: 'Inter_400Regular', color: colors.mutedForeground }}>{timeAgo(r.timestamp)}</Text>
+              <Text style={{ fontSize: fs(11), fontFamily: 'Inter_400Regular', color: colors.mutedForeground }}>{timeAgo(r.timestamp, t)}</Text>
             </View>
             <Text style={{ fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground, lineHeight: 20 }}>{r.content}</Text>
           </View>
