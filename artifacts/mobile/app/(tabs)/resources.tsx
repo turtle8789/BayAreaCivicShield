@@ -267,20 +267,220 @@ function TypeFilterChips({
 
 // ─── Find Near You Tab ────────────────────────────────────────────────────────
 
+// ─── Overpass API — live legal resource search ────────────────────────────────
+
+interface OverpassElement {
+  id: number;
+  type: 'node' | 'way' | 'relation';
+  lat?: number;
+  lon?: number;
+  center?: { lat: number; lon: number };
+  tags: Record<string, string>;
+}
+
+interface LiveResult {
+  id: string;
+  name: string;
+  lat: number;
+  lon: number;
+  dist: number;
+  typeLabel: string;
+  typeColor: string;
+  address: string;
+  phone: string;
+  website: string;
+}
+
+const OVERPASS_MAX_MI   = 50;
+const OVERPASS_MAX_M    = OVERPASS_MAX_MI * 1609.344;
+
+function buildOverpassQuery(lat: number, lon: number): string {
+  const r = OVERPASS_MAX_M.toFixed(0);
+  const c = `${lat},${lon}`;
+  return `[out:json][timeout:30];
+(
+  node["office"~"^(lawyer|legal_services|legal_aid)$"](around:${r},${c});
+  node["amenity"~"^(legal_advice|courthouse)$"](around:${r},${c});
+  node["name"~"Legal Aid|Legal Services|Legal Help|Public Defender|Immigration Legal|Civil Rights|ACLU|NAACP|Law Center|Law Foundation|Legal Foundation",i](around:${r},${c});
+  way["office"~"^(lawyer|legal_services|legal_aid)$"](around:${r},${c});
+  way["amenity"~"^(legal_advice|courthouse)$"](around:${r},${c});
+)->.all;
+.all out center tags;`;
+}
+
+function liveTypeInfo(tags: Record<string, string>): { label: string; color: string } {
+  const o = tags.office;
+  const a = tags.amenity;
+  if (o === 'lawyer')         return { label: 'Lawyer / Attorney',  color: '#9B7EC9' };
+  if (o === 'legal_services') return { label: 'Legal Services',     color: '#5A9E6F' };
+  if (o === 'legal_aid')      return { label: 'Legal Aid',          color: '#4A90D9' };
+  if (a === 'legal_advice')   return { label: 'Legal Advice',       color: '#4A90D9' };
+  if (a === 'courthouse')     return { label: 'Courthouse',         color: '#C9A050' };
+  return { label: 'Legal Resource', color: '#888' };
+}
+
+function liveAddress(tags: Record<string, string>): string {
+  const num    = tags['addr:housenumber'] || '';
+  const street = tags['addr:street']      || '';
+  const city   = tags['addr:city']        || '';
+  const state  = tags['addr:state']       || '';
+  const full   = [num && street ? `${num} ${street}` : street, city, state].filter(Boolean);
+  return full.join(', ');
+}
+
+async function queryOverpass(lat: number, lon: number): Promise<LiveResult[]> {
+  const body = `data=${encodeURIComponent(buildOverpassQuery(lat, lon))}`;
+  const res  = await fetch('https://overpass-api.de/api/interpreter', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body,
+  });
+  if (!res.ok) throw new Error(`Overpass HTTP ${res.status}`);
+  const json = (await res.json()) as { elements: OverpassElement[] };
+
+  const seen = new Set<string>();
+  const results: LiveResult[] = [];
+
+  for (const el of json.elements) {
+    const name = el.tags?.name;
+    if (!name) continue;
+    const elLat = el.lat  ?? el.center?.lat ?? 0;
+    const elLon = el.lon  ?? el.center?.lon ?? 0;
+    if (!elLat && !elLon) continue;
+    const key = `${name}|${elLat.toFixed(4)}|${elLon.toFixed(4)}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    const dist = haversine(lat, lon, elLat, elLon);
+    if (dist > OVERPASS_MAX_MI) continue;
+    const typeInfo = liveTypeInfo(el.tags);
+    results.push({
+      id: `${el.type}-${el.id}`,
+      name,
+      lat: elLat, lon: elLon, dist,
+      typeLabel: typeInfo.label, typeColor: typeInfo.color,
+      address: liveAddress(el.tags),
+      phone:   el.tags.phone    || el.tags['contact:phone'] || '',
+      website: el.tags.website  || el.tags['contact:website'] || el.tags.url || '',
+    });
+  }
+  return results.sort((a, b) => a.dist - b.dist);
+}
+
+// ─── LiveResultCard ────────────────────────────────────────────────────────────
+
+function LiveResultCard({ item, rowDir }: { item: LiveResult; rowDir: 'row' | 'row-reverse' }) {
+  const colors = useColors();
+  const { t }  = useT();
+
+  const openMaps = () => {
+    const url = Platform.select({
+      ios:     `maps://maps.apple.com/?q=${encodeURIComponent(item.name)}&ll=${item.lat},${item.lon}`,
+      android: `geo:${item.lat},${item.lon}?q=${encodeURIComponent(item.name)}`,
+      default: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.name + ' ' + item.address)}`,
+    });
+    Linking.openURL(url!).catch(() =>
+      Linking.openURL(`https://www.google.com/maps/search/?api=1&query=${item.lat},${item.lon}`)
+    );
+  };
+
+  const openPhone = () => Linking.openURL(`tel:${item.phone.replace(/\s/g, '')}`);
+  const openWeb   = () => Linking.openURL(item.website.startsWith('http') ? item.website : `https://${item.website}`);
+
+  return (
+    <View style={{ backgroundColor: colors.card, borderRadius: colors.radius, borderWidth: 1, borderColor: colors.border, marginBottom: 10, overflow: 'hidden' }}>
+      {/* Header row */}
+      <View style={{ padding: 14, paddingBottom: 10 }}>
+        <View style={{ flexDirection: rowDir, alignItems: 'flex-start', gap: 10, marginBottom: 6 }}>
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 14, fontFamily: 'Inter_600SemiBold', color: colors.foreground, lineHeight: 20 }}>{item.name}</Text>
+            {item.address ? (
+              <Text style={{ fontSize: 12, fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginTop: 3 }}>{item.address}</Text>
+            ) : null}
+          </View>
+          <Text style={{ fontSize: 11, fontFamily: 'Inter_600SemiBold', color: '#fff', backgroundColor: item.typeColor, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 20, overflow: 'hidden', alignSelf: 'flex-start' }}>
+            {item.typeLabel}
+          </Text>
+        </View>
+        {/* Distance badge */}
+        <View style={{ flexDirection: rowDir, alignItems: 'center', gap: 4 }}>
+          <Feather name="navigation" size={11} color={colors.primary} />
+          <Text style={{ fontSize: 12, fontFamily: 'Inter_500Medium', color: colors.primary }}>
+            {item.dist < 1 ? `${(item.dist * 5280).toFixed(0)} ft away` : `${item.dist.toFixed(1)} mi away`}
+          </Text>
+        </View>
+      </View>
+
+      {/* Action buttons */}
+      {(item.phone || item.website || true) && (
+        <View style={{ flexDirection: rowDir, borderTopWidth: 1, borderTopColor: colors.border }}>
+          {item.phone ? (
+            <Pressable
+              onPress={openPhone}
+              style={({ pressed }) => [{ flex: 1, flexDirection: rowDir, alignItems: 'center', justifyContent: 'center', gap: 5, paddingVertical: 10, opacity: pressed ? 0.6 : 1, borderRightWidth: item.website ? 1 : 0, borderRightColor: colors.border }]}
+              accessibilityRole="button" accessibilityLabel="Call"
+            >
+              <Feather name="phone" size={14} color="#5A9E6F" />
+              <Text style={{ fontSize: 12, fontFamily: 'Inter_500Medium', color: '#5A9E6F' }}>Call</Text>
+            </Pressable>
+          ) : null}
+          {item.website ? (
+            <Pressable
+              onPress={openWeb}
+              style={({ pressed }) => [{ flex: 1, flexDirection: rowDir, alignItems: 'center', justifyContent: 'center', gap: 5, paddingVertical: 10, opacity: pressed ? 0.6 : 1, borderRightWidth: 1, borderRightColor: colors.border }]}
+              accessibilityRole="button" accessibilityLabel="Website"
+            >
+              <Feather name="globe" size={14} color="#4A90D9" />
+              <Text style={{ fontSize: 12, fontFamily: 'Inter_500Medium', color: '#4A90D9' }}>Website</Text>
+            </Pressable>
+          ) : null}
+          <Pressable
+            onPress={openMaps}
+            style={({ pressed }) => [{ flex: 1, flexDirection: rowDir, alignItems: 'center', justifyContent: 'center', gap: 5, paddingVertical: 10, opacity: pressed ? 0.6 : 1 }]}
+            accessibilityRole="button" accessibilityLabel={t('common.open_maps')}
+          >
+            <Feather name="map-pin" size={14} color={colors.primary} />
+            <Text style={{ fontSize: 12, fontFamily: 'Inter_500Medium', color: colors.primary }}>Maps</Text>
+          </Pressable>
+        </View>
+      )}
+    </View>
+  );
+}
+
+// ─── FindNearbyTab ─────────────────────────────────────────────────────────────
+
+const RADIUS_CHIPS = [1, 5, 10, 25, 50] as const;
+
 function FindNearbyTab() {
   const colors = useColors();
   const { t } = useT();
   const { rowDir } = useRTL();
 
-  const [loading, setLoading]         = useState(false);
-  const [userLat, setUserLat]         = useState<number | null>(null);
-  const [userLon, setUserLon]         = useState<number | null>(null);
+  const [loading, setLoading]           = useState(false);
+  const [userLat, setUserLat]           = useState<number | null>(null);
+  const [userLon, setUserLon]           = useState<number | null>(null);
   const [locationName, setLocationName] = useState('');
-  const [manualZip, setManualZip]     = useState('');
-  const [sorted, setSorted]           = useState<Array<{ resource: LegalResource; dist: number }>>([]);
-  const [searched, setSearched]       = useState(false);
-  const [typeFilter, setTypeFilter]   = useState<ResourceType | 'all'>('all');
-  const [radiusMiles, setRadiusMiles] = useState<number | null>(25); // null = no limit
+  const [manualInput, setManualInput]   = useState('');
+  const [allResults, setAllResults]     = useState<LiveResult[]>([]);
+  const [searched, setSearched]         = useState(false);
+  const [radiusMiles, setRadiusMiles]   = useState<number>(25);
+  const [overpassError, setOverpassError] = useState('');
+
+  const runSearch = async (lat: number, lon: number, name: string) => {
+    setLoading(true);
+    setOverpassError('');
+    setUserLat(lat); setUserLon(lon); setLocationName(name);
+    try {
+      const results = await queryOverpass(lat, lon);
+      setAllResults(results);
+      setSearched(true);
+      if (results.length > 0) Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } catch (e) {
+      setOverpassError('Could not reach the search service. Check your connection and try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const useMyLocation = async () => {
     try {
@@ -292,77 +492,53 @@ function FindNearbyTab() {
         return;
       }
       const loc = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
-      computeResults(loc.coords.latitude, loc.coords.longitude, t('resources.your_location'));
+      await runSearch(loc.coords.latitude, loc.coords.longitude, t('resources.your_location'));
     } catch {
       Alert.alert('Error', t('resources.location_error'));
       setLoading(false);
     }
   };
 
-  // Free Nominatim geocoding — no key needed
   const searchByAddress = async () => {
-    if (!manualZip.trim()) {
-      Alert.alert(t('resources.enter_location'), t('resources.enter_location'));
-      return;
-    }
+    const q = manualInput.trim();
+    if (!q) { Alert.alert(t('resources.enter_location'), t('resources.enter_location')); return; }
     setLoading(true);
     try {
-      const q = encodeURIComponent(manualZip.trim());
-      const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1&addressdetails=1`,
+      const res  = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1`,
         { headers: { 'User-Agent': 'CivicShieldPro/2.0 (civic-legal-aid-app)' } },
       );
       const data = (await res.json()) as Array<{ lat: string; lon: string; display_name: string }>;
-      if (!data || data.length === 0) {
-        Alert.alert(t('resources.not_found'), `"${manualZip.trim()}" could not be found. Try a full city name (e.g. "Los Angeles"), a ZIP code (e.g. "90001"), or an address.`);
+      if (!data?.length) {
+        Alert.alert(t('resources.not_found'), `"${q}" could not be found. Try a full city name, ZIP code, or address.`);
         setLoading(false);
         return;
       }
-      const lat = parseFloat(data[0].lat);
-      const lon = parseFloat(data[0].lon);
-      computeResults(lat, lon, data[0].display_name.split(',').slice(0, 2).join(','));
+      const lat  = parseFloat(data[0].lat);
+      const lon  = parseFloat(data[0].lon);
+      const name = data[0].display_name.split(',').slice(0, 2).join(',');
+      await runSearch(lat, lon, name);
     } catch {
       Alert.alert('Error', t('resources.geocode_error'));
       setLoading(false);
     }
   };
 
-  const computeResults = (lat: number, lon: number, name: string) => {
-    setUserLat(lat);
-    setUserLon(lon);
-    setLocationName(name);
-    const withDist = LEGAL_RESOURCES.map((r) => ({
-      resource: r,
-      dist: haversine(lat, lon, r.lat, r.lon),
-    })).sort((a, b) => a.dist - b.dist);
-    setSorted(withDist);
-    setSearched(true);
-    setLoading(false);
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-  };
-
-  // Apply type + radius filters
-  const RADIUS_OPTIONS: Array<{ label: string; value: number | null }> = [
-    { label: '5 mi',              value: 5    },
-    { label: '10 mi',             value: 10   },
-    { label: '25 mi',             value: 25   },
-    { label: '50 mi',             value: 50   },
-    { label: t('resources.radius_any'), value: null },
-  ];
-
-  const filtered = sorted.filter(({ resource, dist }) => {
-    const matchType   = typeFilter === 'all' || resource.type === typeFilter;
-    const matchRadius = radiusMiles === null || dist <= radiusMiles;
-    return matchType && matchRadius;
-  });
+  const filtered = allResults.filter(r => r.dist <= radiusMiles);
 
   return (
     <>
       {/* Location input card */}
       <View style={{ backgroundColor: colors.card, borderRadius: colors.radius, borderWidth: 1, borderColor: colors.border, padding: 14, marginBottom: 12 }}>
-        <Text style={{ fontSize: 14, fontFamily: 'Inter_600SemiBold', color: colors.foreground, marginBottom: 10 }}>
-          📍 {t('resources.find_near_you')}
-        </Text>
+        <View style={{ flexDirection: rowDir, alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+          <Text style={{ fontSize: 14, fontFamily: 'Inter_600SemiBold', color: colors.foreground }}>
+            📍 {t('resources.find_near_you')}
+          </Text>
+          <View style={{ flexDirection: rowDir, alignItems: 'center', gap: 4, backgroundColor: colors.muted, borderRadius: 12, paddingHorizontal: 8, paddingVertical: 4 }}>
+            <Feather name="database" size={10} color={colors.mutedForeground} />
+            <Text style={{ fontSize: 10, fontFamily: 'Inter_500Medium', color: colors.mutedForeground }}>Live · OpenStreetMap</Text>
+          </View>
+        </View>
         <Pressable
           style={{ flexDirection: rowDir, alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: colors.primary, borderRadius: 10, paddingVertical: 12, marginBottom: 10, opacity: loading ? 0.6 : 1 }}
           onPress={useMyLocation}
@@ -372,7 +548,7 @@ function FindNearbyTab() {
         >
           {loading ? <ActivityIndicator size="small" color="#FFFFFF" /> : <Feather name="navigation" size={16} color="#FFFFFF" />}
           <Text style={{ fontSize: 14, fontFamily: 'Inter_600SemiBold', color: '#FFFFFF' }}>
-            {t('resources.use_my_location')}
+            {loading ? 'Searching…' : t('resources.use_my_location')}
           </Text>
         </Pressable>
         <Text style={{ fontSize: 12, fontFamily: 'Inter_400Regular', color: colors.mutedForeground, textAlign: 'center', marginBottom: 10 }}>
@@ -381,8 +557,8 @@ function FindNearbyTab() {
         <View style={{ flexDirection: rowDir, gap: 8 }}>
           <TextInput
             style={{ flex: 1, backgroundColor: colors.muted, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14, fontFamily: 'Inter_400Regular', color: colors.foreground, borderWidth: 1, borderColor: colors.border }}
-            value={manualZip}
-            onChangeText={setManualZip}
+            value={manualInput}
+            onChangeText={setManualInput}
             placeholder={t('resources.location_ph')}
             placeholderTextColor={colors.mutedForeground}
             returnKeyType="search"
@@ -400,51 +576,59 @@ function FindNearbyTab() {
         </View>
       </View>
 
-      {/* Results */}
+      {/* Error banner */}
+      {overpassError ? (
+        <View style={{ backgroundColor: '#E0525214', borderRadius: colors.radius, borderWidth: 1, borderColor: '#E0525230', padding: 12, marginBottom: 12, flexDirection: rowDir, gap: 8 }}>
+          <Feather name="alert-circle" size={14} color="#E05252" />
+          <Text style={{ flex: 1, fontSize: 13, fontFamily: 'Inter_400Regular', color: '#E05252', lineHeight: 18 }}>{overpassError}</Text>
+        </View>
+      ) : null}
+
+      {/* Results section */}
       {searched && (
         <>
-          {/* Location label */}
-          {locationName ? (
-            <View style={{ flexDirection: rowDir, alignItems: 'center', gap: 6, marginBottom: 10 }}>
-              <Feather name="map-pin" size={13} color={colors.primary} />
-              <Text style={{ fontSize: 13, fontFamily: 'Inter_500Medium', color: colors.mutedForeground, flex: 1 }}>
-                {t('resources.showing_near')} {locationName}
-              </Text>
-              {/* Open full map in Google Maps centered on user location */}
-              {userLat !== null && userLon !== null && (
-                <Pressable
-                  onPress={() => openGoogleMaps(userLat!, userLon!, 'Legal Aid Near Me')}
-                  style={{ flexDirection: rowDir, alignItems: 'center', gap: 4, backgroundColor: '#5A9E6F14', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 5 }}
-                  accessibilityRole="button"
-                  accessibilityLabel={t('common.open_maps')}
-                >
-                  <Feather name="external-link" size={12} color="#5A9E6F" />
-                  <Text style={{ fontSize: 12, fontFamily: 'Inter_500Medium', color: '#5A9E6F' }}>
-                    {t('common.open_maps')}
-                  </Text>
-                </Pressable>
-              )}
-            </View>
-          ) : null}
+          {/* Location header row */}
+          <View style={{ flexDirection: rowDir, alignItems: 'center', gap: 6, marginBottom: 12 }}>
+            <Feather name="map-pin" size={13} color={colors.primary} />
+            <Text style={{ fontSize: 13, fontFamily: 'Inter_500Medium', color: colors.mutedForeground, flex: 1 }} numberOfLines={1}>
+              {t('resources.showing_near')} {locationName}
+            </Text>
+            {userLat !== null && userLon !== null && (
+              <Pressable
+                onPress={() => openGoogleMaps(userLat!, userLon!, 'Legal Aid Near Me')}
+                style={{ flexDirection: rowDir, alignItems: 'center', gap: 4, backgroundColor: '#5A9E6F14', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 5 }}
+                accessibilityRole="button"
+              >
+                <Feather name="external-link" size={12} color="#5A9E6F" />
+                <Text style={{ fontSize: 12, fontFamily: 'Inter_500Medium', color: '#5A9E6F' }}>{t('common.open_maps')}</Text>
+              </Pressable>
+            )}
+          </View>
 
-          {/* Radius filter */}
-          <View style={{ marginBottom: 12 }}>
-            <Text style={{ fontSize: 12, fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase', letterSpacing: 0.7, marginBottom: 8 }}>
-              📍 {t('resources.search_radius')}
+          {/* Radius chips */}
+          <View style={{ marginBottom: 14 }}>
+            <Text style={{ fontSize: 11, fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8 }}>
+              Show within
             </Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               <View style={{ flexDirection: rowDir, gap: 6, paddingRight: 8 }}>
-                {RADIUS_OPTIONS.map((opt) => {
-                  const active = radiusMiles === opt.value;
+                {RADIUS_CHIPS.map((mi) => {
+                  const active = radiusMiles === mi;
+                  const count  = allResults.filter(r => r.dist <= mi).length;
                   return (
                     <Pressable
-                      key={String(opt.value)}
-                      onPress={() => { setRadiusMiles(opt.value); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
-                      style={{ paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, borderWidth: 1.5, borderColor: active ? colors.primary : colors.border, backgroundColor: active ? colors.primary + '14' : colors.muted }}
+                      key={mi}
+                      onPress={() => { setRadiusMiles(mi); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
+                      style={{ paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, borderWidth: 1.5, borderColor: active ? colors.primary : colors.border, backgroundColor: active ? colors.primary + '14' : colors.muted, flexDirection: rowDir, alignItems: 'center', gap: 5 }}
                       accessibilityRole="radio"
                       accessibilityState={{ selected: active }}
                     >
-                      <Text style={{ fontSize: 13, fontFamily: active ? 'Inter_600SemiBold' : 'Inter_400Regular', color: active ? colors.primary : colors.mutedForeground }}>{opt.label}</Text>
+                      <Text style={{ fontSize: 13, fontFamily: active ? 'Inter_600SemiBold' : 'Inter_400Regular', color: active ? colors.primary : colors.mutedForeground }}>
+                        {mi} mi
+                      </Text>
+                      <Text style={{ fontSize: 11, fontFamily: 'Inter_500Medium', color: active ? colors.primary : colors.mutedForeground, opacity: 0.75 }}>
+                        ({count})
+                      </Text>
                     </Pressable>
                   );
                 })}
@@ -452,31 +636,25 @@ function FindNearbyTab() {
             </ScrollView>
           </View>
 
-          {/* Type filter chips */}
-          <View style={{ marginBottom: 4 }}>
-            <Text style={{ fontSize: 12, fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase', letterSpacing: 0.7, marginBottom: 8 }}>
-              {t('resources.filter_type')}
-            </Text>
-            <TypeFilterChips selected={typeFilter} onChange={setTypeFilter} />
-          </View>
-
-          {/* Result count */}
+          {/* Count */}
           <Text style={{ fontSize: 12, fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginBottom: 10 }}>
-            {filtered.length} {filtered.length === 1 ? t('resources.result') : t('resources.results')}
-            {radiusMiles !== null ? ` ${t('resources.within')} ${radiusMiles} ${t('resources.mi')}` : ''}
-            {typeFilter !== 'all' ? ` · ${TYPE_LABELS[typeFilter as ResourceType]}` : ''}
+            {filtered.length === 0
+              ? 'No results within this radius'
+              : `${filtered.length} result${filtered.length === 1 ? '' : 's'} within ${radiusMiles} mi`}
           </Text>
 
           {filtered.length === 0 ? (
-            <View style={{ backgroundColor: colors.muted, borderRadius: colors.radius, padding: 14, borderWidth: 1, borderColor: colors.border }}>
-              <Text style={{ fontSize: 14, fontFamily: 'Inter_400Regular', color: colors.mutedForeground, textAlign: 'center' }}>
-                {t('resources.no_results')}
+            <View style={{ backgroundColor: colors.muted, borderRadius: colors.radius, padding: 16, borderWidth: 1, borderColor: colors.border, alignItems: 'center', gap: 8 }}>
+              <Feather name="search" size={20} color={colors.mutedForeground} />
+              <Text style={{ fontSize: 14, fontFamily: 'Inter_500Medium', color: colors.mutedForeground, textAlign: 'center' }}>
+                No legal resources found within {radiusMiles} miles.
+              </Text>
+              <Text style={{ fontSize: 13, fontFamily: 'Inter_400Regular', color: colors.mutedForeground, textAlign: 'center', lineHeight: 18 }}>
+                Try expanding your radius, or check the Legal Aid tab for organizations that serve your area remotely.
               </Text>
             </View>
           ) : (
-            filtered.map(({ resource, dist }) => (
-              <ResourceCard key={resource.id} resource={resource} distanceMiles={dist} />
-            ))
+            filtered.map(item => <LiveResultCard key={item.id} item={item} rowDir={rowDir} />)
           )}
         </>
       )}
@@ -485,7 +663,7 @@ function FindNearbyTab() {
         <View style={{ backgroundColor: colors.primary + '0F', borderRadius: colors.radius, padding: 14, borderWidth: 1, borderColor: colors.primary + '20', flexDirection: rowDir, gap: 10 }}>
           <Feather name="map" size={16} color={colors.primary} />
           <Text style={{ flex: 1, fontSize: 13, fontFamily: 'Inter_400Regular', color: colors.mutedForeground, lineHeight: 19 }}>
-            {t('resources.search_tip')}
+            {t('resources.search_tip')} Results come directly from OpenStreetMap — no API key needed.
           </Text>
         </View>
       )}

@@ -67,6 +67,14 @@ export const HIGH_CONTRAST_OVERRIDES = {
 // ─── Context types ────────────────────────────────────────────────────────────
 
 interface AppContextValue {
+  // Hydration
+  hydrated: boolean;
+
+  // App Lock (PIN)
+  appLockEnabled: boolean;
+  appPin: string;
+  setAppLock: (enabled: boolean, pin: string) => Promise<void>;
+
   // Language
   language: Language;
   setLanguage: (lang: Language) => Promise<void>;
@@ -117,8 +125,10 @@ const STORAGE_FONT_SIZE     = 'civicshield_fontsize';
 const STORAGE_TOUR          = 'civicshield_tour_done';
 const STORAGE_HIGH_CONTRAST = 'civicshield_high_contrast';
 const STORAGE_FORUM_POSTS   = 'civicshield_forum_posts';
-const STORAGE_FORUM_HELPFUL = 'civicshield_forum_helpful'; // set of ids marked helpful
-const STORAGE_LANGUAGE      = 'civicshield_language';      // persists selected language code
+const STORAGE_FORUM_HELPFUL = 'civicshield_forum_helpful';
+const STORAGE_LANGUAGE      = 'civicshield_language';
+const STORAGE_APP_LOCK      = 'civicshield_app_lock';
+const STORAGE_APP_PIN       = 'civicshield_app_pin';
 
 // ─── Translation via free MyMemory API ───────────────────────────────────────
 
@@ -139,6 +149,9 @@ async function translateWithMyMemory(text: string, targetLang: string): Promise<
 // ─── Provider ─────────────────────────────────────────────────────────────────
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
+  const [hydrated, setHydrated]              = useState(false);
+  const [appLockEnabled, setAppLockEnabled]  = useState(false);
+  const [appPin, setAppPinState]             = useState('');
   const [language, setLanguageState]         = useState<Language>(DEFAULT_LANGUAGE);
   const [encounters, setEncounters]           = useState<Encounter[]>([]);
   const [isTranslating, setIsTranslating]     = useState(false);
@@ -161,7 +174,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       AsyncStorage.getItem(STORAGE_FORUM_POSTS),
       AsyncStorage.getItem(STORAGE_FORUM_HELPFUL),
       AsyncStorage.getItem(STORAGE_LANGUAGE),
-    ]).then(([enc, dead, font, tour, hc, forum, helpful, lang]) => {
+      AsyncStorage.getItem(STORAGE_APP_LOCK),
+      AsyncStorage.getItem(STORAGE_APP_PIN),
+    ]).then(([enc, dead, font, tour, hc, forum, helpful, lang, lock, pin]) => {
       if (enc)     setEncounters(JSON.parse(enc) as Encounter[]);
       if (dead)    setSavedDeadlines(JSON.parse(dead) as SavedDeadline[]);
       if (font)    setFontSizeState(font as FontSizeLevel);
@@ -169,11 +184,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (hc)      setHighContrastState(hc === 'true');
       if (forum)   setForumPosts(JSON.parse(forum) as ForumPost[]);
       if (helpful) setHelpfulIds(new Set(JSON.parse(helpful) as string[]));
-      if (lang) {
-        const loaded = getLanguageByCode(lang);
-        setLanguageState(loaded);
-      }
-    }).catch(() => {});
+      if (lang)    setLanguageState(getLanguageByCode(lang));
+      if (lock)    setAppLockEnabled(lock === 'true');
+      if (pin)     setAppPinState(pin);
+    }).catch(() => {}).finally(() => setHydrated(true));
+  }, []);
+
+  const setAppLock = useCallback(async (enabled: boolean, pin: string) => {
+    setAppLockEnabled(enabled);
+    setAppPinState(pin);
+    await AsyncStorage.setItem(STORAGE_APP_LOCK, enabled ? 'true' : 'false');
+    await AsyncStorage.setItem(STORAGE_APP_PIN, pin);
   }, []);
 
   const setLanguage = useCallback(async (lang: Language) => {
@@ -303,6 +324,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   return (
     <AppContext.Provider
       value={{
+        hydrated,
+        appLockEnabled, appPin, setAppLock,
         language, setLanguage, isRTL,
         encounters, addEncounter, deleteEncounter,
         translateText, isTranslating,

@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Switch,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import { router } from 'expo-router';
@@ -71,7 +72,48 @@ export default function SettingsScreen() {
     fontSize, setFontSize, fs,
     highContrast, setHighContrast,
     encounters, clearDeadlines, savedDeadlines,
+    appLockEnabled, appPin, setAppLock,
   } = useApp();
+
+  // ── App Lock PIN setup state ──────────────────────────────────────────────
+  const [showPinSetup, setShowPinSetup] = useState(false);
+  const [pinStep, setPinStep]           = useState<'enter' | 'confirm'>('enter');
+  const [pinInput, setPinInput]         = useState('');
+  const [pinConfirm, setPinConfirm]     = useState('');
+  const [pinError, setPinError]         = useState('');
+
+  const startPinSetup = () => {
+    setPinInput(''); setPinConfirm(''); setPinStep('enter'); setPinError('');
+    setShowPinSetup(true);
+  };
+
+  const handlePinChange = (v: string) => {
+    const digits = v.replace(/\D/g, '').slice(0, 4);
+    setPinError('');
+    if (pinStep === 'enter') {
+      setPinInput(digits);
+      if (digits.length === 4) { setPinStep('confirm'); setPinConfirm(''); }
+    } else {
+      setPinConfirm(digits);
+      if (digits.length === 4) {
+        if (digits === pinInput) {
+          setAppLock(true, digits);
+          setShowPinSetup(false);
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        } else {
+          setPinError('PINs don\'t match — try again');
+          setPinInput(''); setPinConfirm(''); setPinStep('enter');
+        }
+      }
+    }
+  };
+
+  const disableLock = () => {
+    Alert.alert('Disable App Lock', 'Remove the PIN and allow anyone to open this app?', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Disable', style: 'destructive', onPress: () => { setAppLock(false, ''); setShowPinSetup(false); } },
+    ]);
+  };
 
   const FONT_SIZES: { labelKey: 'settings.font_small' | 'settings.font_medium' | 'settings.font_large'; value: FontSizeLevel; preview: number }[] = [
     { labelKey: 'settings.font_small',  value: 'small',  preview: 12 },
@@ -265,6 +307,73 @@ export default function SettingsScreen() {
             description={t('settings.expo_qr_desc')}
             onPress={() => { router.back(); setTimeout(() => router.push('/qrcode-screen'), 300); }}
           />
+        </View>
+
+        {/* ── Privacy & Security ── */}
+        <Text style={styles.sectionLabel} accessibilityRole="header">🔒 Privacy &amp; Security</Text>
+        <View style={styles.card}>
+          <SettingsRow
+            icon="lock"
+            label="App Lock"
+            description={appLockEnabled ? 'PIN required to open the app' : 'Anyone can open the app'}
+            right={
+              <Switch
+                value={appLockEnabled}
+                onValueChange={(v) => { if (v) startPinSetup(); else disableLock(); }}
+                trackColor={{ false: colors.muted, true: colors.primary + '80' }}
+                thumbColor={appLockEnabled ? colors.primary : '#F4F4F4'}
+                accessibilityLabel="App Lock"
+              />
+            }
+          />
+          {appLockEnabled && (
+            <>
+              <View style={styles.divider} />
+              <SettingsRow icon="edit-2" label="Change PIN" description="Update your 4-digit PIN" onPress={startPinSetup} />
+            </>
+          )}
+
+          {/* Inline PIN setup card */}
+          {showPinSetup && (
+            <View style={{ padding: 16, borderTopWidth: 1, borderTopColor: colors.border }}>
+              <Text style={{ fontSize: fs(13), fontFamily: 'Inter_600SemiBold', color: colors.foreground, marginBottom: 4 }}>
+                {pinStep === 'enter' ? '🔐 Set a 4-digit PIN' : '✅ Confirm your PIN'}
+              </Text>
+              <Text style={{ fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginBottom: 12 }}>
+                {pinStep === 'enter' ? 'Enter 4 digits — it will auto-advance when done.' : 'Re-enter the same PIN to confirm.'}
+              </Text>
+              {/* Dot display */}
+              <View style={{ flexDirection: 'row', gap: 14, marginBottom: 12 }}>
+                {[0, 1, 2, 3].map(i => {
+                  const filled = pinStep === 'enter' ? i < pinInput.length : i < pinConfirm.length;
+                  return (
+                    <View key={i} style={{ width: 14, height: 14, borderRadius: 7, borderWidth: 2,
+                      borderColor: pinError ? '#E05252' : colors.primary,
+                      backgroundColor: filled ? (pinError ? '#E05252' : colors.primary) : 'transparent' }} />
+                  );
+                })}
+              </View>
+              {pinError ? <Text style={{ color: '#E05252', fontSize: fs(12), fontFamily: 'Inter_500Medium', marginBottom: 8 }}>{pinError}</Text> : null}
+              <TextInput
+                style={{ backgroundColor: colors.background, borderWidth: 1, borderColor: colors.border,
+                  borderRadius: 10, paddingHorizontal: 14, paddingVertical: 11, fontSize: fs(16),
+                  fontFamily: 'Inter_400Regular', color: colors.foreground, letterSpacing: 8 }}
+                value={pinStep === 'enter' ? pinInput : pinConfirm}
+                onChangeText={handlePinChange}
+                keyboardType="number-pad"
+                secureTextEntry
+                maxLength={4}
+                autoFocus
+                placeholder="••••"
+                placeholderTextColor={colors.mutedForeground}
+                accessibilityLabel={pinStep === 'enter' ? 'Enter PIN' : 'Confirm PIN'}
+              />
+              <Pressable onPress={() => setShowPinSetup(false)}
+                style={{ marginTop: 12, alignItems: 'center', paddingVertical: 10 }}>
+                <Text style={{ fontSize: fs(13), fontFamily: 'Inter_500Medium', color: colors.mutedForeground }}>Cancel</Text>
+              </Pressable>
+            </View>
+          )}
         </View>
 
         {/* ── Data ── */}

@@ -13,7 +13,8 @@ import {
 } from '@expo-google-fonts/inter';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { AppProvider } from '@/context/AppContext';
+import { AppProvider, useApp } from '@/context/AppContext';
+import PinLockScreen from '@/components/PinLockScreen';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -27,11 +28,25 @@ function RootLayoutNav() {
       <Stack.Screen name="log-list"      options={{ headerShown: false }} />
       <Stack.Screen name="settings"      options={{ headerShown: false, presentation: 'modal' }} />
       <Stack.Screen name="tour"          options={{ headerShown: false, presentation: 'modal' }} />
-      <Stack.Screen name="forum"           options={{ headerShown: false }} />
+      <Stack.Screen name="forum"         options={{ headerShown: false }} />
       <Stack.Screen name="resource-hub"  options={{ headerShown: false }} />
       <Stack.Screen name="qrcode-screen" options={{ headerShown: false }} />
     </Stack>
   );
+}
+
+/** Sits inside AppProvider so it can read lock state from context. */
+function AppShell() {
+  const { hydrated, appLockEnabled, appPin } = useApp();
+  const [unlocked, setUnlocked] = React.useState(false);
+
+  // While AsyncStorage is loading, render nothing (SplashScreen covers it)
+  if (!hydrated) return null;
+
+  if (appLockEnabled && appPin && !unlocked) {
+    return <PinLockScreen pin={appPin} onUnlock={() => setUnlocked(true)} />;
+  }
+  return <RootLayoutNav />;
 }
 
 export default function RootLayout() {
@@ -55,7 +70,7 @@ export default function RootLayout() {
           <GestureHandlerRootView>
             <KeyboardProvider>
               <AppProvider>
-                <RootLayoutNav />
+                <AppShell />
               </AppProvider>
             </KeyboardProvider>
           </GestureHandlerRootView>

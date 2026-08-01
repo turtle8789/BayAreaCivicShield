@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
+import * as Speech from 'expo-speech';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LanguagePicker } from '@/components/LanguagePicker';
 import { LANGUAGES, Language } from '@/constants/languages';
@@ -90,8 +91,6 @@ function ttsSpeak(text: string, langCode: string, ttsNaTitle: string, ttsNaMsg: 
     win.speechSynthesis.speak(utter);
   } else {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const Speech = require('expo-speech');
       Speech.stop();
       Speech.speak(text, { language: langCode });
     } catch {
@@ -104,10 +103,7 @@ function ttsStop() {
   if (Platform.OS === 'web') {
     (window as any).speechSynthesis?.cancel();
   } else {
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      require('expo-speech').stop();
-    } catch { /* ignore */ }
+    try { Speech.stop(); } catch { /* ignore */ }
   }
 }
 
