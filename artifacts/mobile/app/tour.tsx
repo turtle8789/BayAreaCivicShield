@@ -28,77 +28,6 @@ interface TourStep {
   tab?: string;
 }
 
-const STEPS: TourStep[] = [
-  {
-    emoji: '👋',
-    title: 'Welcome to CivicShield Pro',
-    description:
-      'CivicShield Pro is your multilingual legal assistant — built to help you understand your rights, translate legal documents, and find help fast.',
-    tip: 'All data stays on your device. Nothing is shared.',
-    color: '#C97B8E',
-    icon: 'shield',
-  },
-  {
-    emoji: '📄',
-    title: 'Document Analyzer',
-    description:
-      'Paste legal text or take a photo of a court notice, eviction letter, or citation. The analyzer extracts key deadlines, dates, penalties, and required actions automatically.',
-    tip: 'Tap "Save to Dashboard" after analyzing — deadlines appear pinned at the top of your Home screen.',
-    color: '#C9A050',
-    icon: 'file-text',
-    tab: '/(tabs)/docs',
-  },
-  {
-    emoji: '🌐',
-    title: 'Real-Time Translation',
-    description:
-      'Translate text into 14 languages including Spanish, Chinese, Arabic, Hindi, Tagalog, and more. On the web version, tap the 🎤 microphone to translate speech in real time.',
-    tip: 'During an encounter, show this screen to an officer — or tap 🎤 to translate what they say.',
-    color: '#C97B8E',
-    icon: 'globe',
-    tab: '/(tabs)/translate',
-  },
-  {
-    emoji: '📚',
-    title: 'Know Your Rights',
-    description:
-      'Learn your civil rights for traffic stops, police encounters, arrests, home searches, immigration checkpoints, and more. Then test yourself with a 10-question quiz.',
-    tip: 'Knowing your rights before an encounter is the most powerful protection you have.',
-    color: '#A07888',
-    icon: 'book-open',
-    tab: '/(tabs)/rights',
-  },
-  {
-    emoji: '📍',
-    title: 'Find Legal Resources Near You',
-    description:
-      'Tap "📍 Near Me" in the Resources tab to find legal aid offices, public defenders, and nonprofits sorted by distance from your location. Call or get directions instantly.',
-    tip: 'Crisis hotlines are available 24/7 — including immigration, domestic violence, and LGBTQ+ lines.',
-    color: '#5A9E6F',
-    icon: 'map-pin',
-    tab: '/(tabs)/resources',
-  },
-  {
-    emoji: '🗂️',
-    title: 'Encounter Log',
-    description:
-      'Document police interactions privately — date, type, officer info, description, and outcome. Your logs are stored only on your device and are never shared.',
-    tip: 'Detailed logs can be invaluable if you later need to file a complaint or consult a lawyer.',
-    color: '#C97B8E',
-    icon: 'clipboard',
-    tab: '/log-list',
-  },
-  {
-    emoji: '✅',
-    title: "You're Ready!",
-    description:
-      'CivicShield Pro is set up and ready to help. Use the tabs at the bottom to navigate between features. Tap the language button at any time to switch languages.',
-    tip: 'Tap Settings (⚙️) on the Home screen to adjust font size, contrast, and language.',
-    color: '#5A9E6F',
-    icon: 'check-circle',
-  },
-];
-
 export default function TourScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
@@ -106,6 +35,70 @@ export default function TourScreen() {
   const { t } = useT();
   const { rowDir, arrowIcon } = useRTL();
   const [step, setStep] = useState(0);
+
+  const STEPS: TourStep[] = [
+    {
+      emoji: '👋',
+      title: t('tour.welcome_title'),
+      description: t('tour.welcome_desc'),
+      tip: t('tour.welcome_tip'),
+      color: '#C97B8E',
+      icon: 'shield',
+    },
+    {
+      emoji: '📄',
+      title: t('tour.docs_title'),
+      description: t('tour.docs_desc'),
+      tip: t('tour.docs_tip'),
+      color: '#C9A050',
+      icon: 'file-text',
+      tab: '/(tabs)/docs',
+    },
+    {
+      emoji: '🌐',
+      title: t('tour.translate_title'),
+      description: t('tour.translate_desc'),
+      tip: t('tour.translate_tip'),
+      color: '#C97B8E',
+      icon: 'globe',
+      tab: '/(tabs)/translate',
+    },
+    {
+      emoji: '📚',
+      title: t('tour.rights_title'),
+      description: t('tour.rights_desc'),
+      tip: t('tour.rights_tip'),
+      color: '#A07888',
+      icon: 'book-open',
+      tab: '/(tabs)/rights',
+    },
+    {
+      emoji: '📍',
+      title: t('tour.resources_title'),
+      description: t('tour.resources_desc'),
+      tip: t('tour.resources_tip'),
+      color: '#5A9E6F',
+      icon: 'map-pin',
+      tab: '/(tabs)/resources',
+    },
+    {
+      emoji: '🗂️',
+      title: t('tour.log_title'),
+      description: t('tour.log_desc'),
+      tip: t('tour.log_tip'),
+      color: '#C97B8E',
+      icon: 'clipboard',
+      tab: '/log-list',
+    },
+    {
+      emoji: '✅',
+      title: t('tour.ready_title'),
+      description: t('tour.ready_desc'),
+      tip: t('tour.ready_tip'),
+      color: '#5A9E6F',
+      icon: 'check-circle',
+    },
+  ];
 
   const topPad = Platform.OS === 'web' ? 67 : insets.top;
   const bottomPad = Platform.OS === 'web' ? 34 : insets.bottom;

@@ -115,7 +115,7 @@ export default function QRCodeScreen() {
         <View style={{ flexDirection: rowDir, alignItems: 'center', gap: 8, marginBottom: 20 }}>
           <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: isRealUrl ? '#5A9E6F' : '#C9A050' }} />
           <Text style={{ fontSize: 13, fontFamily: 'Inter_500Medium', color: isRealUrl ? '#5A9E6F' : '#C9A050' }}>
-            {isRealUrl ? 'Live dev server detected' : 'Connect to a dev server first'}
+            {isRealUrl ? t('qr.status_live') : t('qr.status_connect')}
           </Text>
         </View>
 
@@ -157,10 +157,10 @@ export default function QRCodeScreen() {
               })}
               onPress={handleShare}
               accessibilityRole="button"
-              accessibilityLabel="Share URL"
+              accessibilityLabel={t('qr.share')}
             >
               <Feather name="share-2" size={16} color={colors.foreground} />
-              <Text style={{ fontSize: 14, fontFamily: 'Inter_600SemiBold', color: colors.foreground }}>Share</Text>
+              <Text style={{ fontSize: 14, fontFamily: 'Inter_600SemiBold', color: colors.foreground }}>{t('qr.share')}</Text>
             </Pressable>
           )}
         </View>
@@ -168,14 +168,11 @@ export default function QRCodeScreen() {
         {/* How-to steps */}
         <View style={{ width: '100%', backgroundColor: colors.card, borderRadius: colors.radius, borderWidth: 1, borderColor: colors.border, padding: 16 }}>
           <Text style={{ fontSize: 14, fontFamily: 'Inter_600SemiBold', color: colors.foreground, marginBottom: 12 }}>
-            How to connect with Expo Go
+            {t('qr.howto_title')}
           </Text>
-          {[
-            'Download the free Expo Go app from the App Store or Google Play.',
-            'Make sure your phone and this computer are on the same Wi-Fi network.',
-            'Open Expo Go → tap "Scan QR Code" → scan the code above.',
-            'The app will load live on your phone with hot-reload.',
-          ].map((step, i) => (
+          {([
+            t('qr.howto_1'), t('qr.howto_2'), t('qr.howto_3'), t('qr.howto_4'),
+          ] as const).map((step, i) => (
             <View key={i} style={{ flexDirection: rowDir, gap: 12, marginBottom: i < 3 ? 10 : 0 }}>
               <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: colors.primary + '20', alignItems: 'center', justifyContent: 'center', marginTop: 1 }}>
                 <Text style={{ fontSize: 12, fontFamily: 'Inter_700Bold', color: colors.primary }}>{i + 1}</Text>
@@ -190,10 +187,10 @@ export default function QRCodeScreen() {
         {/* Note about Replit tunnel */}
         <View style={{ width: '100%', backgroundColor: '#C9A05014', borderRadius: colors.radius, borderWidth: 1, borderColor: '#C9A05030', padding: 14, marginTop: 12 }}>
           <Text style={{ fontSize: 12, fontFamily: 'Inter_500Medium', color: '#C9A050', marginBottom: 4 }}>
-            📡 Replit Tunnel Note
+            {t('qr.tunnel_title')}
           </Text>
           <Text style={{ fontSize: 12, fontFamily: 'Inter_400Regular', color: colors.mutedForeground, lineHeight: 18 }}>
-            Since this app runs on Replit, you may need to use the Expo Go "Enter URL manually" option and paste the URL above — the QR code scan requires the phone to reach the Replit tunnel address.
+            {t('qr.tunnel_note')}
           </Text>
         </View>
 

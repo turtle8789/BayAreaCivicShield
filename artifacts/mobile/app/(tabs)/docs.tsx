@@ -211,7 +211,7 @@ export default function DocsScreen() {
 
   const handleAnalyze = () => {
     if (!inputText.trim()) {
-      Alert.alert('No Text', 'Please paste legal text, load a sample, or scan a document image.');
+      Alert.alert(t('docs.no_text_title'), t('docs.no_text_msg'));
       return;
     }
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -236,9 +236,9 @@ export default function DocsScreen() {
       : await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (permResult.status !== 'granted') {
-      Alert.alert('Permission Required', useCamera
-        ? 'Camera permission is needed to scan documents.'
-        : 'Photo library permission is needed to select images.');
+      Alert.alert(t('docs.perm_title'), useCamera
+        ? t('docs.camera_perm_msg')
+        : t('docs.library_perm_msg'));
       return;
     }
 
@@ -250,7 +250,7 @@ export default function DocsScreen() {
 
     const asset = pickerResult.assets[0];
     if (!asset.base64) {
-      Alert.alert('Error', 'Could not read image data. Please try another image.');
+      Alert.alert(t('docs.error_title'), t('docs.img_error_msg'));
       return;
     }
 
@@ -260,10 +260,7 @@ export default function DocsScreen() {
     try {
       const text = await ocrImageBase64(asset.base64);
       if (!text) {
-        Alert.alert(
-          'No Text Found',
-          'Could not extract text from this image. Try a clearer, well-lit photo, or type/paste the text manually.',
-        );
+        Alert.alert(t('docs.no_text_found_title'), t('docs.no_text_found_msg'));
       } else {
         setInputText(text);
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -273,17 +270,17 @@ export default function DocsScreen() {
         }, 100);
       }
     } catch {
-      Alert.alert('OCR Failed', 'Could not read text from the image. Please try again or paste the text manually.');
+      Alert.alert(t('docs.ocr_fail_title'), t('docs.ocr_fail_msg'));
     } finally {
       setOcrLoading(false);
     }
   };
 
   const showImageOptions = () => {
-    Alert.alert('Scan Document', 'Choose how to provide the document:', [
-      { text: '📷 Take Photo', onPress: () => pickImage(true) },
-      { text: '🖼️ Choose from Library', onPress: () => pickImage(false) },
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('docs.scan_doc_title'), t('docs.scan_doc_msg'), [
+      { text: t('docs.scan_take_photo'), onPress: () => pickImage(true) },
+      { text: t('docs.scan_library'), onPress: () => pickImage(false) },
+      { text: t('common.close'), style: 'cancel' },
     ]);
   };
 
@@ -292,7 +289,7 @@ export default function DocsScreen() {
     await addDeadline(text, 'Document Analyzer', inputText);
     setSavedIds((prev) => new Set(prev).add(key));
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    Alert.alert('✅ Saved to Dashboard', 'This important date is now pinned at the top of your Home screen. Tap it to return to this document.');
+    Alert.alert(t('docs.saved_title'), t('docs.saved_msg'));
   };
 
   const handleSaveAll = async () => {
@@ -303,7 +300,7 @@ export default function DocsScreen() {
       ...result.penalties.map((p) => `Penalty: ${p}`),
     ];
     if (all.length === 0) {
-      Alert.alert('Nothing to Save', 'No deadlines or dates were found to save.');
+      Alert.alert(t('docs.nothing_save_title'), t('docs.nothing_save_msg'));
       return;
     }
     for (const item of all.slice(0, 5)) {
@@ -311,8 +308,8 @@ export default function DocsScreen() {
     }
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     Alert.alert(
-      `✅ Saved ${Math.min(all.length, 5)} Important Date${Math.min(all.length, 5) === 1 ? '' : 's'}`,
-      'These are pinned at the top of your Home screen. Tap any one to return to this document.',
+      `✅ ${t('docs.saved_title')} (${Math.min(all.length, 5)})`,
+      t('docs.save_all_msg'),
     );
   };
 
@@ -325,7 +322,7 @@ export default function DocsScreen() {
       result.actions.length > 0 ? `\nREQUIRED ACTIONS:\n${result.actions.map((d) => `• ${d}`).join('\n')}` : '',
     ].filter(Boolean).join('');
     await Clipboard.setStringAsync(parts || 'No items found.');
-    Alert.alert('Copied', 'Summary copied to clipboard.');
+    Alert.alert(t('docs.copied_title'), t('docs.copied_msg'));
   };
 
   const qrContent = result
@@ -386,7 +383,7 @@ export default function DocsScreen() {
       <View style={styles.card}>
         <View style={styles.cardHeader}>
           <Text style={styles.cardLabel} accessibilityRole="header">{t('docs.input_label')}</Text>
-          <Text style={styles.charCount}>{inputText.length} chars</Text>
+          <Text style={styles.charCount}>{inputText.length} {t('docs.chars')}</Text>
         </View>
         <TextInput
           style={styles.textInput}
@@ -442,10 +439,10 @@ export default function DocsScreen() {
         <View style={styles.ocrOverlay}>
           <ActivityIndicator size="large" color={colors.primary} />
           <Text style={{ fontSize: fs(14), fontFamily: 'Inter_500Medium', color: colors.foreground }}>
-            Reading document…
+            {t('docs.ocr_loading')}
           </Text>
           <Text style={{ fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.mutedForeground }}>
-            OCR is extracting text from your image
+            {t('docs.ocr_loading_sub')}
           </Text>
         </View>
       )}
@@ -501,7 +498,7 @@ export default function DocsScreen() {
             <View style={styles.qrContainer}>
               <Image source={{ uri: qrImageUrl }} style={{ width: 220, height: 220 }} resizeMode="contain" accessibilityLabel="QR code of extracted deadlines" />
               <Text style={{ fontSize: fs(12), fontFamily: 'Inter_500Medium', color: colors.mutedForeground, marginTop: 10, textAlign: 'center' }}>
-                Scan to share extracted deadlines
+                {t('docs.qr_share_hint')}
               </Text>
             </View>
           )}
@@ -514,7 +511,7 @@ export default function DocsScreen() {
           {totalFound === 0 && (
             <View style={styles.tipCard}>
               <Feather name="info" size={16} color={colors.primary} />
-              <Text style={styles.tipText}>No structured items detected. Try the sample document or paste more complete legal text.</Text>
+              <Text style={styles.tipText}>{t('docs.no_items_tip')}</Text>
             </View>
           )}
         </>
@@ -523,9 +520,7 @@ export default function DocsScreen() {
       {!result && !ocrLoading && (
         <View style={styles.tipCard}>
           <Feather name="info" size={16} color={colors.primary} />
-          <Text style={styles.tipText}>
-            Paste text from a court notice or tap <Text style={{ fontFamily: 'Inter_600SemiBold' }}>Scan Image</Text> to photograph a document. The analyzer finds dates, deadlines, penalties, and required actions.
-          </Text>
+          <Text style={styles.tipText}>{t('docs.input_tip')}</Text>
         </View>
       )}
     </>
@@ -533,21 +528,21 @@ export default function DocsScreen() {
 
   const renderGuideTab = () => (
     <>
-      {[
-        { title: '📋 What This Tool Detects', body: '• Court appearance dates and hearing dates\n• Filing deadlines and response windows\n• "Within X days" notice periods\n• Penalty and fine amounts\n• Required action items (bring ID, pay fee, etc.)\n• Warrant and arrest warnings' },
-        { title: '📄 Supported Document Types', body: '• Court summons and notices to appear\n• Eviction notices (30/60/90-day)\n• Traffic citations\n• Immigration notices\n• Lease violation letters\n• Government benefit denial letters' },
-        { title: '📷 Scanning a Document', body: 'Tap "Scan Image" to photograph a document or choose one from your library. The OCR engine will extract the text automatically. For best results, use good lighting and hold the camera steady.' },
-        { title: '📱 QR Code Sharing', body: 'After extracting, tap the grid icon (⊞) to generate a QR code. Share it with a lawyer or advocate so they can instantly see your key deadlines.' },
-        { title: '💾 Saving to Dashboard', body: 'Tap "Save Deadlines to Dashboard" and your key deadlines will appear pinned at the top of your Home screen as reminders.' },
-      ].map((s) => (
-        <View key={s.title} style={{ backgroundColor: colors.card, borderRadius: colors.radius, borderWidth: 1, borderColor: colors.border, padding: 16, marginBottom: 12 }}>
-          <Text style={{ fontSize: fs(15), fontFamily: 'Inter_600SemiBold', color: colors.foreground, marginBottom: 8 }} accessibilityRole="header">{s.title}</Text>
-          <Text style={{ fontSize: fs(13), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, lineHeight: 20 }}>{s.body}</Text>
+      {([
+        { titleKey: 'docs.guide_detect_title', bodyKey: 'docs.guide_detect_body' },
+        { titleKey: 'docs.guide_docs_title',   bodyKey: 'docs.guide_docs_body'   },
+        { titleKey: 'docs.guide_scan_title',   bodyKey: 'docs.guide_scan_body'   },
+        { titleKey: 'docs.guide_qr_title',     bodyKey: 'docs.guide_qr_body'     },
+        { titleKey: 'docs.guide_save_title',   bodyKey: 'docs.guide_save_body'   },
+      ] as const).map((s) => (
+        <View key={s.titleKey} style={{ backgroundColor: colors.card, borderRadius: colors.radius, borderWidth: 1, borderColor: colors.border, padding: 16, marginBottom: 12 }}>
+          <Text style={{ fontSize: fs(15), fontFamily: 'Inter_600SemiBold', color: colors.foreground, marginBottom: 8 }} accessibilityRole="header">{t(s.titleKey)}</Text>
+          <Text style={{ fontSize: fs(13), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, lineHeight: 20 }}>{t(s.bodyKey)}</Text>
         </View>
       ))}
       <View style={styles.tipCard}>
         <Feather name="shield" size={16} color={colors.primary} />
-        <Text style={styles.tipText}>General information only — not legal advice. Check the Resources tab for free legal aid near you.</Text>
+        <Text style={styles.tipText}>{t('docs.guide_disclaimer')}</Text>
       </View>
     </>
   );

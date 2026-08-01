@@ -13,6 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Language, LANGUAGES } from '@/constants/languages';
 import { useColors } from '@/hooks/useColors';
 import { useRTL } from '@/hooks/useRTL';
+import { useT } from '@/hooks/useTranslation';
 
 interface LanguagePickerProps {
   visible: boolean;
@@ -25,6 +26,7 @@ export function LanguagePicker({ visible, selectedCode, onSelect, onClose }: Lan
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { rowDir } = useRTL();
+  const { t } = useT();
   const [query, setQuery] = useState('');
 
   const filtered = LANGUAGES.filter(
@@ -118,7 +120,7 @@ export function LanguagePicker({ visible, selectedCode, onSelect, onClose }: Lan
         <Pressable style={styles.sheet} onPress={() => { /* absorb */ }}>
           <View style={styles.handle} />
           <View style={styles.header}>
-            <Text style={styles.headerTitle}>Select Language</Text>
+            <Text style={styles.headerTitle}>{t('langpicker.title')}</Text>
             <Pressable onPress={onClose} hitSlop={12}>
               <Feather name="x" size={22} color={colors.mutedForeground} />
             </Pressable>
@@ -129,7 +131,7 @@ export function LanguagePicker({ visible, selectedCode, onSelect, onClose }: Lan
               style={styles.searchInput}
               value={query}
               onChangeText={setQuery}
-              placeholder="Search languages..."
+              placeholder={t('langpicker.search_ph')}
               placeholderTextColor={colors.mutedForeground}
               autoCorrect={false}
             />

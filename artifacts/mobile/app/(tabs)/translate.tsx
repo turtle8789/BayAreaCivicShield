@@ -80,7 +80,7 @@ async function translateText(text: string, to: string): Promise<string> {
 }
 
 // ── TTS ───────────────────────────────────────────────────────────────────────
-function ttsSpeak(text: string, langCode: string) {
+function ttsSpeak(text: string, langCode: string, ttsNaTitle: string, ttsNaMsg: string) {
   if (Platform.OS === 'web') {
     const win = window as any;
     if (!win.speechSynthesis) return;
@@ -95,7 +95,7 @@ function ttsSpeak(text: string, langCode: string) {
       Speech.stop();
       Speech.speak(text, { language: langCode });
     } catch {
-      Alert.alert('TTS', 'Text-to-speech is not available in this environment.');
+      Alert.alert(ttsNaTitle, ttsNaMsg);
     }
   }
 }
@@ -153,7 +153,7 @@ export default function TranslateScreen() {
     setScript1Trans('');
     translateText(script1, targetLang.code)
       .then(setScript1Trans)
-      .catch(() => setScript1Trans('(translation unavailable)'))
+      .catch(() => setScript1Trans(t('translate.unavailable')))
       .finally(() => setTranslating1(false));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [targetLang]);
@@ -189,7 +189,7 @@ export default function TranslateScreen() {
       }
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch {
-      setAdviceText('(Could not translate advice — showing in English)\n\n' +
+      setAdviceText(t('translate.advice_fallback') + '\n\n' +
         cat.rights.map((r) => `• ${r}`).join('\n'));
     } finally {
       setLoadingAdvice(false);
@@ -200,7 +200,7 @@ export default function TranslateScreen() {
   const startWebVoice = () => {
     const win = window as any;
     const SR = win.SpeechRecognition || win.webkitSpeechRecognition;
-    if (!SR) { Alert.alert('Not Supported', 'Voice input requires Chrome or Safari.'); return; }
+    if (!SR) { Alert.alert(t('translate.voice_ns_title'), t('translate.voice_ns_msg')); return; }
     const rec = new SR();
     webRecRef.current = rec;
     rec.lang = 'en-US';
@@ -214,7 +214,7 @@ export default function TranslateScreen() {
     };
     rec.onerror  = (e: any) => {
       setListening(false);
-      if (e.error === 'not-allowed') Alert.alert('Blocked', 'Allow microphone access in browser settings.');
+      if (e.error === 'not-allowed') Alert.alert(t('translate.voice_blocked_title'), t('translate.voice_blocked_msg'));
     };
     rec.onend = () => setListening(false);
     rec.start();
@@ -227,9 +227,9 @@ export default function TranslateScreen() {
     // to avoid a hard crash at the native bridge level (try/catch can't catch bridge errors).
     if (!NativeModules.ExpoSpeechRecognition) {
       Alert.alert(
-        '🎤 Voice on Mobile',
-        'Voice input requires a full app build and is not available in Expo Go.\n\nType what the officer said in the text box instead — or use the web version where voice works today.',
-        [{ text: 'Got it' }],
+        t('translate.voice_mobile_title'),
+        t('translate.voice_mobile_msg'),
+        [{ text: t('translate.voice_mobile_ok') }],
       );
       return;
     }
@@ -237,7 +237,7 @@ export default function TranslateScreen() {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const { ExpoSpeechRecognitionModule } = require('expo-speech-recognition');
       const { granted } = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
-      if (!granted) { Alert.alert('Microphone Required', 'Please allow microphone access in Settings.'); return; }
+      if (!granted) { Alert.alert(t('translate.voice_perm_title'), t('translate.voice_perm_msg')); return; }
 
       const resSub = ExpoSpeechRecognitionModule.addListener('result', (event: any) => {
         if (event.isFinal) {
@@ -249,7 +249,7 @@ export default function TranslateScreen() {
       const endSub = ExpoSpeechRecognitionModule.addListener('end', () => setListening(false));
       const errSub = ExpoSpeechRecognitionModule.addListener('error', (event: any) => {
         setListening(false);
-        if (event.error !== 'no-speech') Alert.alert('Voice Error', event.message ?? event.error);
+        if (event.error !== 'no-speech') Alert.alert(t('translate.voice_err_title'), event.message ?? event.error);
         cleanup();
       });
       const cleanup = () => {
@@ -263,7 +263,7 @@ export default function TranslateScreen() {
       setListening(true);
       ExpoSpeechRecognitionModule.start({ lang: 'en-US', interimResults: false, continuous: false });
     } catch {
-      Alert.alert('Voice on Mobile', 'Voice input requires a full app build (EAS Build), not Expo Go.\n\nType what the officer said instead.');
+      Alert.alert(t('translate.voice_eas_title'), t('translate.voice_eas_msg'));
     }
   };
   const stopNativeVoice = () => {
@@ -367,12 +367,12 @@ export default function TranslateScreen() {
     <View style={S.container}>
       {/* ── Header ── */}
       <View style={S.header}>
-        <Text style={S.headerTitle} accessibilityRole="header">🌐 Translate</Text>
+        <Text style={S.headerTitle} accessibilityRole="header">{t('translate.title')}</Text>
         <Text style={S.headerSub}>{t('translate.subtitle')}</Text>
 
         {/* Language selector */}
         <View style={S.langRow}>
-          <Text style={S.langLabel}>Your language:</Text>
+          <Text style={S.langLabel}>{t('translate.your_language')}</Text>
           <Pressable style={S.langBtn} onPress={() => setShowPicker(true)} accessibilityRole="button">
             <Text style={S.langBtnText}>🌐 {targetLang.nativeName}</Text>
             <Feather name="chevron-down" size={15} color={colors.mutedForeground} />
@@ -387,12 +387,12 @@ export default function TranslateScreen() {
           <View style={S.cardHead}>
             <View style={S.cardBadge}><Text style={S.cardBadgeTxt}>1</Text></View>
             <View style={{ flex: 1 }}>
-              <Text style={S.cardTitle}>Play Before Interaction</Text>
-              <Text style={S.cardDesc}>Play this to the officer before recording begins.</Text>
+              <Text style={S.cardTitle}>{t('translate.clip1_title')}</Text>
+              <Text style={S.cardDesc}>{t('translate.clip1_desc')}</Text>
             </View>
           </View>
           <View style={S.cardBody}>
-            <Text style={S.sectionLabel}>Officer-facing script (English):</Text>
+            <Text style={S.sectionLabel}>{t('translate.officer_script_label')}</Text>
             <TextInput
               style={S.scriptInput}
               value={script1}
@@ -404,7 +404,7 @@ export default function TranslateScreen() {
             {/* Translation of script 1 */}
             {langCode !== 'en' && (
               <View style={S.transBox}>
-                <Text style={S.transLabel}>What this says in {targetLang.name}:</Text>
+                <Text style={S.transLabel}>{t('translate.says_in')} {targetLang.name}:</Text>
                 {translating1
                   ? <ActivityIndicator size="small" color={colors.primary} />
                   : <Text style={S.transText}>{script1Trans || '—'}</Text>
@@ -412,9 +412,9 @@ export default function TranslateScreen() {
               </View>
             )}
 
-            <Pressable style={S.playBtn} onPress={() => ttsSpeak(script1, 'en-US')} accessibilityRole="button">
+            <Pressable style={S.playBtn} onPress={() => ttsSpeak(script1, 'en-US', t('translate.tts_na_title'), t('translate.tts_na_msg'))} accessibilityRole="button">
               <Feather name="play-circle" size={18} color="#FFFFFF" />
-              <Text style={S.playBtnText}>▶ Play to Officer (English)</Text>
+              <Text style={S.playBtnText}>{t('translate.play_to_officer')}</Text>
             </Pressable>
           </View>
         </View>
@@ -424,8 +424,8 @@ export default function TranslateScreen() {
           <View style={S.cardHead}>
             <View style={[S.cardBadge, { backgroundColor: '#5A9E6F' }]}><Text style={S.cardBadgeTxt}>2</Text></View>
             <View style={{ flex: 1 }}>
-              <Text style={S.cardTitle}>Play Advice</Text>
-              <Text style={S.cardDesc}>Record or type what the officer says to get your rights.</Text>
+              <Text style={S.cardTitle}>{t('translate.clip2_title')}</Text>
+              <Text style={S.cardDesc}>{t('translate.clip2_desc')}</Text>
             </View>
           </View>
           <View style={S.cardBody}>
@@ -433,15 +433,15 @@ export default function TranslateScreen() {
             {/* Mic recorder section */}
             <View style={{ backgroundColor: colors.primary + '08', borderRadius: 10, padding: 12,
                            borderWidth: 1, borderColor: colors.primary + '20', marginBottom: 12 }}>
-              <Text style={[S.sectionLabel, { marginBottom: 8 }]}>🎙 Microphone Recorder</Text>
+              <Text style={[S.sectionLabel, { marginBottom: 8 }]}>{t('translate.mic_title')}</Text>
               <Text style={{ fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginBottom: 10 }}>
-                Use Start/Stop to capture what the officer says.
+                {t('translate.mic_hint')}
               </Text>
 
               {listening && (
                 <View style={S.listeningBadge} accessibilityLiveRegion="polite">
                   <View style={S.listeningDot} />
-                  <Text style={S.listeningTxt}>Listening… speak now</Text>
+                  <Text style={S.listeningTxt}>{t('translate.listening')}</Text>
                 </View>
               )}
 
@@ -450,12 +450,12 @@ export default function TranslateScreen() {
                   style={[S.micBtn, listening ? S.micActive : S.micIdle]}
                   onPress={handleMic}
                   accessibilityRole="button"
-                  accessibilityLabel={listening ? 'Stop recording' : 'Start recording'}
+                  accessibilityLabel={listening ? t('translate.stop_rec') : t('translate.start_rec')}
                 >
                   <Feather name={listening ? 'square' : 'mic'} size={15}
                     color={listening ? '#E05252' : colors.mutedForeground} />
                   <Text style={[S.micText, { color: listening ? '#E05252' : colors.mutedForeground }]}>
-                    {listening ? 'Stop' : 'Start Recording'}
+                    {listening ? t('translate.stop_rec') : t('translate.start_rec')}
                   </Text>
                 </Pressable>
               </View>
@@ -463,19 +463,19 @@ export default function TranslateScreen() {
               {officerText.length > 0 && (
                 <View style={S.capturedBox}>
                   <Feather name="check-circle" size={14} color="#5A9E6F" style={{ marginTop: 2 }} />
-                  <Text style={S.capturedTxt}>Speech captured and converted to text.</Text>
+                  <Text style={S.capturedTxt}>{t('translate.captured')}</Text>
                 </View>
               )}
             </View>
 
             {/* Text area */}
-            <Text style={S.sectionLabel}>Enter text or record audio to translate:</Text>
+            <Text style={S.sectionLabel}>{t('translate.input_label')}</Text>
             <TextInput
               style={S.officerInput}
               value={officerText}
               onChangeText={setOfficerText}
               multiline
-              placeholder="Type or record what the officer said…"
+              placeholder={t('translate.input_ph')}
               placeholderTextColor={colors.mutedForeground}
               accessibilityLabel="Officer statement input"
             />
@@ -492,7 +492,7 @@ export default function TranslateScreen() {
                 : <Feather name="shield" size={16} color={colors.background} />
               }
               <Text style={S.getAdviceTxt}>
-                {loadingAdvice ? 'Getting advice…' : '🛡 Translate & Get Advice'}
+                {loadingAdvice ? t('translate.get_advice_loading') : t('translate.get_advice_btn')}
               </Text>
             </Pressable>
 
@@ -500,7 +500,7 @@ export default function TranslateScreen() {
             {category && adviceText ? (
               <>
                 <View style={S.divider} />
-                <Text style={S.sectionLabel}>Your Rights &amp; Legal Advice:</Text>
+                <Text style={S.sectionLabel}>{t('translate.rights_label')}</Text>
                 <View style={S.adviceBox}>
                   <Text style={S.adviceCat}>
                     {category.icon === 'navigation' ? '🚗' :
@@ -518,11 +518,11 @@ export default function TranslateScreen() {
 
                 <Pressable
                   style={[S.playBtn, S.playBtnSecondary]}
-                  onPress={() => ttsSpeak(advisorySpeech, langCode)}
+                  onPress={() => ttsSpeak(advisorySpeech, langCode, t('translate.tts_na_title'), t('translate.tts_na_msg'))}
                   accessibilityRole="button"
                 >
                   <Feather name="play-circle" size={18} color="#FFFFFF" />
-                  <Text style={S.playBtnText}>▶ Play Advice ({targetLang.name})</Text>
+                  <Text style={S.playBtnText}>{t('translate.play_advice')} ({targetLang.name})</Text>
                 </Pressable>
               </>
             ) : null}
@@ -534,12 +534,12 @@ export default function TranslateScreen() {
           <View style={S.cardHead}>
             <View style={[S.cardBadge, { backgroundColor: '#C9A050' }]}><Text style={S.cardBadgeTxt}>3</Text></View>
             <View style={{ flex: 1 }}>
-              <Text style={S.cardTitle}>Play After Understanding Rights</Text>
-              <Text style={S.cardDesc}>Play this to the officer after you hear your rights.</Text>
+              <Text style={S.cardTitle}>{t('translate.clip3_title')}</Text>
+              <Text style={S.cardDesc}>{t('translate.clip3_desc')}</Text>
             </View>
           </View>
           <View style={S.cardBody}>
-            <Text style={S.sectionLabel}>Officer-facing script (English):</Text>
+            <Text style={S.sectionLabel}>{t('translate.officer_script_label')}</Text>
             <TextInput
               style={S.scriptInput}
               value={script3}
@@ -548,9 +548,9 @@ export default function TranslateScreen() {
               accessibilityLabel="Post-rights officer script"
             />
 
-            <Pressable style={S.playBtn} onPress={() => ttsSpeak(script3, 'en-US')} accessibilityRole="button">
+            <Pressable style={S.playBtn} onPress={() => ttsSpeak(script3, 'en-US', t('translate.tts_na_title'), t('translate.tts_na_msg'))} accessibilityRole="button">
               <Feather name="play-circle" size={18} color="#FFFFFF" />
-              <Text style={S.playBtnText}>▶ Play to Officer (English)</Text>
+              <Text style={S.playBtnText}>{t('translate.play_to_officer')}</Text>
             </Pressable>
           </View>
         </View>

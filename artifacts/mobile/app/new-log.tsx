@@ -39,7 +39,7 @@ export default function NewLogScreen() {
 
   const handleSave = async () => {
     if (!description.trim()) {
-      Alert.alert('Required', t('newlog.required_msg'));
+      Alert.alert(t('newlog.required_title'), t('newlog.required_msg'));
       return;
     }
     setSaving(true);
@@ -55,7 +55,7 @@ export default function NewLogScreen() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       router.back();
     } catch {
-      Alert.alert('Error', t('newlog.error_msg'));
+      Alert.alert(t('newlog.error_title'), t('newlog.error_msg'));
       setSaving(false);
     }
   };

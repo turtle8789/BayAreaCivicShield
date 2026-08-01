@@ -383,7 +383,7 @@ function FindNearbyTab() {
             style={{ flex: 1, backgroundColor: colors.muted, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14, fontFamily: 'Inter_400Regular', color: colors.foreground, borderWidth: 1, borderColor: colors.border }}
             value={manualZip}
             onChangeText={setManualZip}
-            placeholder="e.g. Los Angeles, 90001, or a street address"
+            placeholder={t('resources.location_ph')}
             placeholderTextColor={colors.mutedForeground}
             returnKeyType="search"
             onSubmitEditing={searchByAddress}
@@ -430,7 +430,7 @@ function FindNearbyTab() {
           {/* Radius filter */}
           <View style={{ marginBottom: 12 }}>
             <Text style={{ fontSize: 12, fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase', letterSpacing: 0.7, marginBottom: 8 }}>
-              📍 Search Radius
+              📍 {t('resources.search_radius')}
             </Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               <View style={{ flexDirection: rowDir, gap: 6, paddingRight: 8 }}>
@@ -462,8 +462,8 @@ function FindNearbyTab() {
 
           {/* Result count */}
           <Text style={{ fontSize: 12, fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginBottom: 10 }}>
-            {filtered.length} {filtered.length === 1 ? 'result' : 'results'}
-            {radiusMiles !== null ? ` within ${radiusMiles} mi` : ''}
+            {filtered.length} {filtered.length === 1 ? t('resources.result') : t('resources.results')}
+            {radiusMiles !== null ? ` ${t('resources.within')} ${radiusMiles} ${t('resources.mi')}` : ''}
             {typeFilter !== 'all' ? ` · ${TYPE_LABELS[typeFilter as ResourceType]}` : ''}
           </Text>
 
@@ -510,7 +510,7 @@ export default function ResourcesScreen() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
       await Linking.openURL(url);
     } else {
-      Alert.alert('Emergency', 'Call 911 immediately.');
+      Alert.alert(t('resources.emergency_title'), t('resources.emergency_msg'));
     }
   };
 

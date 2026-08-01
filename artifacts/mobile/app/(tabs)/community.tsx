@@ -53,7 +53,7 @@ function catMeta(cat: ForumCategory) {
   return FORUM_CATEGORIES.find((c) => c.value === cat)!;
 }
 
-async function openUrl(url: string) {
+async function openUrl(url: string, errorTitle: string, errorMsg: string) {
   try {
     if (Platform.OS === 'web') {
       window.open(url, '_blank', 'noopener');
@@ -63,7 +63,7 @@ async function openUrl(url: string) {
       });
     }
   } catch {
-    Alert.alert('Could not open link', 'Copy and paste the URL in your browser:\n' + url);
+    Alert.alert(errorTitle, errorMsg + url);
   }
 }
 
@@ -94,7 +94,7 @@ function ForumTab() {
 
   const submitPost = async () => {
     if (!newTitle.trim() || !newBody.trim()) {
-      Alert.alert('Missing Fields', 'Please add a title and description.');
+      Alert.alert(t('community.missing_fields_title'), t('community.missing_fields_msg'));
       return;
     }
     setSubmitting(true);
@@ -182,7 +182,7 @@ function ForumTab() {
               <Pressable onPress={() => setDetailPost(p)} style={{ flexDirection: rowDir, alignItems: 'center', gap: 5 }}>
                 <Feather name="message-circle" size={14} color={colors.mutedForeground} />
                 <Text style={{ fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.mutedForeground }}>
-                  {p.replies.length} {p.replies.length === 1 ? 'reply' : 'replies'}
+                  {p.replies.length} {p.replies.length === 1 ? t('forum.reply') : t('forum.replies')}
                 </Text>
               </Pressable>
               <Text style={{ fontSize: fs(11), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginLeft: 'auto' }}>{p.author}</Text>
@@ -283,12 +283,12 @@ function NewPostView({ title, setTitle, body, setBody, cat, setCat, submitting, 
         <Pressable onPress={onClose} hitSlop={12} style={{ marginRight: 12 }}><Feather name="x" size={22} color={colors.foreground} /></Pressable>
         <Text style={{ flex: 1, fontSize: fs(17), fontFamily: 'Inter_700Bold', color: colors.foreground }}>{t('community.new_post')}</Text>
         <Pressable onPress={onSubmit} disabled={submitting} style={{ backgroundColor: colors.primary, borderRadius: 20, paddingHorizontal: 16, paddingVertical: 7, opacity: submitting ? 0.6 : 1 }}>
-          <Text style={{ fontSize: fs(14), fontFamily: 'Inter_600SemiBold', color: '#FFFFFF' }}>Share</Text>
+          <Text style={{ fontSize: fs(14), fontFamily: 'Inter_600SemiBold', color: '#FFFFFF' }}>{t('community.share')}</Text>
         </Pressable>
       </View>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, gap: 12, flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-          <Text style={{ fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase' }}>Category</Text>
+          <Text style={{ fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase' }}>{t('forum.category_label')}</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <View style={{ flexDirection: rowDir, gap: 6 }}>
               {FORUM_CATEGORIES.map((c) => (
@@ -299,13 +299,13 @@ function NewPostView({ title, setTitle, body, setBody, cat, setCat, submitting, 
               ))}
             </View>
           </ScrollView>
-          <Text style={{ fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase' }}>Title *</Text>
-          <TextInput style={[{ backgroundColor: colors.muted, borderRadius: 10, padding: 12, fontSize: fs(15), fontFamily: 'Inter_400Regular', color: colors.foreground, borderWidth: 1, borderColor: colors.border }, textStyle]} value={title} onChangeText={setTitle} placeholder="What's your question or story?" placeholderTextColor={colors.mutedForeground} />
-          <Text style={{ fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase' }}>Details *</Text>
-          <TextInput style={[{ backgroundColor: colors.muted, borderRadius: 10, padding: 12, fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground, minHeight: 140, textAlignVertical: 'top', borderWidth: 1, borderColor: colors.border }, textStyle]} value={body} onChangeText={setBody} placeholder="Share the full situation…" placeholderTextColor={colors.mutedForeground} multiline />
+          <Text style={{ fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase' }}>{t('forum.title_label')} *</Text>
+          <TextInput style={[{ backgroundColor: colors.muted, borderRadius: 10, padding: 12, fontSize: fs(15), fontFamily: 'Inter_400Regular', color: colors.foreground, borderWidth: 1, borderColor: colors.border }, textStyle]} value={title} onChangeText={setTitle} placeholder={t('forum.title_ph')} placeholderTextColor={colors.mutedForeground} />
+          <Text style={{ fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase' }}>{t('forum.details_label')} *</Text>
+          <TextInput style={[{ backgroundColor: colors.muted, borderRadius: 10, padding: 12, fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground, minHeight: 140, textAlignVertical: 'top', borderWidth: 1, borderColor: colors.border }, textStyle]} value={body} onChangeText={setBody} placeholder={t('forum.details_ph')} placeholderTextColor={colors.mutedForeground} multiline />
           <View style={{ backgroundColor: colors.primary + '10', borderRadius: 10, padding: 12, flexDirection: rowDir, gap: 8 }}>
             <Feather name="lock" size={14} color={colors.primary} />
-            <Text style={{ flex: 1, fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, lineHeight: 18 }}>Posts are anonymous. Do not include personal identifying information.</Text>
+            <Text style={{ flex: 1, fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, lineHeight: 18 }}>{t('community.anon_note')}</Text>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -361,7 +361,7 @@ function HubTab() {
       </ScrollView>
 
       <Text style={{ fontSize: fs(11), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginBottom: 10 }}>
-        {filtered.length} resource{filtered.length !== 1 ? 's' : ''}
+        {filtered.length} {t('hub.curated_count')}
       </Text>
 
       {filtered.map((r) => (
@@ -369,7 +369,7 @@ function HubTab() {
           <View style={{ flexDirection: rowDir, alignItems: 'flex-start', gap: 10, marginBottom: 6 }}>
             <Text style={{ flex: 1, fontSize: fs(15), fontFamily: 'Inter_600SemiBold', color: colors.foreground, lineHeight: 21 }}>{r.name}</Text>
             <View style={{ backgroundColor: r.free ? '#5A9E6F18' : colors.muted, borderRadius: 20, paddingHorizontal: 8, paddingVertical: 3 }}>
-              <Text style={{ fontSize: fs(10), fontFamily: 'Inter_600SemiBold', color: r.free ? '#5A9E6F' : colors.mutedForeground }}>{r.free ? t('community.free_badge') : 'PAID'}</Text>
+              <Text style={{ fontSize: fs(10), fontFamily: 'Inter_600SemiBold', color: r.free ? '#5A9E6F' : colors.mutedForeground }}>{r.free ? t('community.free_badge') : t('hub.paid')}</Text>
             </View>
           </View>
           <Text style={{ fontSize: fs(13), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, lineHeight: 18, marginBottom: 8 }}>{r.description}</Text>
@@ -381,14 +381,14 @@ function HubTab() {
             ))}
           </View>
           <View style={{ flexDirection: rowDir, gap: 8 }}>
-            <Pressable onPress={() => openUrl(r.url.startsWith('http') ? r.url : `https://${r.url}`)} style={{ flex: 1, backgroundColor: colors.primary, borderRadius: 10, paddingVertical: 10, alignItems: 'center', flexDirection: rowDir, justifyContent: 'center', gap: 6 }}>
+            <Pressable onPress={() => openUrl(r.url.startsWith('http') ? r.url : `https://${r.url}`, t('community.link_error_title'), t('community.link_error_msg'))} style={{ flex: 1, backgroundColor: colors.primary, borderRadius: 10, paddingVertical: 10, alignItems: 'center', flexDirection: rowDir, justifyContent: 'center', gap: 6 }}>
               <Feather name="external-link" size={14} color="#FFFFFF" />
               <Text style={{ fontSize: fs(13), fontFamily: 'Inter_600SemiBold', color: '#FFFFFF' }}>{t('community.open_website')}</Text>
             </Pressable>
             {r.phone && (
               <Pressable onPress={() => Linking.openURL(`tel:${r.phone!.replace(/\D/g, '')}`).catch(() => {})} style={{ backgroundColor: '#5A9E6F14', borderRadius: 10, paddingVertical: 10, paddingHorizontal: 16, alignItems: 'center', flexDirection: rowDir, gap: 6 }}>
                 <Feather name="phone" size={14} color="#5A9E6F" />
-                <Text style={{ fontSize: fs(13), fontFamily: 'Inter_600SemiBold', color: '#5A9E6F' }}>Call</Text>
+                <Text style={{ fontSize: fs(13), fontFamily: 'Inter_600SemiBold', color: '#5A9E6F' }}>{t('hub.call')}</Text>
               </Pressable>
             )}
           </View>
@@ -427,7 +427,7 @@ export default function CommunityScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle} accessibilityRole="header">💬 Community</Text>
+        <Text style={styles.headerTitle} accessibilityRole="header">{t('community.title')}</Text>
         <Text style={styles.headerSub}>{t('community.subtitle')}</Text>
         <View style={styles.tabRow}>
           {([
