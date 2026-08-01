@@ -5,7 +5,7 @@ description: Key design decisions for the CivicShield Pro Expo mobile app — co
 
 ## Runtime decisions
 
-- **No backend** — all state in AsyncStorage; five storage keys: encounters, deadlines, fontsize, tour_done, high_contrast.
+- **No backend** — all state in AsyncStorage; storage keys: encounters, deadlines, fontsize, tour_done, high_contrast, app_lock (bool), app_pin (4-digit string).
 - **OCR** — free OCR.space API (`https://api.ocr.space/parse/image`, key `helloworld`), base64 image upload from expo-image-picker. Auto-runs extraction after OCR.
 - **Translation** — MyMemory free API, 450-char limit, `auto|<targetCode>` pair.
 - **Voice input** — Web Speech API (`window.SpeechRecognition || webkitSpeechRecognition`) on `Platform.OS === 'web'` only; graceful alert fallback on native Expo Go.
@@ -13,5 +13,9 @@ description: Key design decisions for the CivicShield Pro Expo mobile app — co
 - **Font scaling** — `fs(base)` helper in AppContext multiplies by `FONT_SCALE[fontSize]`; all screens use it for every fontSize style value.
 - **Tour** — `/tour` modal route (Stack screen), 7 steps, dot progress, "Try it Now" per step, persisted completion flag.
 - **Deadlines dashboard** — `savedDeadlines[]` in context → gold alert cards pinned at top of Home above 911 banner; per-item dismiss + clear-all.
+
+- **PIN lock** — `AppShell` component (inside `AppProvider` in `_layout.tsx`) reads `hydrated`, `appLockEnabled`, `appPin` from context; shows `components/PinLockScreen.tsx` until unlocked. `hydrated` flag prevents flicker before AsyncStorage resolves.
+- **expo-speech** — must use static `import * as Speech from 'expo-speech'` at top of file; dynamic `require('expo-speech')` inside function bodies does not work on native.
+- **Nearby tab** — live Overpass API search (POST to `https://overpass-api.de/api/interpreter`); queries within 50 mi, client-side radius filter chips (1/5/10/25/50 mi); no API key needed.
 
 **Why:** keeps the app fully offline-capable and avoids any API key management burden on the user.
