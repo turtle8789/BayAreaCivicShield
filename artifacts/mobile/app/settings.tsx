@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import {
   Alert,
+  KeyboardAvoidingView,
+  Modal,
   Platform,
   Pressable,
   ScrollView,
@@ -17,11 +19,13 @@ import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { PasswordModal } from '@/components/PasswordModal';
 import { LanguagePicker } from '@/components/LanguagePicker';
 import { Encounter, FontSizeLevel, useApp } from '@/context/AppContext';
 import { useColors } from '@/hooks/useColors';
 import { useRTL } from '@/hooks/useRTL';
 import { useT } from '@/hooks/useTranslation';
+import { aesDecryptStrong, aesEncryptStrong } from '@/utils/encryption';
 
 const LOCK_TIMEOUT_OPTIONS: { label: string; value: number }[] = [
   { label: 'Immediately', value: 0 },
@@ -71,6 +75,118 @@ function SettingsRow({
   );
 }
 
+// ─── BackupDecryptModal ────────────────────────────────────────────────────────
+// Simple single-password modal used when restoring an encrypted backup file.
+
+interface BackupDecryptModalProps {
+  visible: boolean;
+  onCancel: () => void;
+  /** Return true if decryption succeeded; false if the password was wrong. */
+  onDecrypt: (password: string) => Promise<boolean>;
+}
+
+function BackupDecryptModal({ visible, onCancel, onDecrypt }: BackupDecryptModalProps) {
+  const colors = useColors();
+  const { fs } = useApp();
+  const { t } = useT();
+  const [password,     setPassword]     = useState('');
+  const [error,        setError]        = useState('');
+  const [isDecrypting, setIsDecrypting] = useState(false);
+
+  const handleClose = () => {
+    setPassword('');
+    setError('');
+    onCancel();
+  };
+
+  const handleUnlock = async () => {
+    const pwd = password.trim();
+    if (!pwd || isDecrypting) return;
+    setIsDecrypting(true);
+    setError('');
+    const ok = await onDecrypt(pwd);
+    setIsDecrypting(false);
+    if (!ok) {
+      setError(t('settings.restore_pw_wrong'));
+    } else {
+      setPassword('');
+      setError('');
+    }
+  };
+
+  const s = StyleSheet.create({
+    overlay:  { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
+    sheet:    { backgroundColor: colors.background, borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 24, paddingBottom: 36 },
+    handle:   { width: 36, height: 4, borderRadius: 2, backgroundColor: colors.border, alignSelf: 'center', marginBottom: 20 },
+    iconWrap: { width: 56, height: 56, borderRadius: 28, backgroundColor: colors.primary + '18', alignItems: 'center', justifyContent: 'center', alignSelf: 'center', marginBottom: 14 },
+    title:    { fontSize: fs(18), fontFamily: 'Inter_700Bold',    color: colors.foreground,       textAlign: 'center', marginBottom: 8 },
+    desc:     { fontSize: fs(13), fontFamily: 'Inter_400Regular', color: colors.mutedForeground,  textAlign: 'center', lineHeight: 19, marginBottom: 20 },
+    input:    { backgroundColor: colors.muted, borderRadius: 12, borderWidth: 1, borderColor: colors.border, paddingHorizontal: 16, paddingVertical: 12, fontSize: fs(15), fontFamily: 'Inter_400Regular', color: colors.foreground, marginBottom: error ? 8 : 16 },
+    errorText: { fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.destructive, marginBottom: 12 },
+    btnPrimary:         { backgroundColor: colors.primary,        borderRadius: 12, paddingVertical: 14, alignItems: 'center', marginBottom: 10 },
+    btnPrimaryDisabled: { backgroundColor: colors.primary + '60', borderRadius: 12, paddingVertical: 14, alignItems: 'center', marginBottom: 10 },
+    btnCancel: { paddingVertical: 10, alignItems: 'center' },
+    btnTextPrimary: { fontSize: fs(15), fontFamily: 'Inter_600SemiBold', color: colors.primaryForeground },
+    btnTextCancel:  { fontSize: fs(14), fontFamily: 'Inter_400Regular',  color: colors.mutedForeground },
+  });
+
+  const canUnlock = password.trim().length > 0 && !isDecrypting;
+
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+      onRequestClose={handleClose}
+    >
+      <KeyboardAvoidingView
+        style={s.overlay}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <Pressable style={{ flex: 1 }} onPress={handleClose} />
+        <View style={s.sheet}>
+          <View style={s.handle} />
+          <View style={s.iconWrap}>
+            <Feather name="unlock" size={24} color={colors.primary} />
+          </View>
+          <Text style={s.title}>{t('settings.restore_pw_title')}</Text>
+          <Text style={s.desc}>{t('settings.restore_pw_desc')}</Text>
+
+          <TextInput
+            style={s.input}
+            placeholder={t('settings.restore_pw_ph')}
+            placeholderTextColor={colors.mutedForeground}
+            secureTextEntry
+            value={password}
+            onChangeText={(v) => { setPassword(v); setError(''); }}
+            autoCapitalize="none"
+            autoCorrect={false}
+            returnKeyType="done"
+            onSubmitEditing={canUnlock ? handleUnlock : undefined}
+            editable={!isDecrypting}
+          />
+
+          {error ? <Text style={s.errorText}>{error}</Text> : null}
+
+          <Pressable
+            style={canUnlock ? s.btnPrimary : s.btnPrimaryDisabled}
+            onPress={canUnlock ? handleUnlock : undefined}
+            disabled={!canUnlock}
+          >
+            <Text style={s.btnTextPrimary}>
+              {isDecrypting ? '…' : t('settings.restore_pw_btn')}
+            </Text>
+          </Pressable>
+
+          <Pressable style={s.btnCancel} onPress={handleClose} disabled={isDecrypting}>
+            <Text style={s.btnTextCancel}>{t('settings.restore_pw_cancel')}</Text>
+          </Pressable>
+        </View>
+      </KeyboardAvoidingView>
+    </Modal>
+  );
+}
+
 export default function SettingsScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
@@ -92,6 +208,9 @@ export default function SettingsScreen() {
   // ── Backup ────────────────────────────────────────────────────────────────
   const [isBackingUp, setIsBackingUp]   = useState(false);
   const [isRestoring, setIsRestoring]   = useState(false);
+  const [backupPwModalVisible,  setBackupPwModalVisible]  = useState(false);
+  const [restorePwModalVisible, setRestorePwModalVisible] = useState(false);
+  const [pendingEncryptedData, setPendingEncryptedData]   = useState<Record<string, unknown> | null>(null);
 
   /** Friendly label for the last auto-backup timestamp. */
   const formatLastBackup = (iso: string | null): string => {
@@ -105,23 +224,53 @@ export default function SettingsScreen() {
     return `Backed up ${Math.floor(hrs / 24)}d ago`;
   };
 
-  const handleBackup = async () => {
+  /** Show the optional-password modal before creating a backup file. */
+  const handleBackup = () => {
     if (encounters.length === 0) {
       Alert.alert('Back up log', 'No encounters to back up yet.');
       return;
     }
     if (isBackingUp) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setBackupPwModalVisible(true);
+  };
+
+  /** Called by PasswordModal with the chosen password (or null = no password). */
+  const doBackup = async (password: string | null) => {
+    setBackupPwModalVisible(false);
     setIsBackingUp(true);
     try {
-      const payload = JSON.stringify({
-        version: 1,
-        app: 'CivicShield Pro',
-        exportedAt: new Date().toISOString(),
-        encounters,
-      }, null, 2);
-      const fileUri = (FileSystem.cacheDirectory ?? '') + 'civicshield-backup.json';
-      await FileSystem.writeAsStringAsync(fileUri, payload, {
+      let filePayload: string;
+      let fileName: string;
+
+      if (password) {
+        // Encrypt the encounters with AES-256-CBC + PBKDF2
+        const innerJson = JSON.stringify({
+          version: 1,
+          app: 'CivicShield Pro',
+          exportedAt: new Date().toISOString(),
+          encounters,
+        });
+        filePayload = JSON.stringify({
+          version: 1,
+          app: 'CivicShield Pro',
+          exportedAt: new Date().toISOString(),
+          encrypted: true,
+          payload: aesEncryptStrong(innerJson, password),
+        }, null, 2);
+        fileName = 'civicshield-backup-protected.json';
+      } else {
+        filePayload = JSON.stringify({
+          version: 1,
+          app: 'CivicShield Pro',
+          exportedAt: new Date().toISOString(),
+          encounters,
+        }, null, 2);
+        fileName = 'civicshield-backup.json';
+      }
+
+      const fileUri = (FileSystem.cacheDirectory ?? '') + fileName;
+      await FileSystem.writeAsStringAsync(fileUri, filePayload, {
         encoding: FileSystem.EncodingType.UTF8,
       });
       const canShare = await Sharing.isAvailableAsync();
@@ -138,6 +287,103 @@ export default function SettingsScreen() {
       Alert.alert('Back up log', 'Could not create backup. Please try again.');
     } finally {
       setIsBackingUp(false);
+    }
+  };
+
+  // ── Shared encounter validation + import (used by both plain and encrypted restore) ──
+  const validateAndImportEncounters = async (raw: unknown[]) => {
+    const VALID_TYPES = new Set<string>([
+      'traffic_stop', 'arrest', 'questioning', 'citation', 'search', 'other',
+    ]);
+
+    const validationErrors: string[] = [];
+    const newEncs: Encounter[] = raw.map((item: unknown, idx: number) => {
+      if (typeof item !== 'object' || item === null) {
+        validationErrors.push(`Entry ${idx + 1}: not an object`);
+        return null as unknown as Encounter;
+      }
+      const e = item as Record<string, unknown>;
+
+      if (typeof e['id'] !== 'string' || e['id'].trim() === '') {
+        validationErrors.push(`Entry ${idx + 1}: missing or empty id`);
+      }
+      if (typeof e['date'] !== 'string' || isNaN(Date.parse(e['date'] as string))) {
+        validationErrors.push(`Entry ${idx + 1}: invalid date`);
+      }
+      if (typeof e['type'] !== 'string' || !VALID_TYPES.has(e['type'] as string)) {
+        validationErrors.push(`Entry ${idx + 1}: unknown type "${e['type']}"`);
+      }
+      for (const field of ['location', 'officerInfo', 'description', 'outcome'] as const) {
+        if (typeof e[field] !== 'string') {
+          validationErrors.push(`Entry ${idx + 1}: field "${field}" must be a string`);
+        }
+      }
+
+      return {
+        id:          String(e['id'] ?? ''),
+        date:        String(e['date'] ?? ''),
+        type:        (e['type'] as Encounter['type']) ?? 'other',
+        location:    String(e['location'] ?? ''),
+        officerInfo: String(e['officerInfo'] ?? ''),
+        description: String(e['description'] ?? ''),
+        outcome:     String(e['outcome'] ?? ''),
+      } satisfies Encounter;
+    });
+
+    if (validationErrors.length > 0) {
+      Alert.alert(
+        'Restore failed',
+        `The backup contains ${validationErrors.length} invalid record${validationErrors.length === 1 ? '' : 's'}. No data was changed.\n\n${validationErrors.slice(0, 3).join('\n')}${validationErrors.length > 3 ? `\n…and ${validationErrors.length - 3} more` : ''}`,
+      );
+      setIsRestoring(false);
+      return;
+    }
+
+    if (encounters.length > 0) {
+      Alert.alert(
+        'Restore backup',
+        `Found ${newEncs.length} encounter${newEncs.length === 1 ? '' : 's'} in this backup.\n\nMerge adds them alongside your current ${encounters.length} — duplicates are skipped.\n\nReplace permanently deletes your current log and cannot be undone.`,
+        [
+          { text: 'Cancel', style: 'cancel', onPress: () => setIsRestoring(false) },
+          {
+            text: 'Replace…',
+            style: 'destructive',
+            onPress: () => {
+              Alert.alert(
+                'Delete current log?',
+                `This will permanently delete all ${encounters.length} encounter${encounters.length === 1 ? '' : 's'} in your current log and replace them with the ${newEncs.length} from the backup.\n\nThis cannot be undone.`,
+                [
+                  { text: 'Cancel', style: 'cancel', onPress: () => setIsRestoring(false) },
+                  {
+                    text: 'Delete & Replace',
+                    style: 'destructive',
+                    onPress: async () => {
+                      await importEncounters(newEncs, true);
+                      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                      Alert.alert('Restored', `Log replaced with ${newEncs.length} encounter${newEncs.length === 1 ? '' : 's'} from backup.`);
+                      setIsRestoring(false);
+                    },
+                  },
+                ],
+              );
+            },
+          },
+          {
+            text: 'Merge',
+            onPress: async () => {
+              await importEncounters(newEncs, false);
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+              Alert.alert('Restored', `${newEncs.length} encounter${newEncs.length === 1 ? '' : 's'} merged into your log.`);
+              setIsRestoring(false);
+            },
+          },
+        ],
+      );
+    } else {
+      await importEncounters(newEncs, true);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      Alert.alert('Restored', `${newEncs.length} encounter${newEncs.length === 1 ? '' : 's'} restored from backup.`);
+      setIsRestoring(false);
     }
   };
 
@@ -175,6 +421,15 @@ export default function SettingsScreen() {
         return;
       }
 
+      // ── Encrypted backup path ───────────────────────────────────────────────
+      if ((parsed as Record<string, unknown>)['encrypted'] === true) {
+        setPendingEncryptedData(parsed as Record<string, unknown>);
+        setRestorePwModalVisible(true);
+        // isRestoring stays true — modal drives the rest of the flow
+        return;
+      }
+
+      // ── Plain backup path ───────────────────────────────────────────────────
       const raw = (parsed as Record<string, unknown>)['encounters'];
       if (!Array.isArray(raw) || raw.length === 0) {
         Alert.alert('Restore failed', 'No encounters found in this backup file.');
@@ -182,104 +437,50 @@ export default function SettingsScreen() {
         return;
       }
 
-      const VALID_TYPES = new Set<string>([
-        'traffic_stop', 'arrest', 'questioning', 'citation', 'search', 'other',
-      ]);
-
-      const validationErrors: string[] = [];
-      const newEncs: Encounter[] = raw.map((item: unknown, idx: number) => {
-        if (typeof item !== 'object' || item === null) {
-          validationErrors.push(`Entry ${idx + 1}: not an object`);
-          return null as unknown as Encounter;
-        }
-        const e = item as Record<string, unknown>;
-
-        if (typeof e['id'] !== 'string' || e['id'].trim() === '') {
-          validationErrors.push(`Entry ${idx + 1}: missing or empty id`);
-        }
-        if (typeof e['date'] !== 'string' || isNaN(Date.parse(e['date'] as string))) {
-          validationErrors.push(`Entry ${idx + 1}: invalid date`);
-        }
-        if (typeof e['type'] !== 'string' || !VALID_TYPES.has(e['type'] as string)) {
-          validationErrors.push(`Entry ${idx + 1}: unknown type "${e['type']}"`);
-        }
-        for (const field of ['location', 'officerInfo', 'description', 'outcome'] as const) {
-          if (typeof e[field] !== 'string') {
-            validationErrors.push(`Entry ${idx + 1}: field "${field}" must be a string`);
-          }
-        }
-
-        return {
-          id:          String(e['id'] ?? ''),
-          date:        String(e['date'] ?? ''),
-          type:        (e['type'] as Encounter['type']) ?? 'other',
-          location:    String(e['location'] ?? ''),
-          officerInfo: String(e['officerInfo'] ?? ''),
-          description: String(e['description'] ?? ''),
-          outcome:     String(e['outcome'] ?? ''),
-        } satisfies Encounter;
-      });
-
-      if (validationErrors.length > 0) {
-        Alert.alert(
-          'Restore failed',
-          `The backup contains ${validationErrors.length} invalid record${validationErrors.length === 1 ? '' : 's'}. No data was changed.\n\n${validationErrors.slice(0, 3).join('\n')}${validationErrors.length > 3 ? `\n…and ${validationErrors.length - 3} more` : ''}`,
-        );
-        setIsRestoring(false);
-        return;
-      }
-
-      if (encounters.length > 0) {
-        Alert.alert(
-          'Restore backup',
-          `Found ${newEncs.length} encounter${newEncs.length === 1 ? '' : 's'} in this backup.\n\nMerge adds them alongside your current ${encounters.length} — duplicates are skipped.\n\nReplace permanently deletes your current log and cannot be undone.`,
-          [
-            { text: 'Cancel', style: 'cancel', onPress: () => setIsRestoring(false) },
-            {
-              text: 'Replace…',
-              style: 'destructive',
-              onPress: () => {
-                // Second confirmation to prevent accidental destructive action
-                Alert.alert(
-                  'Delete current log?',
-                  `This will permanently delete all ${encounters.length} encounter${encounters.length === 1 ? '' : 's'} in your current log and replace them with the ${newEncs.length} from the backup.\n\nThis cannot be undone.`,
-                  [
-                    { text: 'Cancel', style: 'cancel', onPress: () => setIsRestoring(false) },
-                    {
-                      text: 'Delete & Replace',
-                      style: 'destructive',
-                      onPress: async () => {
-                        await importEncounters(newEncs, true);
-                        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-                        Alert.alert('Restored', `Log replaced with ${newEncs.length} encounter${newEncs.length === 1 ? '' : 's'} from backup.`);
-                        setIsRestoring(false);
-                      },
-                    },
-                  ],
-                );
-              },
-            },
-            {
-              text: 'Merge',
-              onPress: async () => {
-                await importEncounters(newEncs, false);
-                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-                Alert.alert('Restored', `${newEncs.length} encounter${newEncs.length === 1 ? '' : 's'} merged into your log.`);
-                setIsRestoring(false);
-              },
-            },
-          ],
-        );
-      } else {
-        await importEncounters(newEncs, true);
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        Alert.alert('Restored', `${newEncs.length} encounter${newEncs.length === 1 ? '' : 's'} restored from backup.`);
-        setIsRestoring(false);
-      }
+      await validateAndImportEncounters(raw);
     } catch {
       Alert.alert('Restore failed', 'The file could not be read or is not a valid CivicShield backup.');
       setIsRestoring(false);
     }
+  };
+
+  /**
+   * Called by BackupDecryptModal with the entered password.
+   * Returns true if decryption succeeded (modal can close), false if wrong password.
+   */
+  const handleDecryptAndRestore = async (password: string): Promise<boolean> => {
+    if (!pendingEncryptedData) return false;
+
+    const encryptedPayload = pendingEncryptedData['payload'] as string | undefined;
+    if (typeof encryptedPayload !== 'string') return false;
+
+    const decrypted = aesDecryptStrong(encryptedPayload, password);
+    if (!decrypted) return false; // wrong password
+
+    let innerParsed: unknown;
+    try { innerParsed = JSON.parse(decrypted); } catch { return false; }
+
+    const raw = (innerParsed as Record<string, unknown>)?.['encounters'];
+    if (!Array.isArray(raw)) return false;
+
+    // Close the modal before running the import flow
+    setRestorePwModalVisible(false);
+    setPendingEncryptedData(null);
+
+    if (raw.length === 0) {
+      Alert.alert('Restore failed', 'No encounters found in this backup file.');
+      setIsRestoring(false);
+      return true;
+    }
+
+    await validateAndImportEncounters(raw);
+    return true;
+  };
+
+  const handleDecryptCancel = () => {
+    setRestorePwModalVisible(false);
+    setPendingEncryptedData(null);
+    setIsRestoring(false);
   };
 
   // ── App Lock PIN setup state ──────────────────────────────────────────────
@@ -704,6 +905,20 @@ export default function SettingsScreen() {
         selectedCode={language.code}
         onSelect={(lang) => { setLanguage(lang); setShowLangPicker(false); }}
         onClose={() => setShowLangPicker(false)}
+      />
+
+      {/* Backup password modal — shown before creating the backup file */}
+      <PasswordModal
+        visible={backupPwModalVisible}
+        onCancel={() => setBackupPwModalVisible(false)}
+        onShare={doBackup}
+      />
+
+      {/* Restore decrypt modal — shown when the imported backup is encrypted */}
+      <BackupDecryptModal
+        visible={restorePwModalVisible}
+        onCancel={handleDecryptCancel}
+        onDecrypt={handleDecryptAndRestore}
       />
     </View>
   );
