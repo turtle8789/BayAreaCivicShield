@@ -315,6 +315,17 @@ export default function LogListScreen() {
     setSelectedIds(new Set());
   };
 
+  const allSelected = encounters.length > 0 && selectedIds.size === encounters.length;
+
+  const toggleSelectAll = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    if (allSelected) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(encounters.map(e => e.id)));
+    }
+  };
+
   const handleMultiExportPress = () => {
     if (selectedIds.size === 0) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -476,6 +487,11 @@ export default function LogListScreen() {
       width: 48, height: 48, borderRadius: 12, backgroundColor: colors.muted,
       alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.border,
     },
+    selectAllBtn: {
+      paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8,
+      backgroundColor: colors.muted, borderWidth: 1, borderColor: colors.border,
+    },
+    selectAllText: { fontSize: fs(13), fontFamily: 'Inter_500Medium', color: colors.foreground },
     selectHint: { fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, textAlign: 'center', paddingHorizontal: 16, paddingVertical: 6 },
   });
 
@@ -503,6 +519,13 @@ export default function LogListScreen() {
             </>
           )}
         </View>
+        {selectionMode && (
+          <Pressable style={styles.selectAllBtn} onPress={toggleSelectAll}>
+            <Text style={styles.selectAllText}>
+              {allSelected ? t('log.deselect_all') : t('log.select_all')}
+            </Text>
+          </Pressable>
+        )}
         {!selectionMode && encounters.length > 0 && (
           <Pressable style={styles.exportBtn} onPress={handleExport} disabled={isExporting}>
             <Feather name="share" size={18} color={isExporting ? colors.mutedForeground : colors.foreground} />

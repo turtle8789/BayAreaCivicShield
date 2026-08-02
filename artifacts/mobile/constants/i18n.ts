@@ -2261,6 +2261,22 @@ export const TRANSLATIONS = {
     te: 'భాగస్వామ్యం చేయండి',  pa: 'ਸਾਂਝਾ ਕਰੋ',   ta: 'பகிர்',       bn: 'শেয়ার করুন',   id: 'Bagikan',   ur: 'شیئر کریں',   tr: 'Paylaş',
     sw: 'Shiriki',         it: 'Condividi',        th: 'แชร์',         ms: 'Kongsi',   ne: 'साझा गर्नुहोस्',   so: 'La wadaag',   ht: 'Pataje',
   },
+  'log.select_all': {
+    en: 'Select all',   es: 'Seleccionar todo',  'zh-CN': '全选',     'zh-TW': '全選',
+    vi: 'Chọn tất cả',  tl: 'Piliin lahat',      hi: 'सभी चुनें',     ko: '모두 선택',
+    ar: 'تحديد الكل',   fr: 'Tout sélectionner', pt: 'Selecionar tudo', ru: 'Выбрать все',
+    ja: 'すべて選択',     am: 'ሁሉንም ምረጥ',
+    te: 'అన్నీ ఎంచుకోండి',  pa: 'ਸਭ ਚੁਣੋ',  ta: 'அனைத்தையும் தேர்ந்தெடு',  bn: 'সব নির্বাচন করুন',  id: 'Pilih semua',  ur: 'سب منتخب کریں',  tr: 'Tümünü seç',
+    sw: 'Chagua zote',  it: 'Seleziona tutto',  th: 'เลือกทั้งหมด',  ms: 'Pilih semua',  ne: 'सबै छान्नुहोस्',  so: 'Dooro dhammaan',  ht: 'Chwazi tout',
+  },
+  'log.deselect_all': {
+    en: 'Deselect all',   es: 'Deseleccionar todo',  'zh-CN': '取消全选',   'zh-TW': '取消全選',
+    vi: 'Bỏ chọn tất cả', tl: 'Alisin lahat',         hi: 'सभी अचयनित करें', ko: '모두 선택 해제',
+    ar: 'إلغاء تحديد الكل', fr: 'Tout désélectionner', pt: 'Desselecionar tudo', ru: 'Снять все',
+    ja: 'すべて解除',        am: 'ሁሉንም ምረጥ ሰርዝ',
+    te: 'అన్నీ తీసివేయండి',  pa: 'ਸਭ ਹਟਾਓ',  ta: 'அனைத்தையும் நீக்கு',  bn: 'সব নির্বাচন বাতিল করুন',  id: 'Batalkan semua',  ur: 'سب منتخب ہٹائیں',  tr: 'Tümünü kaldır',
+    sw: 'Ondoa zote',  it: 'Deseleziona tutto',  th: 'ยกเลิกเลือกทั้งหมด',  ms: 'Nyahpilih semua',  ne: 'सबै हटाउनुहोस्',  so: 'Ka saar dhammaan',  ht: 'Retire tout',
+  },
   'log.select_hint': {
     en: 'Long-press a card to select',   es: 'Mantén presionado para seleccionar',  'zh-CN': '长按卡片以选择',  'zh-TW': '長按卡片以選取',
     vi: 'Nhấn giữ để chọn',              tl: 'Pindutin nang matagal para pumili',    hi: 'कार्ड को चुनने के लिए देर तक दबाएँ',  ko: '길게 눌러 선택',
