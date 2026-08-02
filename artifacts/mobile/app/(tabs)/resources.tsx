@@ -81,6 +81,13 @@ interface LiveResult {
 const OVERPASS_MAX_MI = 50;
 const OVERPASS_MAX_M  = OVERPASS_MAX_MI * 1609.344;
 
+// Multiple public Overpass mirrors — tried in order; first success wins.
+const OVERPASS_ENDPOINTS = [
+  'https://overpass-api.de/api/interpreter',
+  'https://overpass.kumi.systems/api/interpreter',
+  'https://overpass.private.coffee/api/interpreter',
+];
+
 function buildOverpassQuery(lat: number, lon: number): string {
   const r = OVERPASS_MAX_M.toFixed(0);
   const c = `${lat},${lon}`;
@@ -113,46 +120,57 @@ function liveAddress(tags: Record<string, string>): string {
   return [num && street ? `${num} ${street}` : street, city, state].filter(Boolean).join(', ');
 }
 
-async function queryOverpass(lat: number, lon: number): Promise<LiveResult[]> {
-  const controller = new AbortController();
-  const timeout    = setTimeout(() => controller.abort(), 30_000);
-  try {
-    const body = `data=${encodeURIComponent(buildOverpassQuery(lat, lon))}`;
-    const res  = await fetch('https://overpass-api.de/api/interpreter', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body,
-      signal: controller.signal,
+function parseOverpassResults(json: { elements: OverpassElement[] }, lat: number, lon: number): LiveResult[] {
+  const seen = new Set<string>();
+  const results: LiveResult[] = [];
+  for (const el of json.elements) {
+    const name = el.tags?.name;
+    if (!name) continue;
+    const elLat = el.lat  ?? el.center?.lat ?? 0;
+    const elLon = el.lon  ?? el.center?.lon ?? 0;
+    if (!elLat && !elLon) continue;
+    const key = `${name}|${elLat.toFixed(4)}|${elLon.toFixed(4)}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    const dist = haversine(lat, lon, elLat, elLon);
+    if (dist > OVERPASS_MAX_MI) continue;
+    const typeInfo = liveTypeInfo(el.tags);
+    results.push({
+      id: `${el.type}-${el.id}`, name,
+      lat: elLat, lon: elLon, dist,
+      typeKey: typeInfo.typeKey, typeColor: typeInfo.color,
+      address: liveAddress(el.tags),
+      phone:   el.tags.phone    || el.tags['contact:phone']   || '',
+      website: el.tags.website  || el.tags['contact:website'] || el.tags.url || '',
     });
-    if (!res.ok) throw new Error(`Overpass HTTP ${res.status}`);
-    const json = (await res.json()) as { elements: OverpassElement[] };
-    const seen = new Set<string>();
-    const results: LiveResult[] = [];
-    for (const el of json.elements) {
-      const name = el.tags?.name;
-      if (!name) continue;
-      const elLat = el.lat  ?? el.center?.lat ?? 0;
-      const elLon = el.lon  ?? el.center?.lon ?? 0;
-      if (!elLat && !elLon) continue;
-      const key = `${name}|${elLat.toFixed(4)}|${elLon.toFixed(4)}`;
-      if (seen.has(key)) continue;
-      seen.add(key);
-      const dist = haversine(lat, lon, elLat, elLon);
-      if (dist > OVERPASS_MAX_MI) continue;
-      const typeInfo = liveTypeInfo(el.tags);
-      results.push({
-        id: `${el.type}-${el.id}`, name,
-        lat: elLat, lon: elLon, dist,
-        typeKey: typeInfo.typeKey, typeColor: typeInfo.color,
-        address: liveAddress(el.tags),
-        phone:   el.tags.phone    || el.tags['contact:phone']   || '',
-        website: el.tags.website  || el.tags['contact:website'] || el.tags.url || '',
-      });
-    }
-    return results.sort((a, b) => a.dist - b.dist);
-  } finally {
-    clearTimeout(timeout);
   }
+  return results.sort((a, b) => a.dist - b.dist);
+}
+
+async function queryOverpass(lat: number, lon: number): Promise<LiveResult[]> {
+  const body = `data=${encodeURIComponent(buildOverpassQuery(lat, lon))}`;
+  let lastError: unknown;
+  for (const endpoint of OVERPASS_ENDPOINTS) {
+    const controller = new AbortController();
+    const tid = setTimeout(() => controller.abort(), 22_000);
+    try {
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body,
+        signal: controller.signal,
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = (await res.json()) as { elements: OverpassElement[] };
+      return parseOverpassResults(json, lat, lon);
+    } catch (e) {
+      lastError = e;
+      // AbortError = our timeout; still try next mirror
+    } finally {
+      clearTimeout(tid);
+    }
+  }
+  throw lastError;
 }
 
 // ─── LiveResultCard ───────────────────────────────────────────────────────────
@@ -282,11 +300,18 @@ export default function ResourcesScreen() {
     if (!q) return;
     setLoading(true);
     try {
-      const res  = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1`,
-        { headers: { 'User-Agent': 'CivicShieldPro/2.0 (civic-legal-aid-app)' } },
-      );
-      const data = (await res.json()) as Array<{ lat: string; lon: string; display_name: string }>;
+      const controller = new AbortController();
+      const tid = setTimeout(() => controller.abort(), 15_000);
+      let data: Array<{ lat: string; lon: string; display_name: string }> = [];
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1`,
+          { signal: controller.signal },
+        );
+        data = await res.json();
+      } finally {
+        clearTimeout(tid);
+      }
       if (!data?.length) {
         Alert.alert(t('resources.not_found'), t('resources.nearby.geocode_not_found').replace('{query}', q));
         setLoading(false);
@@ -405,25 +430,13 @@ export default function ResourcesScreen() {
         {/* Error message */}
         {overpassError ? (
           <View style={{ backgroundColor: '#E0525218', borderRadius: colors.radius, padding: 12,
-            borderWidth: 1, borderColor: '#E0525240', marginBottom: 12, gap: 8 }}>
+            borderWidth: 1, borderColor: '#E0525240', marginBottom: 12 }}>
             <Text style={{ fontSize: 13, fontFamily: 'Inter_500Medium', color: '#E05252' }}>
               {overpassError}
             </Text>
-            {(userLat !== null && userLon !== null) && (
-              <Pressable
-                style={{ flexDirection: rowDir, alignItems: 'center', gap: 6, alignSelf: 'flex-start',
-                  backgroundColor: colors.primary, borderRadius: 10, paddingVertical: 8, paddingHorizontal: 12 }}
-                onPress={() => {
-                  const q = encodeURIComponent(`legal aid near ${locationName || 'me'}`);
-                  Linking.openURL(`https://www.google.com/maps/search/${q}/@${userLat},${userLon},12z`);
-                }}
-                accessibilityRole="button">
-                <Feather name="map" size={14} color="#FFFFFF" />
-                <Text style={{ fontSize: 13, fontFamily: 'Inter_600SemiBold', color: '#FFFFFF' }}>
-                  Search Google Maps instead
-                </Text>
-              </Pressable>
-            )}
+            <Text style={{ fontSize: 12, fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginTop: 4 }}>
+              The live search service is unavailable. Use the Google Maps button below to find legal aid near you.
+            </Text>
           </View>
         ) : null}
 
@@ -483,35 +496,42 @@ export default function ResourcesScreen() {
         {/* Results */}
         {searched && !overpassError && filtered.length === 0 && (
           <View style={{ backgroundColor: colors.muted, borderRadius: colors.radius, padding: 16,
-            borderWidth: 1, borderColor: colors.border, alignItems: 'center', gap: 8 }}>
+            borderWidth: 1, borderColor: colors.border, alignItems: 'center', gap: 8, marginBottom: 12 }}>
             <Feather name="search" size={20} color={colors.mutedForeground} />
             <Text style={{ fontSize: 14, fontFamily: 'Inter_500Medium', color: colors.mutedForeground, textAlign: 'center' }}>
               {t('resources.nearby.no_resources').replace('{radius}', String(radiusMiles))}
             </Text>
             <Text style={{ fontSize: 13, fontFamily: 'Inter_400Regular', color: colors.mutedForeground, textAlign: 'center', lineHeight: 18 }}>
-              {t('resources.nearby.expand_tip')}
+              OpenStreetMap data is sparse for legal offices in many areas. Try Google Maps below for the most complete results.
             </Text>
-            {(userLat !== null && userLon !== null) && (
-              <Pressable
-                style={{ flexDirection: rowDir, alignItems: 'center', gap: 6, marginTop: 4,
-                  backgroundColor: colors.primary, borderRadius: 10, paddingVertical: 8, paddingHorizontal: 14 }}
-                onPress={() => {
-                  const q = encodeURIComponent(`legal aid near ${locationName || 'me'}`);
-                  Linking.openURL(`https://www.google.com/maps/search/${q}/@${userLat},${userLon},12z`);
-                }}
-                accessibilityRole="button">
-                <Feather name="map" size={14} color="#FFFFFF" />
-                <Text style={{ fontSize: 13, fontFamily: 'Inter_600SemiBold', color: '#FFFFFF' }}>
-                  Search Google Maps
-                </Text>
-              </Pressable>
-            )}
           </View>
         )}
 
         {searched && !overpassError && filtered.map(item => (
           <LiveResultCard key={item.id} item={item} rowDir={rowDir} />
         ))}
+
+        {/* Google Maps fallback — always visible after any search so users can find results OSM doesn't have */}
+        {searched && (userLat !== null && userLon !== null) && (
+          <Pressable
+            style={({ pressed }) => ({
+              flexDirection: rowDir, alignItems: 'center', justifyContent: 'center', gap: 8,
+              marginTop: 12, backgroundColor: '#4285F4',
+              borderRadius: colors.radius, paddingVertical: 13, paddingHorizontal: 16,
+              opacity: pressed ? 0.85 : 1,
+            })}
+            onPress={() => {
+              const q = encodeURIComponent(`legal aid near ${locationName || 'me'}`);
+              Linking.openURL(`https://www.google.com/maps/search/${q}/@${userLat},${userLon},13z`);
+            }}
+            accessibilityRole="button"
+            accessibilityLabel="Search Google Maps for legal aid">
+            <Feather name="map" size={16} color="#FFFFFF" />
+            <Text style={{ fontSize: 14, fontFamily: 'Inter_600SemiBold', color: '#FFFFFF' }}>
+              Search Google Maps for More Results
+            </Text>
+          </Pressable>
+        )}
 
         {/* Intro tip */}
         {!searched && !loading && (
