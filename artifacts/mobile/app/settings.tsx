@@ -23,6 +23,14 @@ import { useColors } from '@/hooks/useColors';
 import { useRTL } from '@/hooks/useRTL';
 import { useT } from '@/hooks/useTranslation';
 
+const LOCK_TIMEOUT_OPTIONS: { label: string; value: number }[] = [
+  { label: 'Immediately', value: 0 },
+  { label: '1 min',       value: 1 },
+  { label: '5 min',       value: 5 },
+  { label: '15 min',      value: 15 },
+  { label: 'Never',       value: -1 },
+];
+
 function SettingsRow({
   icon,
   label,
@@ -76,6 +84,7 @@ export default function SettingsScreen() {
     highContrast, setHighContrast,
     encounters, clearDeadlines, savedDeadlines,
     appLockEnabled, appPin, setAppLock,
+    lockTimeout, setLockTimeout,
     importEncounters,
   } = useApp();
 
@@ -501,6 +510,45 @@ export default function SettingsScreen() {
             <>
               <View style={styles.divider} />
               <SettingsRow icon="edit-2" label="Change PIN" description="Update your 4-digit PIN" onPress={startPinSetup} />
+              <View style={styles.divider} />
+              {/* Lock after timeout picker */}
+              <View style={{ paddingHorizontal: 16, paddingVertical: 14 }}>
+                <View style={{ flexDirection: rowDir, alignItems: 'center', gap: 14, marginBottom: 12 }}>
+                  <View style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: colors.primary + '18', alignItems: 'center', justifyContent: 'center' }}>
+                    <Feather name="clock" size={18} color={colors.primary} />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: fs(15), fontFamily: 'Inter_500Medium', color: colors.foreground }}>Lock after</Text>
+                    <Text style={{ fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginTop: 1 }}>
+                      How long in background before re-locking
+                    </Text>
+                  </View>
+                </View>
+                <View style={{ flexDirection: rowDir, flexWrap: 'wrap', gap: 8 }}>
+                  {LOCK_TIMEOUT_OPTIONS.map((opt) => {
+                    const active = lockTimeout === opt.value;
+                    return (
+                      <Pressable
+                        key={opt.value}
+                        onPress={() => { setLockTimeout(opt.value); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
+                        style={{
+                          paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20,
+                          borderWidth: 1.5,
+                          borderColor: active ? colors.primary : colors.border,
+                          backgroundColor: active ? colors.primary + '14' : colors.muted,
+                        }}
+                        accessibilityRole="radio"
+                        accessibilityState={{ selected: active }}
+                        accessibilityLabel={`Lock after ${opt.label}`}
+                      >
+                        <Text style={{ fontSize: fs(13), fontFamily: active ? 'Inter_600SemiBold' : 'Inter_400Regular', color: active ? colors.primary : colors.mutedForeground }}>
+                          {opt.label}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              </View>
             </>
           )}
 

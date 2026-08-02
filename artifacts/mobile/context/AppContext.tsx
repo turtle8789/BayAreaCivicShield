@@ -74,6 +74,8 @@ interface AppContextValue {
   appLockEnabled: boolean;
   appPin: string;
   setAppLock: (enabled: boolean, pin: string) => Promise<void>;
+  lockTimeout: number; // minutes; -1 = Never, 0 = Immediately
+  setLockTimeout: (minutes: number) => Promise<void>;
 
   // Language
   language: Language;
@@ -130,6 +132,7 @@ const STORAGE_FORUM_HELPFUL = 'civicshield_forum_helpful';
 const STORAGE_LANGUAGE      = 'civicshield_language';
 const STORAGE_APP_LOCK      = 'civicshield_app_lock';
 const STORAGE_APP_PIN       = 'civicshield_app_pin';
+const STORAGE_LOCK_TIMEOUT  = 'civicshield_lock_timeout';
 
 // ─── Translation via free MyMemory API ───────────────────────────────────────
 
@@ -153,6 +156,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [hydrated, setHydrated]              = useState(false);
   const [appLockEnabled, setAppLockEnabled]  = useState(false);
   const [appPin, setAppPinState]             = useState('');
+  const [lockTimeout, setLockTimeoutState]   = useState<number>(5); // default 5 min
   const [language, setLanguageState]         = useState<Language>(DEFAULT_LANGUAGE);
   const [encounters, setEncounters]           = useState<Encounter[]>([]);
   const [isTranslating, setIsTranslating]     = useState(false);
@@ -177,7 +181,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       AsyncStorage.getItem(STORAGE_LANGUAGE),
       AsyncStorage.getItem(STORAGE_APP_LOCK),
       AsyncStorage.getItem(STORAGE_APP_PIN),
-    ]).then(([enc, dead, font, tour, hc, forum, helpful, lang, lock, pin]) => {
+      AsyncStorage.getItem(STORAGE_LOCK_TIMEOUT),
+    ]).then(([enc, dead, font, tour, hc, forum, helpful, lang, lock, pin, timeout]) => {
       if (enc)     setEncounters(JSON.parse(enc) as Encounter[]);
       if (dead)    setSavedDeadlines(JSON.parse(dead) as SavedDeadline[]);
       if (font)    setFontSizeState(font as FontSizeLevel);
@@ -188,6 +193,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (lang)    setLanguageState(getLanguageByCode(lang));
       if (lock)    setAppLockEnabled(lock === 'true');
       if (pin)     setAppPinState(pin);
+      if (timeout) setLockTimeoutState(Number(timeout));
     }).catch(() => {}).finally(() => setHydrated(true));
   }, []);
 
@@ -196,6 +202,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setAppPinState(pin);
     await AsyncStorage.setItem(STORAGE_APP_LOCK, enabled ? 'true' : 'false');
     await AsyncStorage.setItem(STORAGE_APP_PIN, pin);
+  }, []);
+
+  const setLockTimeout = useCallback(async (minutes: number) => {
+    setLockTimeoutState(minutes);
+    await AsyncStorage.setItem(STORAGE_LOCK_TIMEOUT, String(minutes));
   }, []);
 
   const setLanguage = useCallback(async (lang: Language) => {
@@ -335,6 +346,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       value={{
         hydrated,
         appLockEnabled, appPin, setAppLock,
+        lockTimeout, setLockTimeout,
         language, setLanguage, isRTL,
         encounters, addEncounter, deleteEncounter, importEncounters,
         translateText, isTranslating,
