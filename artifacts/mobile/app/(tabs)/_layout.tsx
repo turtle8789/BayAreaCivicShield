@@ -1,54 +1,21 @@
 import React from 'react';
-import { Platform, StyleSheet, Text, useColorScheme, View } from 'react-native';
+import { Alert, Platform, StyleSheet, useColorScheme, View } from 'react-native';
 import { useColors } from '@/hooks/useColors';
 import { useT } from '@/hooks/useTranslation';
+import { logSelectionGuard } from '@/utils/logSelectionGuard';
 import { Feather } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
-import { isLiquidGlassAvailable } from 'expo-glass-effect';
 import { Tabs } from 'expo-router';
-import { Icon, NativeTabs } from 'expo-router/unstable-native-tabs';
 import { SymbolView } from 'expo-symbols';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-// NativeTabLayout uses plain Text for labels so we can translate them
-function NativeTabLayout() {
-  const { t } = useT();
-  return (
-    <NativeTabs>
-      <NativeTabs.Trigger name="index">
-        <Icon sf={{ default: 'house', selected: 'house.fill' }} />
-        <Text>{t('nav.home')}</Text>
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="rights">
-        <Icon sf={{ default: 'book', selected: 'book.fill' }} />
-        <Text>{t('nav.rights')}</Text>
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="resources">
-        <Icon sf={{ default: 'location', selected: 'location.fill' }} />
-        <Text>{t('nav.resources')}</Text>
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="hub">
-        <Icon sf={{ default: 'square.grid.2x2', selected: 'square.grid.2x2.fill' }} />
-        <Text>{t('nav.hub')}</Text>
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="log">
-        <Icon sf={{ default: 'list.clipboard', selected: 'list.clipboard.fill' }} />
-        <Text>{t('nav.log')}</Text>
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="translate">
-        <Icon sf={{ default: 'globe', selected: 'globe.fill' }} />
-        <Text>{t('nav.translate')}</Text>
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="docs">
-        <Icon sf={{ default: 'doc.text', selected: 'doc.text.fill' }} />
-        <Text>{t('nav.docs')}</Text>
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="community">
-        <Icon sf={{ default: 'bubble.left.and.bubble.right', selected: 'bubble.left.and.bubble.right.fill' }} />
-        <Text>{t('nav.community')}</Text>
-      </NativeTabs.Trigger>
-    </NativeTabs>
-  );
+// Note: NativeTabs (expo-router/unstable-native-tabs) does not expose a
+// pre-navigation tabPress interceptor (screenListeners is not in its API), so
+// ClassicTabLayout is used unconditionally to guarantee the discard-selection
+// confirmation can always preventDefault() on any tab switch.
+
+export default function TabLayout() {
+  return <ClassicTabLayout />;
 }
 
 function ClassicTabLayout() {
@@ -60,8 +27,33 @@ function ClassicTabLayout() {
   const isWeb = Platform.OS === 'web';
   const safeAreaInsets = useSafeAreaInsets();
 
+  // screenListeners intercepts tabPress on each screen's own tab before navigation.
+  // route.name is the tab being pressed; when the log tab is currently active and
+  // the guard is armed, we call e.preventDefault() and show the confirmation dialog.
+  const screenListeners = ({ navigation, route }: { navigation: any; route: any }) => ({
+    tabPress: (e: any) => {
+      const state = navigation.getState();
+      const activeTab = state?.routes?.[state?.index]?.name;
+      if (activeTab === 'log' && route.name !== 'log' && logSelectionGuard.isActive) {
+        e.preventDefault();
+        Alert.alert(t('log.discard_title'), t('log.discard_msg'), [
+          { text: t('log.discard_stay'), style: 'cancel' },
+          {
+            text: t('log.discard_exit'),
+            style: 'destructive',
+            onPress: () => {
+              logSelectionGuard.clear();      // clears selection in log-list.tsx
+              navigation.navigate(route.name); // proceed to intended tab
+            },
+          },
+        ]);
+      }
+    },
+  });
+
   return (
     <Tabs
+      screenListeners={screenListeners}
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: colors.primary,
@@ -161,9 +153,3 @@ function ClassicTabLayout() {
   );
 }
 
-export default function TabLayout() {
-  if (isLiquidGlassAvailable()) {
-    return <NativeTabLayout />;
-  }
-  return <ClassicTabLayout />;
-}

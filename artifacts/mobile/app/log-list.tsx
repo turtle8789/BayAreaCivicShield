@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Alert,
+  BackHandler,
   FlatList,
   Platform,
   Pressable,
@@ -8,7 +9,8 @@ import {
   Text,
   View,
 } from 'react-native';
-import { router } from 'expo-router';
+import { router, useNavigation } from 'expo-router';
+import { logSelectionGuard } from '@/utils/logSelectionGuard';
 import { Feather } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import * as FileSystem from 'expo-file-system/legacy';
@@ -284,6 +286,7 @@ function buildEncounterHtml(encounters: Encounter[], exportTitle: string): strin
 // ─── LogListScreen ─────────────────────────────────────────────────────────────
 
 export default function LogListScreen() {
+  const navigation = useNavigation();
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const topPad = Platform.OS === 'web' ? 67 : insets.top;
@@ -314,6 +317,27 @@ export default function LogListScreen() {
     setSelectionMode(false);
     setSelectedIds(new Set());
   };
+
+  const confirmCancelSelection = () => {
+    if (selectedIds.size === 0) {
+      cancelSelection();
+      return;
+    }
+    Alert.alert(t('log.discard_title'), t('log.discard_msg'), [
+      { text: t('log.discard_stay'), style: 'cancel' },
+      { text: t('log.discard_exit'), style: 'destructive', onPress: cancelSelection },
+    ]);
+  };
+
+  useEffect(() => {
+    if (!selectionMode) return;
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      confirmCancelSelection();
+      return true;
+    });
+    return () => sub.remove();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectionMode, selectedIds]);
 
   const allSelected = encounters.length > 0 && selectedIds.size === encounters.length;
 
@@ -381,6 +405,46 @@ export default function LogListScreen() {
       setIsExporting(false);
     }
   };
+
+  // ── Tab-switch guard — sync to module-level store ────────────────────────────
+  // logSelectionGuard (module-level, synchronous) is read by ClassicTabLayout's
+  // screenListeners.tabPress handler to synchronously prevent tab navigation
+  // and call clear() to cancel the selection when the user taps Exit.
+  useEffect(() => {
+    logSelectionGuard.sync(selectionMode && selectedIds.size > 0, cancelSelection);
+  }, [selectionMode, selectedIds]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Clean up the guard when this screen unmounts to avoid stale references.
+  useEffect(() => () => logSelectionGuard.reset(), []);
+
+  // ── Navigator-level back guard (iOS swipe-back, browser/router back) ──────────
+  // bypassRemoveGuardRef lets the "Exit" path dispatch the saved action without
+  // triggering the guard a second time, since React state clears asynchronously.
+  const bypassRemoveGuardRef = useRef(false);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('beforeRemove', (e: any) => {
+      if (bypassRemoveGuardRef.current) {
+        bypassRemoveGuardRef.current = false;
+        return; // user already confirmed — let navigation proceed
+      }
+      if (!selectionMode || selectedIds.size === 0) return;
+      e.preventDefault();
+      Alert.alert(t('log.discard_title'), t('log.discard_msg'), [
+        { text: t('log.discard_stay'), style: 'cancel' },
+        {
+          text: t('log.discard_exit'),
+          style: 'destructive',
+          onPress: () => {
+            bypassRemoveGuardRef.current = true; // synchronous — clears guard before next beforeRemove
+            cancelSelection();
+            navigation.dispatch(e.data.action);
+          },
+        },
+      ]);
+    });
+    return unsubscribe;
+  }, [navigation, selectionMode, selectedIds, t]);
 
   const navigateToNew = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -499,7 +563,7 @@ export default function LogListScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         {selectionMode ? (
-          <Pressable onPress={cancelSelection} hitSlop={12}>
+          <Pressable onPress={confirmCancelSelection} hitSlop={12}>
             <Feather name="x" size={22} color={colors.foreground} />
           </Pressable>
         ) : (
@@ -594,7 +658,7 @@ export default function LogListScreen() {
               {t('log.select_share')} ({selectedIds.size})
             </Text>
           </Pressable>
-          <Pressable style={styles.cancelSelectionBtn} onPress={cancelSelection}>
+          <Pressable style={styles.cancelSelectionBtn} onPress={confirmCancelSelection}>
             <Feather name="x" size={20} color={colors.foreground} />
           </Pressable>
         </View>
