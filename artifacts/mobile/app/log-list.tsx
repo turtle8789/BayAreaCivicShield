@@ -68,13 +68,19 @@ function EncounterCard({ encounter, onDelete }: { encounter: Encounter; onDelete
     try {
       const html = buildEncounterHtml([encounter], t('log.export_title'));
 
+      // Build a human-readable filename: e.g. "traffic-stop-2026-08-02"
+      const d = new Date(encounter.date);
+      const dateSlug = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      const typeSlug = encounter.type.replace(/_/g, '-').toLowerCase();
+      const baseName = `${typeSlug}-${dateSlug}`;
+
       if (password) {
         const encryptedPayload = aesEncryptStrong(html, password);
         const wrapperHtml = buildProtectedHtml(encryptedPayload, t('log.export_title'));
 
         const canShare = await Sharing.isAvailableAsync();
         if (canShare) {
-          const fileUri = (FileSystem.cacheDirectory ?? '') + `encounter-${encounter.id}-protected.html`;
+          const fileUri = (FileSystem.cacheDirectory ?? '') + `${baseName}-protected.html`;
           await FileSystem.writeAsStringAsync(fileUri, wrapperHtml, {
             encoding: FileSystem.EncodingType.UTF8,
           });
@@ -94,7 +100,10 @@ function EncounterCard({ encounter, onDelete }: { encounter: Encounter; onDelete
         const { uri } = await Print.printToFileAsync({ html, base64: false });
         const canShare = await Sharing.isAvailableAsync();
         if (canShare) {
-          await Sharing.shareAsync(uri, {
+          // Copy to a named file so the share sheet shows a meaningful filename
+          const namedUri = (FileSystem.cacheDirectory ?? '') + `${baseName}.pdf`;
+          await FileSystem.copyAsync({ from: uri, to: namedUri });
+          await Sharing.shareAsync(namedUri, {
             mimeType: 'application/pdf',
             dialogTitle: t('log.export_title'),
             UTI: 'com.adobe.pdf',
