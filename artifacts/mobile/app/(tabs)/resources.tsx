@@ -284,7 +284,7 @@ interface LiveResult {
   lat: number;
   lon: number;
   dist: number;
-  typeLabel: string;
+  typeKey: string;
   typeColor: string;
   address: string;
   phone: string;
@@ -308,15 +308,15 @@ function buildOverpassQuery(lat: number, lon: number): string {
 .all out center tags;`;
 }
 
-function liveTypeInfo(tags: Record<string, string>): { label: string; color: string } {
+function liveTypeInfo(tags: Record<string, string>): { typeKey: string; color: string } {
   const o = tags.office;
   const a = tags.amenity;
-  if (o === 'lawyer')         return { label: 'Lawyer / Attorney',  color: '#9B7EC9' };
-  if (o === 'legal_services') return { label: 'Legal Services',     color: '#5A9E6F' };
-  if (o === 'legal_aid')      return { label: 'Legal Aid',          color: '#4A90D9' };
-  if (a === 'legal_advice')   return { label: 'Legal Advice',       color: '#4A90D9' };
-  if (a === 'courthouse')     return { label: 'Courthouse',         color: '#C9A050' };
-  return { label: 'Legal Resource', color: '#888' };
+  if (o === 'lawyer')         return { typeKey: 'resources.nearby.type_lawyer',         color: '#9B7EC9' };
+  if (o === 'legal_services') return { typeKey: 'resources.nearby.type_legal_services', color: '#5A9E6F' };
+  if (o === 'legal_aid')      return { typeKey: 'resources.nearby.type_legal_aid',      color: '#4A90D9' };
+  if (a === 'legal_advice')   return { typeKey: 'resources.nearby.type_legal_advice',   color: '#4A90D9' };
+  if (a === 'courthouse')     return { typeKey: 'resources.nearby.type_courthouse',     color: '#C9A050' };
+  return { typeKey: 'resources.nearby.type_legal_resource', color: '#888' };
 }
 
 function liveAddress(tags: Record<string, string>): string {
@@ -357,7 +357,7 @@ async function queryOverpass(lat: number, lon: number): Promise<LiveResult[]> {
       id: `${el.type}-${el.id}`,
       name,
       lat: elLat, lon: elLon, dist,
-      typeLabel: typeInfo.label, typeColor: typeInfo.color,
+      typeKey: typeInfo.typeKey, typeColor: typeInfo.color,
       address: liveAddress(el.tags),
       phone:   el.tags.phone    || el.tags['contact:phone'] || '',
       website: el.tags.website  || el.tags['contact:website'] || el.tags.url || '',
@@ -398,7 +398,7 @@ function LiveResultCard({ item, rowDir }: { item: LiveResult; rowDir: 'row' | 'r
             ) : null}
           </View>
           <Text style={{ fontSize: 11, fontFamily: 'Inter_600SemiBold', color: '#fff', backgroundColor: item.typeColor, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 20, overflow: 'hidden', alignSelf: 'flex-start' }}>
-            {item.typeLabel}
+            {t(item.typeKey as any)}
           </Text>
         </View>
         {/* Distance badge */}
@@ -417,20 +417,20 @@ function LiveResultCard({ item, rowDir }: { item: LiveResult; rowDir: 'row' | 'r
             <Pressable
               onPress={openPhone}
               style={({ pressed }) => [{ flex: 1, flexDirection: rowDir, alignItems: 'center', justifyContent: 'center', gap: 5, paddingVertical: 10, opacity: pressed ? 0.6 : 1, borderRightWidth: item.website ? 1 : 0, borderRightColor: colors.border }]}
-              accessibilityRole="button" accessibilityLabel="Call"
+              accessibilityRole="button" accessibilityLabel={t('common.call')}
             >
               <Feather name="phone" size={14} color="#5A9E6F" />
-              <Text style={{ fontSize: 12, fontFamily: 'Inter_500Medium', color: '#5A9E6F' }}>Call</Text>
+              <Text style={{ fontSize: 12, fontFamily: 'Inter_500Medium', color: '#5A9E6F' }}>{t('common.call')}</Text>
             </Pressable>
           ) : null}
           {item.website ? (
             <Pressable
               onPress={openWeb}
               style={({ pressed }) => [{ flex: 1, flexDirection: rowDir, alignItems: 'center', justifyContent: 'center', gap: 5, paddingVertical: 10, opacity: pressed ? 0.6 : 1, borderRightWidth: 1, borderRightColor: colors.border }]}
-              accessibilityRole="button" accessibilityLabel="Website"
+              accessibilityRole="button" accessibilityLabel={t('common.website')}
             >
               <Feather name="globe" size={14} color="#4A90D9" />
-              <Text style={{ fontSize: 12, fontFamily: 'Inter_500Medium', color: '#4A90D9' }}>Website</Text>
+              <Text style={{ fontSize: 12, fontFamily: 'Inter_500Medium', color: '#4A90D9' }}>{t('common.website')}</Text>
             </Pressable>
           ) : null}
           <Pressable
@@ -439,7 +439,7 @@ function LiveResultCard({ item, rowDir }: { item: LiveResult; rowDir: 'row' | 'r
             accessibilityRole="button" accessibilityLabel={t('common.open_maps')}
           >
             <Feather name="map-pin" size={14} color={colors.primary} />
-            <Text style={{ fontSize: 12, fontFamily: 'Inter_500Medium', color: colors.primary }}>Maps</Text>
+            <Text style={{ fontSize: 12, fontFamily: 'Inter_500Medium', color: colors.primary }}>{t('resources.nearby.maps')}</Text>
           </Pressable>
         </View>
       )}
@@ -476,7 +476,7 @@ function FindNearbyTab() {
       setSearched(true);
       if (results.length > 0) Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch (e) {
-      setOverpassError('Could not reach the search service. Check your connection and try again.');
+      setOverpassError(t('resources.nearby.error'));
     } finally {
       setLoading(false);
     }
@@ -536,7 +536,7 @@ function FindNearbyTab() {
           </Text>
           <View style={{ flexDirection: rowDir, alignItems: 'center', gap: 4, backgroundColor: colors.muted, borderRadius: 12, paddingHorizontal: 8, paddingVertical: 4 }}>
             <Feather name="database" size={10} color={colors.mutedForeground} />
-            <Text style={{ fontSize: 10, fontFamily: 'Inter_500Medium', color: colors.mutedForeground }}>Live · OpenStreetMap</Text>
+            <Text style={{ fontSize: 10, fontFamily: 'Inter_500Medium', color: colors.mutedForeground }}>{t('resources.nearby.live_source')}</Text>
           </View>
         </View>
         <Pressable
@@ -548,7 +548,7 @@ function FindNearbyTab() {
         >
           {loading ? <ActivityIndicator size="small" color="#FFFFFF" /> : <Feather name="navigation" size={16} color="#FFFFFF" />}
           <Text style={{ fontSize: 14, fontFamily: 'Inter_600SemiBold', color: '#FFFFFF' }}>
-            {loading ? 'Searching…' : t('resources.use_my_location')}
+            {loading ? t('resources.nearby.searching') : t('resources.use_my_location')}
           </Text>
         </Pressable>
         <Text style={{ fontSize: 12, fontFamily: 'Inter_400Regular', color: colors.mutedForeground, textAlign: 'center', marginBottom: 10 }}>
@@ -608,7 +608,7 @@ function FindNearbyTab() {
           {/* Radius chips */}
           <View style={{ marginBottom: 14 }}>
             <Text style={{ fontSize: 11, fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8 }}>
-              Show within
+              {t('resources.nearby.show_within')}
             </Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               <View style={{ flexDirection: rowDir, gap: 6, paddingRight: 8 }}>
@@ -639,18 +639,18 @@ function FindNearbyTab() {
           {/* Count */}
           <Text style={{ fontSize: 12, fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginBottom: 10 }}>
             {filtered.length === 0
-              ? 'No results within this radius'
-              : `${filtered.length} result${filtered.length === 1 ? '' : 's'} within ${radiusMiles} mi`}
+              ? t('resources.nearby.no_results_radius')
+              : `${filtered.length} ${t(filtered.length === 1 ? 'resources.result' : 'resources.results')} ${t('resources.within')} ${radiusMiles} ${t('resources.mi')}`}
           </Text>
 
           {filtered.length === 0 ? (
             <View style={{ backgroundColor: colors.muted, borderRadius: colors.radius, padding: 16, borderWidth: 1, borderColor: colors.border, alignItems: 'center', gap: 8 }}>
               <Feather name="search" size={20} color={colors.mutedForeground} />
               <Text style={{ fontSize: 14, fontFamily: 'Inter_500Medium', color: colors.mutedForeground, textAlign: 'center' }}>
-                No legal resources found within {radiusMiles} miles.
+                {t('resources.nearby.no_resources').replace('{radius}', String(radiusMiles))}
               </Text>
               <Text style={{ fontSize: 13, fontFamily: 'Inter_400Regular', color: colors.mutedForeground, textAlign: 'center', lineHeight: 18 }}>
-                Try expanding your radius, or check the Legal Aid tab for organizations that serve your area remotely.
+                {t('resources.nearby.expand_tip')}
               </Text>
             </View>
           ) : (
@@ -663,7 +663,7 @@ function FindNearbyTab() {
         <View style={{ backgroundColor: colors.primary + '0F', borderRadius: colors.radius, padding: 14, borderWidth: 1, borderColor: colors.primary + '20', flexDirection: rowDir, gap: 10 }}>
           <Feather name="map" size={16} color={colors.primary} />
           <Text style={{ flex: 1, fontSize: 13, fontFamily: 'Inter_400Regular', color: colors.mutedForeground, lineHeight: 19 }}>
-            {t('resources.search_tip')} Results come directly from OpenStreetMap — no API key needed.
+            {t('resources.search_tip')} {t('resources.nearby.osm_note')}
           </Text>
         </View>
       )}
