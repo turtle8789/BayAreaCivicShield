@@ -109,6 +109,7 @@ export function PasswordModal({ visible, onCancel, onShare }: PasswordModalProps
             onChangeText={setPassword}
             autoCapitalize="none"
             autoCorrect={false}
+            autoComplete="new-password"
             returnKeyType="next"
           />
 
@@ -123,6 +124,7 @@ export function PasswordModal({ visible, onCancel, onShare }: PasswordModalProps
                 onChangeText={setConfirm}
                 autoCapitalize="none"
                 autoCorrect={false}
+                autoComplete="new-password"
                 returnKeyType="done"
                 onSubmitEditing={canShareProtected ? handleProtected : undefined}
               />
