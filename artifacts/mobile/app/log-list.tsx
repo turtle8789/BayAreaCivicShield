@@ -542,6 +542,7 @@ export default function LogListScreen() {
           <FlatList
             data={encounters}
             keyExtractor={(item) => item.id}
+            extraData={selectedIds}
             contentContainerStyle={styles.listContent}
             renderItem={({ item }) => (
               <EncounterCard
