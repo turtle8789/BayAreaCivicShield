@@ -376,24 +376,31 @@ function PasswordModal({ visible, onCancel, onShare }: PasswordModalProps) {
   const { fs } = useApp();
   const { t } = useT();
   const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
 
   const handleClose = () => {
     setPassword('');
+    setConfirm('');
     onCancel();
   };
 
   const handleSkip = () => {
     setPassword('');
+    setConfirm('');
     onShare(null);
   };
 
   const handleProtected = () => {
     const pwd = password.trim();
     setPassword('');
+    setConfirm('');
     onShare(pwd.length > 0 ? pwd : null);
   };
 
   const hasPassword = password.trim().length > 0;
+  const passwordsMatch = password === confirm;
+  const canShareProtected = hasPassword && passwordsMatch;
+  const showMismatch = hasPassword && confirm.length > 0 && !passwordsMatch;
 
   const s = StyleSheet.create({
     overlay:    { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
@@ -403,7 +410,10 @@ function PasswordModal({ visible, onCancel, onShare }: PasswordModalProps) {
     title:      { fontSize: fs(18), fontFamily: 'Inter_700Bold', color: colors.foreground, textAlign: 'center', marginBottom: 8 },
     desc:       { fontSize: fs(13), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, textAlign: 'center', lineHeight: 19, marginBottom: 20 },
     input:      { backgroundColor: colors.muted, borderRadius: 12, borderWidth: 1, borderColor: colors.border, paddingHorizontal: 16, paddingVertical: 12, fontSize: fs(15), fontFamily: 'Inter_400Regular', color: colors.foreground, marginBottom: 16 },
+    inputError: { backgroundColor: colors.muted, borderRadius: 12, borderWidth: 1, borderColor: colors.destructive, paddingHorizontal: 16, paddingVertical: 12, fontSize: fs(15), fontFamily: 'Inter_400Regular', color: colors.foreground, marginBottom: 6 },
+    mismatch:   { fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.destructive, marginBottom: 12 },
     btnPrimary: { backgroundColor: colors.primary, borderRadius: 12, paddingVertical: 14, alignItems: 'center', marginBottom: 10 },
+    btnPrimaryDisabled: { backgroundColor: colors.primary + '60', borderRadius: 12, paddingVertical: 14, alignItems: 'center', marginBottom: 10 },
     btnOutline: { backgroundColor: 'transparent', borderRadius: 12, paddingVertical: 14, alignItems: 'center', borderWidth: 1, borderColor: colors.border, marginBottom: 10 },
     btnCancel:  { paddingVertical: 10, alignItems: 'center' },
     btnTextPrimary: { fontSize: fs(15), fontFamily: 'Inter_600SemiBold', color: colors.primaryForeground },
@@ -440,12 +450,35 @@ function PasswordModal({ visible, onCancel, onShare }: PasswordModalProps) {
             onChangeText={setPassword}
             autoCapitalize="none"
             autoCorrect={false}
-            returnKeyType="done"
-            onSubmitEditing={handleProtected}
+            returnKeyType="next"
           />
 
+          {hasPassword && (
+            <>
+              <TextInput
+                style={showMismatch ? s.inputError : s.input}
+                placeholder={t('log.protect_confirm_ph')}
+                placeholderTextColor={colors.mutedForeground}
+                secureTextEntry
+                value={confirm}
+                onChangeText={setConfirm}
+                autoCapitalize="none"
+                autoCorrect={false}
+                returnKeyType="done"
+                onSubmitEditing={canShareProtected ? handleProtected : undefined}
+              />
+              {showMismatch && (
+                <Text style={s.mismatch}>{t('log.protect_mismatch')}</Text>
+              )}
+            </>
+          )}
+
           {hasPassword ? (
-            <Pressable style={s.btnPrimary} onPress={handleProtected}>
+            <Pressable
+              style={canShareProtected ? s.btnPrimary : s.btnPrimaryDisabled}
+              onPress={canShareProtected ? handleProtected : undefined}
+              disabled={!canShareProtected}
+            >
               <Text style={s.btnTextPrimary}>{t('log.protect_btn')}</Text>
             </Pressable>
           ) : (

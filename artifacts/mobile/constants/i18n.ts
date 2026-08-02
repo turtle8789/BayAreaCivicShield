@@ -86,6 +86,7 @@ export type I18nKey =
   | 'log.export_btn' | 'log.export_error' | 'log.export_empty' | 'log.export_title'
   | 'log.location_label'
   | 'log.protect_title' | 'log.protect_desc' | 'log.protect_ph'
+  | 'log.protect_confirm_ph' | 'log.protect_mismatch'
   | 'log.protect_skip' | 'log.protect_btn' | 'log.protect_cancel'
   | 'log.share_btn'
   // New log form
@@ -2391,6 +2392,26 @@ export const TRANSLATIONS: Translations = {
     id: 'Kata sandi (opsional)',           ur: 'پاس ورڈ (اختیاری)',               tr: 'Şifre (isteğe bağlı)',
     sw: 'Nenosiri (si lazima)',            it: 'Password (opzionale)',            th: 'รหัสผ่าน (ตัวเลือก)',             ms: 'Kata laluan (pilihan)',
     ne: 'पासवर्ड (वैकल्पिक)',              so: 'Erayga sirta (ikhtiyaari)',        ht: 'Modpas (opsyonèl)',
+  },
+  'log.protect_confirm_ph': {
+    en: 'Confirm password',              es: 'Confirmar contraseña',           'zh-CN': '确认密码',                  'zh-TW': '確認密碼',
+    vi: 'Xác nhận mật khẩu',            tl: 'Kumpirmahin ang password',        hi: 'पासवर्ड की पुष्टि करें',         ko: '비밀번호 확인',
+    ar: 'تأكيد كلمة المرور',             fr: 'Confirmer le mot de passe',       pt: 'Confirmar senha',                ru: 'Подтвердите пароль',
+    ja: 'パスワードを確認',               am: 'የይለፍ ቃል ያረጋግጡ',
+    te: 'పాస్‌వర్డ్ నిర్ధారించండి',       pa: 'ਪਾਸਵਰਡ ਪੁਸ਼ਟੀ ਕਰੋ',              ta: 'கடவுச்சொல்லை உறுதிப்படுத்தவும்',  bn: 'পাসওয়ার্ড নিশ্চিত করুন',
+    id: 'Konfirmasi kata sandi',          ur: 'پاس ورڈ کی تصدیق کریں',           tr: 'Şifreyi onayla',
+    sw: 'Thibitisha nenosiri',            it: 'Conferma password',               th: 'ยืนยันรหัสผ่าน',                  ms: 'Sahkan kata laluan',
+    ne: 'पासवर्ड पुष्टि गर्नुहोस्',      so: 'Xaqiiji erayga sirta',            ht: 'Konfime modpas',
+  },
+  'log.protect_mismatch': {
+    en: 'Passwords don\'t match',        es: 'Las contraseñas no coinciden',   'zh-CN': '密码不匹配',                'zh-TW': '密碼不相符',
+    vi: 'Mật khẩu không khớp',          tl: 'Hindi tugma ang mga password',    hi: 'पासवर्ड मेल नहीं खाते',          ko: '비밀번호가 일치하지 않습니다',
+    ar: 'كلمات المرور غير متطابقة',      fr: 'Les mots de passe ne correspondent pas', pt: 'As senhas não coincidem',   ru: 'Пароли не совпадают',
+    ja: 'パスワードが一致しません',        am: 'የይለፍ ቃሎቹ አይዛመዱም',
+    te: 'పాస్‌వర్డ్‌లు సరిపోలడం లేదు',  pa: 'ਪਾਸਵਰਡ ਮੇਲ ਨਹੀਂ ਖਾਂਦੇ',          ta: 'கடவுச்சொற்கள் பொருந்தவில்லை',   bn: 'পাসওয়ার্ড মিলছে না',
+    id: 'Kata sandi tidak cocok',         ur: 'پاس ورڈ مماثل نہیں ہیں',          tr: 'Şifreler eşleşmiyor',
+    sw: 'Maneno ya siri hayalingani',     it: 'Le password non corrispondono',   th: 'รหัสผ่านไม่ตรงกัน',              ms: 'Kata laluan tidak sepadan',
+    ne: 'पासवर्डहरू मेल खाँदैनन्',       so: 'Erayada sirta kuma siman',        ht: 'Modpas yo pa matche',
   },
   'log.protect_skip': {
     en: 'Share as PDF',                  es: 'Compartir como PDF',             'zh-CN': '以 PDF 分享',               'zh-TW': '以 PDF 分享',
