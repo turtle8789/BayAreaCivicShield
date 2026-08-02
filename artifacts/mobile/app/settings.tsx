@@ -231,26 +231,40 @@ export default function SettingsScreen() {
 
       if (encounters.length > 0) {
         Alert.alert(
-          'Merge or replace?',
-          `Found ${newEncs.length} encounter${newEncs.length === 1 ? '' : 's'} in this backup.\n\nMerge adds them alongside your current ${encounters.length} — duplicates are skipped. Replace deletes your current log and uses the backup only.`,
+          'Restore backup',
+          `Found ${newEncs.length} encounter${newEncs.length === 1 ? '' : 's'} in this backup.\n\nMerge adds them alongside your current ${encounters.length} — duplicates are skipped.\n\nReplace permanently deletes your current log and cannot be undone.`,
           [
             { text: 'Cancel', style: 'cancel', onPress: () => setIsRestoring(false) },
+            {
+              text: 'Replace…',
+              style: 'destructive',
+              onPress: () => {
+                // Second confirmation to prevent accidental destructive action
+                Alert.alert(
+                  'Delete current log?',
+                  `This will permanently delete all ${encounters.length} encounter${encounters.length === 1 ? '' : 's'} in your current log and replace them with the ${newEncs.length} from the backup.\n\nThis cannot be undone.`,
+                  [
+                    { text: 'Cancel', style: 'cancel', onPress: () => setIsRestoring(false) },
+                    {
+                      text: 'Delete & Replace',
+                      style: 'destructive',
+                      onPress: async () => {
+                        await importEncounters(newEncs, true);
+                        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                        Alert.alert('Restored', `Log replaced with ${newEncs.length} encounter${newEncs.length === 1 ? '' : 's'} from backup.`);
+                        setIsRestoring(false);
+                      },
+                    },
+                  ],
+                );
+              },
+            },
             {
               text: 'Merge',
               onPress: async () => {
                 await importEncounters(newEncs, false);
                 Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
                 Alert.alert('Restored', `${newEncs.length} encounter${newEncs.length === 1 ? '' : 's'} merged into your log.`);
-                setIsRestoring(false);
-              },
-            },
-            {
-              text: 'Replace',
-              style: 'destructive',
-              onPress: async () => {
-                await importEncounters(newEncs, true);
-                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-                Alert.alert('Restored', `Log replaced with ${newEncs.length} encounter${newEncs.length === 1 ? '' : 's'} from backup.`);
                 setIsRestoring(false);
               },
             },
