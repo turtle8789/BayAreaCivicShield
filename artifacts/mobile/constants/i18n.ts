@@ -6834,6 +6834,26 @@ export const TRANSLATIONS = {
     so: 'Natiijooyinku waxay si toos ah uga yimaadaan OpenStreetMap — furaha API looma baahna.',
     ht: 'Rezilta yo soti dirèkteman nan OpenStreetMap — pa bezwen kle API.',
   },
+  'resources.nearby.mi_away': {
+    en: 'mi away',          es: 'mi de distancia',  'zh-CN': '英里外',       'zh-TW': '英里外',
+    vi: 'dặm',              tl: 'milya ang layo',   hi: 'मील दूर',           ko: '마일 거리',
+    ar: 'ميل بعيدًا',       fr: 'mi de distance',   pt: 'mi de distância',   ru: 'мил. отсюда',
+    ja: 'マイル先',          am: 'ማይል ርቀት',
+    te: 'మైళ్ళ దూరం',      pa: 'ਮੀਲ ਦੂਰ',          ta: 'மைல் தூரம்',        bn: 'মাইল দূরে',
+    id: 'mi jauhnya',       ur: 'میل دور',           tr: 'mil uzakta',        sw: 'maili mbali',
+    it: 'mi di distanza',   th: 'ไมล์จากนี้',        ms: 'mi jauhnya',        ne: 'माइल टाढा',
+    so: 'mayl fog',         ht: 'miy plis lwen',
+  },
+  'resources.nearby.ft_away': {
+    en: 'ft away',          es: 'pies de distancia','zh-CN': '英尺外',        'zh-TW': '英尺外',
+    vi: 'bộ',               tl: 'talampakan ang layo',hi: 'फ़ुट दूर',         ko: '피트 거리',
+    ar: 'قدم بعيدًا',       fr: 'pi de distance',   pt: 'pés de distância',  ru: 'фут отсюда',
+    ja: 'フィート先',         am: 'ጫማ ርቀት',
+    te: 'అడుగుల దూరం',      pa: 'ਫੁੱਟ ਦੂਰ',          ta: 'அடி தூரம்',          bn: 'ফুট দূরে',
+    id: 'kaki jauhnya',     ur: 'فٹ دور',            tr: 'fit uzakta',        sw: 'futi mbali',
+    it: 'piedi di distanza',th: 'ฟุตจากนี้',          ms: 'kaki jauhnya',      ne: 'फुट टाढा',
+    so: 'cagood fog',       ht: 'pye plis lwen',
+  },
 
   // ── Backup restore — decrypt modal ────────────────────────────────────────
   'settings.restore_pw_title': {

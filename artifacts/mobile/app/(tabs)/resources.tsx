@@ -174,7 +174,9 @@ function LiveResultCard({ item, rowDir }: { item: LiveResult; rowDir: 'row' | 'r
         </View>
         <Text style={{ fontSize: 11, fontFamily: 'Inter_500Medium', color: '#5A9E6F',
           backgroundColor: '#5A9E6F18', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 20 }}>
-          {item.dist < 10 ? item.dist.toFixed(1) : Math.round(item.dist)} {t('resources.mi')}
+          {item.dist < 0.2
+            ? `${Math.round(item.dist * 5280)} ${t('resources.nearby.ft_away')}`
+            : `${item.dist < 10 ? item.dist.toFixed(1) : Math.round(item.dist)} ${t('resources.nearby.mi_away')}`}
         </Text>
       </View>
       <Text style={{ fontSize: 15, fontFamily: 'Inter_600SemiBold', color: colors.foreground, marginBottom: 4 }}>
