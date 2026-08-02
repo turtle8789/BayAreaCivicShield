@@ -288,7 +288,7 @@ export default function ResourcesScreen() {
       );
       const data = (await res.json()) as Array<{ lat: string; lon: string; display_name: string }>;
       if (!data?.length) {
-        Alert.alert(t('resources.not_found'), `"${q}" ${t('resources.geocode_error')}`);
+        Alert.alert(t('resources.not_found'), t('resources.nearby.geocode_not_found').replace('{query}', q));
         setLoading(false);
         return;
       }
