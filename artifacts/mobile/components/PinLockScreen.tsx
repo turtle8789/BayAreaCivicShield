@@ -7,6 +7,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Feather } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import * as LocalAuthentication from 'expo-local-authentication';
@@ -19,6 +20,11 @@ interface Props {
 }
 
 type Screen = 'biometric' | 'pin';
+
+const MAX_ATTEMPTS     = 5;
+const LOCKOUT_SECONDS  = 30;
+const KEY_ATTEMPTS     = '@pin_attempts';
+const KEY_LOCKED_UNTIL = '@pin_locked_until';
 
 export default function PinLockScreen({ pin, onUnlock }: Props) {
   const colors = useColors();
@@ -33,6 +39,80 @@ export default function PinLockScreen({ pin, onUnlock }: Props) {
   const [entered, setEntered]   = useState('');
   const [pinError, setPinError] = useState(false);
   const shake = useRef(new Animated.Value(0)).current;
+
+  // Brute-force lockout state
+  const [hydrated, setHydrated]       = useState(false);  // true once AsyncStorage read completes
+  const [attempts, setAttempts]       = useState(0);
+  const [lockedUntil, setLockedUntil] = useState<number | null>(null);
+  const [countdown, setCountdown]     = useState(0);
+  const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // ── Load persisted lockout state on mount ─────────────────────────────────
+  useEffect(() => {
+    (async () => {
+      try {
+        const [storedAttempts, storedLocked] = await Promise.all([
+          AsyncStorage.getItem(KEY_ATTEMPTS),
+          AsyncStorage.getItem(KEY_LOCKED_UNTIL),
+        ]);
+        const parsedAttempts = storedAttempts ? parseInt(storedAttempts, 10) : 0;
+        const parsedLocked   = storedLocked   ? parseInt(storedLocked,   10) : NaN;
+
+        // Guard against corrupted/non-finite values
+        const safeAttempts = Number.isFinite(parsedAttempts) ? parsedAttempts : 0;
+        const safeExpiry   = Number.isFinite(parsedLocked)   ? parsedLocked   : null;
+
+        setAttempts(safeAttempts);
+        if (safeExpiry !== null && safeExpiry > Date.now()) {
+          setLockedUntil(safeExpiry);
+        } else if (safeExpiry !== null) {
+          // Expired — clear it
+          await AsyncStorage.multiRemove([KEY_ATTEMPTS, KEY_LOCKED_UNTIL]);
+        }
+      } catch {
+        // ignore storage errors — fail open on read errors (not fail locked)
+      } finally {
+        setHydrated(true);
+      }
+    })();
+  }, []);
+
+  // ── Countdown ticker ──────────────────────────────────────────────────────
+  useEffect(() => {
+    if (lockedUntil === null) {
+      if (countdownRef.current) {
+        clearInterval(countdownRef.current);
+        countdownRef.current = null;
+      }
+      setCountdown(0);
+      return;
+    }
+
+    const tick = () => {
+      const remaining = Math.ceil((lockedUntil - Date.now()) / 1000);
+      if (remaining <= 0) {
+        setLockedUntil(null);
+        setAttempts(0);
+        AsyncStorage.multiRemove([KEY_ATTEMPTS, KEY_LOCKED_UNTIL]).catch(() => {});
+        if (countdownRef.current) {
+          clearInterval(countdownRef.current);
+          countdownRef.current = null;
+        }
+        setCountdown(0);
+      } else {
+        setCountdown(remaining);
+      }
+    };
+
+    tick(); // run immediately
+    countdownRef.current = setInterval(tick, 1000);
+    return () => {
+      if (countdownRef.current) clearInterval(countdownRef.current);
+    };
+  }, [lockedUntil]);
+
+  // Treat as locked until storage is hydrated — prevents bypass during async read
+  const isLocked = !hydrated || (lockedUntil !== null && lockedUntil > Date.now());
 
   // ── Biometric probe ────────────────────────────────────────────────────────
   const checkBio = useCallback(async () => {
@@ -103,6 +183,7 @@ export default function PinLockScreen({ pin, onUnlock }: Props) {
   };
 
   const handleDigit = (d: string) => {
+    if (isLocked) return;
     if (entered.length >= 4) return;
     if (Platform.OS !== 'web') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     const next = entered + d;
@@ -111,18 +192,38 @@ export default function PinLockScreen({ pin, onUnlock }: Props) {
 
     if (next.length === 4) {
       if (next === pin) {
+        // Success — clear lockout state
+        AsyncStorage.multiRemove([KEY_ATTEMPTS, KEY_LOCKED_UNTIL]).catch(() => {});
         if (Platform.OS !== 'web') Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         onUnlock();
       } else {
         if (Platform.OS !== 'web') Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         setPinError(true);
         triggerShake();
-        setTimeout(() => { setEntered(''); setPinError(false); }, 700);
+
+        const newAttempts = attempts + 1;
+        setAttempts(newAttempts);
+
+        if (newAttempts >= MAX_ATTEMPTS) {
+          // Trigger lockout
+          const expiry = Date.now() + LOCKOUT_SECONDS * 1000;
+          setLockedUntil(expiry);
+          AsyncStorage.multiSet([
+            [KEY_ATTEMPTS,     String(newAttempts)],
+            [KEY_LOCKED_UNTIL, String(expiry)],
+          ]).catch(() => {});
+          setEntered('');
+          setPinError(false);
+        } else {
+          AsyncStorage.setItem(KEY_ATTEMPTS, String(newAttempts)).catch(() => {});
+          setTimeout(() => { setEntered(''); setPinError(false); }, 700);
+        }
       }
     }
   };
 
   const handleDelete = () => {
+    if (isLocked) return;
     setEntered(p => p.slice(0, -1));
     setPinError(false);
   };
@@ -186,7 +287,7 @@ export default function PinLockScreen({ pin, onUnlock }: Props) {
   }
 
   // ── PIN screen ─────────────────────────────────────────────────────────────
-  const dotColor = pinError ? '#E05252' : colors.primary;
+  const dotColor = pinError ? '#E05252' : isLocked ? colors.mutedForeground : colors.primary;
 
   return (
     <View style={[s.container, { backgroundColor: colors.background }]}>
@@ -211,12 +312,34 @@ export default function PinLockScreen({ pin, onUnlock }: Props) {
           ))}
         </Animated.View>
 
-        {pinError && (
-          <Text style={s.errorText}>Incorrect PIN — try again</Text>
+        {/* Status messages */}
+        {!hydrated ? (
+          // Neutral loading state — don't reveal lockout info before storage is read
+          <Text style={[s.errorText, { color: 'transparent' }]}> </Text>
+        ) : lockedUntil !== null && lockedUntil > Date.now() ? (
+          <View style={s.lockoutBox}>
+            <Feather name="lock" size={15} color="#E05252" style={{ marginBottom: 4 }} />
+            <Text style={s.lockoutTitle}>Too many wrong attempts</Text>
+            <Text style={s.lockoutSub}>
+              Try again in{' '}
+              <Text style={s.lockoutCountdown}>{countdown}s</Text>
+            </Text>
+          </View>
+        ) : (
+          <>
+            {pinError && (
+              <Text style={s.errorText}>
+                Incorrect PIN —{' '}
+                {MAX_ATTEMPTS - attempts <= 1
+                  ? '1 attempt remaining'
+                  : `${MAX_ATTEMPTS - attempts} attempts remaining`}
+              </Text>
+            )}
+          </>
         )}
 
         {/* Numpad */}
-        <View style={s.pad}>
+        <View style={[s.pad, isLocked && s.padDisabled]}>
           {ROWS.map((row, ri) => (
             <View key={ri} style={s.padRow}>
               {row.map((d, di) => {
@@ -224,10 +347,11 @@ export default function PinLockScreen({ pin, onUnlock }: Props) {
                 if (d === '⌫') return (
                   <Pressable
                     key={di}
-                    style={({ pressed }) => [s.padBtn, { backgroundColor: colors.muted, opacity: pressed ? 0.6 : 1 }]}
+                    style={[s.padBtn, { backgroundColor: colors.muted, opacity: isLocked ? 0.35 : 1 }]}
                     onPress={handleDelete}
                     accessibilityRole="button"
                     accessibilityLabel="Delete"
+                    disabled={isLocked}
                   >
                     <Feather name="delete" size={22} color={colors.foreground} />
                   </Pressable>
@@ -237,11 +361,17 @@ export default function PinLockScreen({ pin, onUnlock }: Props) {
                     key={di}
                     style={({ pressed }) => [
                       s.padBtn,
-                      { backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, opacity: pressed ? 0.65 : 1 },
+                      {
+                        backgroundColor: colors.card,
+                        borderWidth: 1,
+                        borderColor: colors.border,
+                        opacity: isLocked ? 0.35 : pressed ? 0.65 : 1,
+                      },
                     ]}
                     onPress={() => handleDigit(d)}
                     accessibilityRole="button"
                     accessibilityLabel={d}
+                    disabled={isLocked}
                   >
                     <Text style={[s.padDigit, { color: colors.foreground }]}>{d}</Text>
                   </Pressable>
@@ -291,7 +421,15 @@ const s = StyleSheet.create({
   dotsRow:     { flexDirection: 'row', gap: 18, marginBottom: 10 },
   dot:         { width: 16, height: 16, borderRadius: 8, borderWidth: 2 },
   errorText:   { fontSize: 13, fontFamily: 'Inter_500Medium', color: '#E05252', marginBottom: 8 },
+
+  // Lockout banner
+  lockoutBox:      { alignItems: 'center', marginBottom: 10, paddingVertical: 10, paddingHorizontal: 16, borderRadius: 10, backgroundColor: '#E0525218' },
+  lockoutTitle:    { fontSize: 13, fontFamily: 'Inter_600SemiBold', color: '#E05252', marginBottom: 2 },
+  lockoutSub:      { fontSize: 13, fontFamily: 'Inter_400Regular', color: '#E05252' },
+  lockoutCountdown:{ fontFamily: 'Inter_700Bold' },
+
   pad:         { marginTop: 26, gap: 14, width: '100%' },
+  padDisabled: { opacity: 0.5 },
   padRow:      { flexDirection: 'row', justifyContent: 'center', gap: 14 },
   padBtn:      { width: 74, height: 74, borderRadius: 37, alignItems: 'center', justifyContent: 'center' },
   padSpacer:   { width: 74, height: 74 },
