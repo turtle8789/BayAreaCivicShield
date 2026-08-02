@@ -84,6 +84,7 @@ interface AppContextValue {
   encounters: Encounter[];
   addEncounter: (encounter: Omit<Encounter, 'id'>) => Promise<void>;
   deleteEncounter: (id: string) => Promise<void>;
+  importEncounters: (newEncounters: Encounter[], replace: boolean) => Promise<void>;
 
   // Translation
   translateText: (text: string, targetLang: string) => Promise<string>;
@@ -219,6 +220,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     await AsyncStorage.setItem(STORAGE_ENCOUNTERS, JSON.stringify(updated));
   }, [encounters]);
 
+  const importEncounters = useCallback(async (newEncs: Encounter[], replace: boolean) => {
+    const updated = replace
+      ? newEncs
+      : [...newEncs.filter((n) => !encounters.some((e) => e.id === n.id)), ...encounters];
+    setEncounters(updated);
+    await AsyncStorage.setItem(STORAGE_ENCOUNTERS, JSON.stringify(updated));
+  }, [encounters]);
+
   // ── Translation ───────────────────────────────────────────────────────────
   const translateText = useCallback(async (text: string, targetLang: string): Promise<string> => {
     setIsTranslating(true);
@@ -327,7 +336,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         hydrated,
         appLockEnabled, appPin, setAppLock,
         language, setLanguage, isRTL,
-        encounters, addEncounter, deleteEncounter,
+        encounters, addEncounter, deleteEncounter, importEncounters,
         translateText, isTranslating,
         savedDeadlines, addDeadline, removeDeadline, clearDeadlines,
         pendingDocText, setPendingDocText,

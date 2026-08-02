@@ -13,9 +13,12 @@ import {
 import { router } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
+import * as DocumentPicker from 'expo-document-picker';
+import * as FileSystem from 'expo-file-system/legacy';
+import * as Sharing from 'expo-sharing';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LanguagePicker } from '@/components/LanguagePicker';
-import { FontSizeLevel, useApp } from '@/context/AppContext';
+import { Encounter, FontSizeLevel, useApp } from '@/context/AppContext';
 import { useColors } from '@/hooks/useColors';
 import { useRTL } from '@/hooks/useRTL';
 import { useT } from '@/hooks/useTranslation';
@@ -73,7 +76,175 @@ export default function SettingsScreen() {
     highContrast, setHighContrast,
     encounters, clearDeadlines, savedDeadlines,
     appLockEnabled, appPin, setAppLock,
+    importEncounters,
   } = useApp();
+
+  // ── Backup ────────────────────────────────────────────────────────────────
+  const [isBackingUp, setIsBackingUp]   = useState(false);
+  const [isRestoring, setIsRestoring]   = useState(false);
+
+  const handleBackup = async () => {
+    if (encounters.length === 0) {
+      Alert.alert('Back up log', 'No encounters to back up yet.');
+      return;
+    }
+    if (isBackingUp) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setIsBackingUp(true);
+    try {
+      const payload = JSON.stringify({
+        version: 1,
+        app: 'CivicShield Pro',
+        exportedAt: new Date().toISOString(),
+        encounters,
+      }, null, 2);
+      const fileUri = (FileSystem.cacheDirectory ?? '') + 'civicshield-backup.json';
+      await FileSystem.writeAsStringAsync(fileUri, payload, {
+        encoding: FileSystem.EncodingType.UTF8,
+      });
+      const canShare = await Sharing.isAvailableAsync();
+      if (canShare) {
+        await Sharing.shareAsync(fileUri, {
+          mimeType: 'application/json',
+          dialogTitle: 'Back up encounter log',
+          UTI: 'public.json',
+        });
+      } else {
+        Alert.alert('Back up log', 'Sharing is not available on this device.');
+      }
+    } catch {
+      Alert.alert('Back up log', 'Could not create backup. Please try again.');
+    } finally {
+      setIsBackingUp(false);
+    }
+  };
+
+  const handleRestore = async () => {
+    if (isRestoring) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setIsRestoring(true);
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: ['application/json', 'text/plain', '*/*'],
+        copyToCacheDirectory: true,
+      });
+      if (result.canceled || !result.assets?.[0]) { setIsRestoring(false); return; }
+
+      const asset = result.assets[0];
+      const content = await FileSystem.readAsStringAsync(asset.uri, {
+        encoding: FileSystem.EncodingType.UTF8,
+      });
+
+      // ── Runtime validation ─────────────────────────────────────────────────
+      let parsed: unknown;
+      try { parsed = JSON.parse(content); } catch {
+        Alert.alert('Restore failed', 'The file is not valid JSON.');
+        setIsRestoring(false);
+        return;
+      }
+
+      if (
+        typeof parsed !== 'object' || parsed === null ||
+        (parsed as Record<string, unknown>)['app'] !== 'CivicShield Pro' ||
+        (parsed as Record<string, unknown>)['version'] !== 1
+      ) {
+        Alert.alert('Restore failed', 'This file is not a CivicShield Pro backup.');
+        setIsRestoring(false);
+        return;
+      }
+
+      const raw = (parsed as Record<string, unknown>)['encounters'];
+      if (!Array.isArray(raw) || raw.length === 0) {
+        Alert.alert('Restore failed', 'No encounters found in this backup file.');
+        setIsRestoring(false);
+        return;
+      }
+
+      const VALID_TYPES = new Set<string>([
+        'traffic_stop', 'arrest', 'questioning', 'citation', 'search', 'other',
+      ]);
+
+      const validationErrors: string[] = [];
+      const newEncs: Encounter[] = raw.map((item: unknown, idx: number) => {
+        if (typeof item !== 'object' || item === null) {
+          validationErrors.push(`Entry ${idx + 1}: not an object`);
+          return null as unknown as Encounter;
+        }
+        const e = item as Record<string, unknown>;
+
+        if (typeof e['id'] !== 'string' || e['id'].trim() === '') {
+          validationErrors.push(`Entry ${idx + 1}: missing or empty id`);
+        }
+        if (typeof e['date'] !== 'string' || isNaN(Date.parse(e['date'] as string))) {
+          validationErrors.push(`Entry ${idx + 1}: invalid date`);
+        }
+        if (typeof e['type'] !== 'string' || !VALID_TYPES.has(e['type'] as string)) {
+          validationErrors.push(`Entry ${idx + 1}: unknown type "${e['type']}"`);
+        }
+        for (const field of ['location', 'officerInfo', 'description', 'outcome'] as const) {
+          if (typeof e[field] !== 'string') {
+            validationErrors.push(`Entry ${idx + 1}: field "${field}" must be a string`);
+          }
+        }
+
+        return {
+          id:          String(e['id'] ?? ''),
+          date:        String(e['date'] ?? ''),
+          type:        (e['type'] as Encounter['type']) ?? 'other',
+          location:    String(e['location'] ?? ''),
+          officerInfo: String(e['officerInfo'] ?? ''),
+          description: String(e['description'] ?? ''),
+          outcome:     String(e['outcome'] ?? ''),
+        } satisfies Encounter;
+      });
+
+      if (validationErrors.length > 0) {
+        Alert.alert(
+          'Restore failed',
+          `The backup contains ${validationErrors.length} invalid record${validationErrors.length === 1 ? '' : 's'}. No data was changed.\n\n${validationErrors.slice(0, 3).join('\n')}${validationErrors.length > 3 ? `\n…and ${validationErrors.length - 3} more` : ''}`,
+        );
+        setIsRestoring(false);
+        return;
+      }
+
+      if (encounters.length > 0) {
+        Alert.alert(
+          'Merge or replace?',
+          `Found ${newEncs.length} encounter${newEncs.length === 1 ? '' : 's'} in this backup.\n\nMerge adds them alongside your current ${encounters.length} — duplicates are skipped. Replace deletes your current log and uses the backup only.`,
+          [
+            { text: 'Cancel', style: 'cancel', onPress: () => setIsRestoring(false) },
+            {
+              text: 'Merge',
+              onPress: async () => {
+                await importEncounters(newEncs, false);
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                Alert.alert('Restored', `${newEncs.length} encounter${newEncs.length === 1 ? '' : 's'} merged into your log.`);
+                setIsRestoring(false);
+              },
+            },
+            {
+              text: 'Replace',
+              style: 'destructive',
+              onPress: async () => {
+                await importEncounters(newEncs, true);
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                Alert.alert('Restored', `Log replaced with ${newEncs.length} encounter${newEncs.length === 1 ? '' : 's'} from backup.`);
+                setIsRestoring(false);
+              },
+            },
+          ],
+        );
+      } else {
+        await importEncounters(newEncs, true);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        Alert.alert('Restored', `${newEncs.length} encounter${newEncs.length === 1 ? '' : 's'} restored from backup.`);
+        setIsRestoring(false);
+      }
+    } catch {
+      Alert.alert('Restore failed', 'The file could not be read or is not a valid CivicShield backup.');
+      setIsRestoring(false);
+    }
+  };
 
   // ── App Lock PIN setup state ──────────────────────────────────────────────
   const [showPinSetup, setShowPinSetup] = useState(false);
@@ -389,6 +560,20 @@ export default function SettingsScreen() {
             icon="clipboard"
             label={t('settings.log_label')}
             description={`${encounters.length} encounter${encounters.length === 1 ? '' : 's'} stored`}
+          />
+          <View style={styles.divider} />
+          <SettingsRow
+            icon="upload-cloud"
+            label={t('settings.backup_label')}
+            description={isBackingUp ? 'Preparing…' : t('settings.backup_desc')}
+            onPress={handleBackup}
+          />
+          <View style={styles.divider} />
+          <SettingsRow
+            icon="download-cloud"
+            label={t('settings.restore_label')}
+            description={isRestoring ? 'Importing…' : t('settings.restore_desc')}
+            onPress={handleRestore}
           />
           <View style={styles.divider} />
           <SettingsRow
