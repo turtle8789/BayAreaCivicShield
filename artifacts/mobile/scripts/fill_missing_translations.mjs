@@ -94,7 +94,7 @@ ${numbered}`;
       model: 'gpt-4o-mini',
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.2,
-      max_tokens: 8192,
+      max_tokens: 16000,
     }),
   });
   if (!res.ok) {
@@ -148,8 +148,7 @@ async function main() {
     return;
   }
 
-  // Process in batches of 20 keys at a time
-  const BATCH_SIZE = 8;
+  const BATCH_SIZE = 4;
   let processed = 0;
 
   for (let bStart = 0; bStart < missingEntries.length; bStart += BATCH_SIZE) {

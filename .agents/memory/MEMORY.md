@@ -1,3 +1,5 @@
 - [CivicShield Pro architecture](civicshield-architecture.md) — Expo mobile-only app, no backend; all persistence via AsyncStorage; five context keys.
+- [I18nKey derivation](i18nkey-derivation.md) — I18nKey is now auto-derived from TRANSLATIONS; never add keys to a manual union type.
+- [Fill translations script](fill-translations-script.md) — batch_size=4, max_tokens=16000; runs incrementally; needs ~17 passes for 70 keys at 4 keys/batch.
 - [Nested Pressable on web](nested-pressable-web.md) — avoid nesting Pressable inside Pressable; split into body + sibling footer Pressables instead.
 - [RTL support pattern](rtl-support.md) — RTL added via isRTL flag on Language, exposed from AppContext, consumed via useRTL hook; apply rowDir/arrowIcon/backIcon to layout rows.
