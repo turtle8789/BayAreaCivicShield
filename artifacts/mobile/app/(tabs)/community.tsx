@@ -1,12 +1,11 @@
 /**
- * Community tab — Forum + Resource Hub in two sub-tabs.
- * Accessible directly from the bottom tab bar.
+ * Community tab — peer forum for sharing experiences and asking questions.
+ * The Resource Hub lives in its own dedicated Hub tab.
  */
 import React, { useState } from 'react';
 import {
   Alert,
   KeyboardAvoidingView,
-  Linking,
   Modal,
   Platform,
   Pressable,
@@ -18,7 +17,6 @@ import {
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import * as WebBrowser from 'expo-web-browser';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   FORUM_CATEGORIES,
@@ -27,18 +25,11 @@ import {
   ForumPost,
   SEED_POSTS,
 } from '@/constants/forum-data';
-import {
-  HUB_CATEGORIES,
-  HUB_RESOURCES,
-  HubCategory,
-} from '@/constants/resource-hub-data';
 import { I18nKey } from '@/constants/i18n';
 import { useApp } from '@/context/AppContext';
 import { useColors } from '@/hooks/useColors';
 import { useRTL } from '@/hooks/useRTL';
 import { useT } from '@/hooks/useTranslation';
-
-type MainTab = 'forum' | 'hub';
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -52,20 +43,6 @@ function timeAgo(iso: string, t: (key: I18nKey) => string): string {
 
 function catMeta(cat: ForumCategory) {
   return FORUM_CATEGORIES.find((c) => c.value === cat)!;
-}
-
-async function openUrl(url: string, errorTitle: string, errorMsg: string) {
-  try {
-    if (Platform.OS === 'web') {
-      window.open(url, '_blank', 'noopener');
-    } else {
-      await WebBrowser.openBrowserAsync(url, {
-        presentationStyle: WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN,
-      });
-    }
-  } catch {
-    Alert.alert(errorTitle, errorMsg + url);
-  }
 }
 
 // ── Forum ─────────────────────────────────────────────────────────────────────
@@ -316,92 +293,6 @@ function NewPostView({ title, setTitle, body, setBody, cat, setCat, submitting, 
   );
 }
 
-// ── Resource Hub ──────────────────────────────────────────────────────────────
-
-function HubTab() {
-  const colors = useColors();
-  const { t } = useT();
-  const { fs } = useApp();
-  const { rowDir, textStyle } = useRTL();
-  const [filter, setFilter]   = useState<HubCategory | 'all'>('all');
-  const [search, setSearch]   = useState('');
-
-  const filtered = HUB_RESOURCES.filter((r) => {
-    const matchCat = filter === 'all' || r.category === filter;
-    const q = search.toLowerCase();
-    const matchSearch = !q || r.name.toLowerCase().includes(q) || r.description.toLowerCase().includes(q) || r.tags.some((t) => t.includes(q));
-    return matchCat && matchSearch;
-  });
-
-  return (
-    <>
-      {/* Search */}
-      <View style={{ flexDirection: rowDir, alignItems: 'center', backgroundColor: colors.muted, borderRadius: 12, marginBottom: 10, paddingHorizontal: 12, height: 42, gap: 8, borderWidth: 1, borderColor: colors.border }}>
-        <Feather name="search" size={15} color={colors.mutedForeground} />
-        <TextInput
-          style={[{ flex: 1, fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground }, textStyle]}
-          value={search} onChangeText={setSearch}
-          placeholder={t('community.search_hub')}
-          placeholderTextColor={colors.mutedForeground}
-        />
-        {search.length > 0 && <Pressable onPress={() => setSearch('')} hitSlop={8}><Feather name="x" size={14} color={colors.mutedForeground} /></Pressable>}
-      </View>
-
-      {/* Category tabs */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 12 }}>
-        <View style={{ flexDirection: rowDir, gap: 6, paddingRight: 8 }}>
-          {[{ value: 'all' as const, label: t('hub.filter_all'), labelKey: '', emoji: '📋' }, ...HUB_CATEGORIES].map((c) => {
-            const active = filter === c.value;
-            const chipLabel = c.labelKey ? t(c.labelKey as I18nKey) : c.label;
-            return (
-              <Pressable key={c.value} onPress={() => { setFilter(c.value as HubCategory | 'all'); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
-                style={{ flexDirection: rowDir, alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1.5, borderColor: active ? colors.primary : colors.border, backgroundColor: active ? colors.primary + '14' : colors.muted }}>
-                <Text style={{ fontSize: 11 }}>{c.emoji}</Text>
-                <Text style={{ fontSize: fs(12), fontFamily: active ? 'Inter_600SemiBold' : 'Inter_400Regular', color: active ? colors.primary : colors.mutedForeground }}>{chipLabel}</Text>
-              </Pressable>
-            );
-          })}
-        </View>
-      </ScrollView>
-
-      <Text style={{ fontSize: fs(11), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginBottom: 10 }}>
-        {filtered.length} {t('hub.curated_count')}
-      </Text>
-
-      {filtered.map((r) => (
-        <View key={r.id} style={{ backgroundColor: colors.card, borderRadius: colors.radius, borderWidth: 1, borderColor: colors.border, marginBottom: 10, padding: 14 }}>
-          <View style={{ flexDirection: rowDir, alignItems: 'flex-start', gap: 10, marginBottom: 6 }}>
-            <Text style={{ flex: 1, fontSize: fs(15), fontFamily: 'Inter_600SemiBold', color: colors.foreground, lineHeight: 21 }}>{r.name}</Text>
-            <View style={{ backgroundColor: r.free ? '#5A9E6F18' : colors.muted, borderRadius: 20, paddingHorizontal: 8, paddingVertical: 3 }}>
-              <Text style={{ fontSize: fs(10), fontFamily: 'Inter_600SemiBold', color: r.free ? '#5A9E6F' : colors.mutedForeground }}>{r.free ? t('community.free_badge') : t('hub.paid')}</Text>
-            </View>
-          </View>
-          <Text style={{ fontSize: fs(13), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, lineHeight: 18, marginBottom: 8 }}>{r.description}</Text>
-          <View style={{ flexDirection: rowDir, flexWrap: 'wrap', gap: 5, marginBottom: 10 }}>
-            {r.tags.slice(0, 4).map((tag) => (
-              <View key={tag} style={{ backgroundColor: colors.muted, borderRadius: 20, paddingHorizontal: 8, paddingVertical: 3 }}>
-                <Text style={{ fontSize: fs(11), fontFamily: 'Inter_400Regular', color: colors.mutedForeground }}>{tag}</Text>
-              </View>
-            ))}
-          </View>
-          <View style={{ flexDirection: rowDir, gap: 8 }}>
-            <Pressable onPress={() => openUrl(r.url.startsWith('http') ? r.url : `https://${r.url}`, t('community.link_error_title'), t('community.link_error_msg'))} style={{ flex: 1, backgroundColor: colors.primary, borderRadius: 10, paddingVertical: 10, alignItems: 'center', flexDirection: rowDir, justifyContent: 'center', gap: 6 }}>
-              <Feather name="external-link" size={14} color="#FFFFFF" />
-              <Text style={{ fontSize: fs(13), fontFamily: 'Inter_600SemiBold', color: '#FFFFFF' }}>{t('community.open_website')}</Text>
-            </Pressable>
-            {r.phone && (
-              <Pressable onPress={() => Linking.openURL(`tel:${r.phone!.replace(/\D/g, '')}`).catch(() => {})} style={{ backgroundColor: '#5A9E6F14', borderRadius: 10, paddingVertical: 10, paddingHorizontal: 16, alignItems: 'center', flexDirection: rowDir, gap: 6 }}>
-                <Feather name="phone" size={14} color="#5A9E6F" />
-                <Text style={{ fontSize: fs(13), fontFamily: 'Inter_600SemiBold', color: '#5A9E6F' }}>{t('hub.call')}</Text>
-              </Pressable>
-            )}
-          </View>
-        </View>
-      ))}
-    </>
-  );
-}
-
 // ── Main Screen ───────────────────────────────────────────────────────────────
 
 export default function CommunityScreen() {
@@ -409,21 +300,14 @@ export default function CommunityScreen() {
   const insets  = useSafeAreaInsets();
   const { t }   = useT();
   const { fs }  = useApp();
-  const { rowDir } = useRTL();
   const topPad  = Platform.OS === 'web' ? 67 : insets.top;
-  const [tab, setTab] = useState<MainTab>('forum');
 
   const styles = StyleSheet.create({
-    container:   { flex: 1, backgroundColor: colors.background },
-    header:      { paddingTop: topPad + 12, paddingHorizontal: 20, paddingBottom: 0, borderBottomWidth: 1, borderBottomColor: colors.border },
-    headerTitle: { fontSize: fs(22), fontFamily: 'Inter_700Bold', color: colors.foreground },
-    headerSub:   { fontSize: fs(13), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginTop: 2, marginBottom: 12 },
-    tabRow:      { flexDirection: rowDir, marginBottom: 0 },
-    tabBtn:      { flex: 1, paddingVertical: 10, alignItems: 'center', flexDirection: rowDir, justifyContent: 'center', gap: 6, borderBottomWidth: 2, borderBottomColor: 'transparent' },
-    tabBtnActive:{ borderBottomColor: colors.primary },
-    tabBtnText:  { fontSize: fs(14), fontFamily: 'Inter_500Medium', color: colors.mutedForeground },
-    tabBtnTextA: { color: colors.primary, fontFamily: 'Inter_600SemiBold' },
-    scroll:      { flex: 1 },
+    container:     { flex: 1, backgroundColor: colors.background },
+    header:        { paddingTop: topPad + 12, paddingHorizontal: 20, paddingBottom: 14, borderBottomWidth: 1, borderBottomColor: colors.border },
+    headerTitle:   { fontSize: fs(22), fontFamily: 'Inter_700Bold', color: colors.foreground },
+    headerSub:     { fontSize: fs(13), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginTop: 2 },
+    scroll:        { flex: 1 },
     scrollContent: { padding: 16, paddingBottom: Platform.OS === 'web' ? 80 : 110, flexGrow: 1 },
   });
 
@@ -433,32 +317,16 @@ export default function CommunityScreen() {
       <View style={styles.header}>
         <Text style={styles.headerTitle} accessibilityRole="header">{t('community.title')}</Text>
         <Text style={styles.headerSub}>{t('community.subtitle')}</Text>
-        <View style={styles.tabRow}>
-          {([
-            { id: 'forum' as MainTab, label: t('community.tab_forum') },
-            { id: 'hub'   as MainTab, label: t('community.tab_hub') },
-          ]).map(({ id, label }) => (
-            <Pressable
-              key={id}
-              style={[styles.tabBtn, tab === id && styles.tabBtnActive]}
-              onPress={() => { setTab(id); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
-              accessibilityRole="tab"
-              accessibilityState={{ selected: tab === id }}
-            >
-              <Text style={[styles.tabBtnText, tab === id && styles.tabBtnTextA]}>{label}</Text>
-            </Pressable>
-          ))}
-        </View>
       </View>
 
-      {/* Content */}
+      {/* Forum */}
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        {tab === 'forum' ? <ForumTab /> : <HubTab />}
+        <ForumTab />
       </ScrollView>
     </View>
   );
