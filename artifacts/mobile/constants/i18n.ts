@@ -89,6 +89,7 @@ export type I18nKey =
   | 'log.protect_confirm_ph' | 'log.protect_mismatch'
   | 'log.protect_skip' | 'log.protect_btn' | 'log.protect_cancel'
   | 'log.share_btn'
+  | 'log.select_hint' | 'log.select_cancel' | 'log.select_share'
   // New log form
   | 'newlog.title' | 'newlog.save' | 'newlog.type_label'
   | 'newlog.location' | 'newlog.location_ph'
@@ -2448,6 +2449,30 @@ export const TRANSLATIONS: Translations = {
     ja: '共有',             am: 'አጋራ',
     te: 'భాగస్వామ్యం చేయండి',  pa: 'ਸਾਂਝਾ ਕਰੋ',   ta: 'பகிர்',       bn: 'শেয়ার করুন',   id: 'Bagikan',   ur: 'شیئر کریں',   tr: 'Paylaş',
     sw: 'Shiriki',         it: 'Condividi',        th: 'แชร์',         ms: 'Kongsi',   ne: 'साझा गर्नुहोस्',   so: 'La wadaag',   ht: 'Pataje',
+  },
+  'log.select_hint': {
+    en: 'Long-press a card to select',   es: 'Mantén presionado para seleccionar',  'zh-CN': '长按卡片以选择',  'zh-TW': '長按卡片以選取',
+    vi: 'Nhấn giữ để chọn',              tl: 'Pindutin nang matagal para pumili',    hi: 'कार्ड को चुनने के लिए देर तक दबाएँ',  ko: '길게 눌러 선택',
+    ar: 'اضغط مطولاً لتحديد',            fr: 'Appuyez longuement pour sélectionner', pt: 'Pressione longo para selecionar',     ru: 'Удерживайте для выбора',
+    ja: '長押しで選択',                    am: 'ለመምረጥ ረጅም ጊዜ ይጫኑ',
+    te: 'ఎంచుకోవడానికి నొక్కి పట్టుకోండి',  pa: 'ਚੁਣਨ ਲਈ ਲੰਮਾ ਦਬਾਓ',  ta: 'தேர்வு செய்ய நீண்டுநேரம் அழுத்துங்கள்',  bn: 'নির্বাচন করতে দীর্ঘ-চাপ দিন',  id: 'Tekan lama untuk memilih',  ur: 'منتخب کرنے کے لیے دیر تک دبائیں',  tr: 'Seçmek için uzun basın',
+    sw: 'Bonyeza kwa muda mrefu kuchagua',  it: 'Tieni premuto per selezionare',  th: 'กดค้างเพื่อเลือก',  ms: 'Tekan lama untuk pilih',  ne: 'छनोट गर्न लामो थिच्नुहोस्',  so: 'Riix muddo dheer si aad u doorato',  ht: 'Peze lontan pou seleksyone',
+  },
+  'log.select_cancel': {
+    en: 'Cancel',         es: 'Cancelar',        'zh-CN': '取消',    'zh-TW': '取消',
+    vi: 'Hủy',            tl: 'Kanselahin',       hi: 'रद्द करें',   ko: '취소',
+    ar: 'إلغاء',           fr: 'Annuler',          pt: 'Cancelar',    ru: 'Отмена',
+    ja: 'キャンセル',       am: 'ሰርዝ',
+    te: 'రద్దు చేయండి',   pa: 'ਰੱਦ ਕਰੋ',         ta: 'ரத்துசெய்',   bn: 'বাতিল করুন',  id: 'Batal',   ur: 'منسوخ کریں',  tr: 'İptal',
+    sw: 'Ghairi',          it: 'Annulla',           th: 'ยกเลิก',      ms: 'Batal',   ne: 'रद्द गर्नुहोस्',  so: 'Jooji',  ht: 'Anile',
+  },
+  'log.select_share': {
+    en: 'Share selected',    es: 'Compartir seleccionados',  'zh-CN': '共享已选',   'zh-TW': '共享已選',
+    vi: 'Chia sẻ đã chọn',   tl: 'Ibahagi ang mga napili',   hi: 'चयनित शेयर करें', ko: '선택 항목 공유',
+    ar: 'مشاركة المحدد',      fr: 'Partager la sélection',    pt: 'Compartilhar selecionados', ru: 'Поделиться выбранным',
+    ja: '選択を共有',           am: 'የተመረጡ አጋራ',
+    te: 'ఎంచుకున్నవి భాగస్వామ్యం చేయండి',  pa: 'ਚੁਣੇ ਸਾਂਝੇ ਕਰੋ',  ta: 'தேர்ந்தெடுத்தவற்றை பகிர்',  bn: 'নির্বাচিত শেয়ার করুন',  id: 'Bagikan yang dipilih',  ur: 'منتخب شیئر کریں',  tr: 'Seçilenleri paylaş',
+    sw: 'Shiriki zilizochaguliwa',  it: 'Condividi selezionati',  th: 'แชร์รายการที่เลือก',  ms: 'Kongsi yang dipilih',  ne: 'चयन गरिएका साझा गर्नुहोस्',  so: 'La wadaag kuwa la doortay',  ht: 'Pataje ki yo chwazi',
   },
 
   // ── New log form ──────────────────────────────────────────────────────────────

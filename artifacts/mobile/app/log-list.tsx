@@ -26,7 +26,16 @@ import { useT } from '@/hooks/useTranslation';
 
 // ─── EncounterCard ─────────────────────────────────────────────────────────────
 
-function EncounterCard({ encounter, onDelete }: { encounter: Encounter; onDelete: () => void }) {
+interface EncounterCardProps {
+  encounter: Encounter;
+  onDelete: () => void;
+  selectionMode: boolean;
+  selected: boolean;
+  onLongPress: () => void;
+  onToggleSelect: () => void;
+}
+
+function EncounterCard({ encounter, onDelete, selectionMode, selected, onLongPress, onToggleSelect }: EncounterCardProps) {
   const colors = useColors();
   const { fs } = useApp();
   const { t } = useT();
@@ -124,7 +133,7 @@ function EncounterCard({ encounter, onDelete }: { encounter: Encounter; onDelete
   const styles = StyleSheet.create({
     card: {
       backgroundColor: colors.card, borderRadius: colors.radius, borderWidth: 1,
-      borderColor: colors.border, marginBottom: 10, overflow: 'hidden',
+      borderColor: selected ? colors.primary : colors.border, marginBottom: 10, overflow: 'hidden',
     },
     cardHeader:     { flexDirection: rowDir, alignItems: 'center', padding: 14, gap: 10 },
     typeDot:        { width: 10, height: 10, borderRadius: 5, backgroundColor: colors.primary },
@@ -135,12 +144,28 @@ function EncounterCard({ encounter, onDelete }: { encounter: Encounter; onDelete
     fieldValue:     { fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground, lineHeight: 20, ...textStyle },
     deleteBtn:      { flex: 1, flexDirection: rowDir, alignItems: 'center', justifyContent: 'center', gap: 6, borderRadius: 10, paddingVertical: 9, backgroundColor: colors.destructive + '12', borderWidth: 1, borderColor: colors.destructive + '25' },
     shareBtn:       { flex: 1, flexDirection: rowDir, alignItems: 'center', justifyContent: 'center', gap: 6, borderRadius: 10, paddingVertical: 9, backgroundColor: colors.primary + '12', borderWidth: 1, borderColor: colors.primary + '25' },
+    checkCircle:    { width: 22, height: 22, borderRadius: 11, borderWidth: 2, borderColor: colors.primary, alignItems: 'center', justifyContent: 'center', backgroundColor: selected ? colors.primary : 'transparent' },
   });
+
+  const handleHeaderPress = () => {
+    if (selectionMode) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      onToggleSelect();
+    } else {
+      setExpanded(!expanded);
+    }
+  };
 
   return (
     <View style={styles.card}>
-      <Pressable style={styles.cardHeader} onPress={() => setExpanded(!expanded)}>
-        <View style={styles.typeDot} />
+      <Pressable style={styles.cardHeader} onPress={handleHeaderPress} onLongPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onLongPress(); }}>
+        {selectionMode ? (
+          <View style={styles.checkCircle}>
+            {selected && <Feather name="check" size={13} color="#FFFFFF" />}
+          </View>
+        ) : (
+          <View style={styles.typeDot} />
+        )}
         <View style={{ flex: 1 }}>
           <Text style={styles.typeLabel}>{t(typeKey)}</Text>
           <View style={{ flexDirection: rowDir, gap: 6, marginTop: 2 }}>
@@ -148,7 +173,7 @@ function EncounterCard({ encounter, onDelete }: { encounter: Encounter; onDelete
             {encounter.location ? <Text style={styles.dateText}>· {encounter.location}</Text> : null}
           </View>
         </View>
-        <Feather name={expanded ? 'chevron-up' : 'chevron-down'} size={18} color={colors.mutedForeground} />
+        {!selectionMode && <Feather name={expanded ? 'chevron-up' : 'chevron-down'} size={18} color={colors.mutedForeground} />}
       </Pressable>
 
       {expanded && (
@@ -523,6 +548,83 @@ export default function LogListScreen() {
   const { rowDir, backIcon } = useRTL();
   const [isExporting, setIsExporting] = useState(false);
   const [passwordModalVisible, setPasswordModalVisible] = useState(false);
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [multiPasswordModalVisible, setMultiPasswordModalVisible] = useState(false);
+
+  const enterSelectionMode = (id: string) => {
+    setSelectedIds(new Set([id]));
+    setSelectionMode(true);
+  };
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const cancelSelection = () => {
+    setSelectionMode(false);
+    setSelectedIds(new Set());
+  };
+
+  const handleMultiExportPress = () => {
+    if (selectedIds.size === 0) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setMultiPasswordModalVisible(true);
+  };
+
+  const doMultiExport = async (password: string | null) => {
+    setMultiPasswordModalVisible(false);
+    setIsExporting(true);
+    try {
+      const selected = encounters.filter(e => selectedIds.has(e.id));
+      const html = buildEncounterHtml(selected, t('log.export_title'));
+
+      if (password) {
+        const encryptedPayload = aesEncryptStrong(html, password);
+        const wrapperHtml = buildProtectedHtml(encryptedPayload, t('log.export_title'));
+
+        const canShare = await Sharing.isAvailableAsync();
+        if (canShare) {
+          const fileUri = (FileSystem.cacheDirectory ?? '') + 'encounter-selection-protected.html';
+          await FileSystem.writeAsStringAsync(fileUri, wrapperHtml, {
+            encoding: FileSystem.EncodingType.UTF8,
+          });
+          await Sharing.shareAsync(fileUri, {
+            mimeType: 'text/html',
+            dialogTitle: t('log.export_title'),
+            UTI: 'public.html',
+          });
+        } else {
+          if (typeof window !== 'undefined') {
+            const blob = new Blob([wrapperHtml], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+          }
+        }
+      } else {
+        const { uri } = await Print.printToFileAsync({ html, base64: false });
+        const canShare = await Sharing.isAvailableAsync();
+        if (canShare) {
+          await Sharing.shareAsync(uri, {
+            mimeType: 'application/pdf',
+            dialogTitle: t('log.export_title'),
+            UTI: 'com.adobe.pdf',
+          });
+        } else {
+          await Print.printAsync({ html });
+        }
+      }
+      cancelSelection();
+    } catch {
+      Alert.alert(t('log.export_btn'), t('log.export_error'));
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const navigateToNew = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -602,7 +704,7 @@ export default function LogListScreen() {
     headerSub:    { fontSize: fs(13), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginTop: 2 },
     addBtn:       { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center' },
     exportBtn:    { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.muted, alignItems: 'center', justifyContent: 'center' },
-    listContent:  { padding: 16, paddingBottom: bottomPad + 24 },
+    listContent:  { padding: 16, paddingBottom: bottomPad + 80 },
     countText:    { fontSize: fs(13), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, paddingHorizontal: 16, paddingTop: 12, paddingBottom: 4 },
     emptyWrap:    { alignItems: 'center', justifyContent: 'center', paddingTop: 80, gap: 12 },
     emptyIcon:    { width: 72, height: 72, borderRadius: 36, backgroundColor: colors.muted, alignItems: 'center', justifyContent: 'center' },
@@ -612,26 +714,60 @@ export default function LogListScreen() {
     emptyBtnText: { fontSize: fs(15), fontFamily: 'Inter_600SemiBold', color: colors.primaryForeground },
     privacyNote:  { flexDirection: rowDir, alignItems: 'center', gap: 8, backgroundColor: colors.muted, borderRadius: 10, padding: 10, marginHorizontal: 16, marginTop: 8 },
     privacyText:  { flex: 1, fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.mutedForeground },
+    selectionBar: {
+      position: 'absolute', bottom: 0, left: 0, right: 0,
+      paddingBottom: bottomPad + 12, paddingTop: 14, paddingHorizontal: 16,
+      backgroundColor: colors.background,
+      borderTopWidth: 1, borderTopColor: colors.border,
+      flexDirection: rowDir, gap: 10, alignItems: 'center',
+    },
+    shareSelectedBtn: {
+      flex: 1, flexDirection: rowDir, alignItems: 'center', justifyContent: 'center', gap: 8,
+      backgroundColor: selectedIds.size > 0 ? colors.primary : colors.primary + '60',
+      borderRadius: 12, paddingVertical: 14,
+    },
+    shareSelectedText: { fontSize: fs(15), fontFamily: 'Inter_600SemiBold', color: colors.primaryForeground },
+    cancelSelectionBtn: {
+      width: 48, height: 48, borderRadius: 12, backgroundColor: colors.muted,
+      alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.border,
+    },
+    selectHint: { fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, textAlign: 'center', paddingHorizontal: 16, paddingVertical: 6 },
   });
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Feather name={backIcon} size={22} color={colors.foreground} />
-        </Pressable>
+        {selectionMode ? (
+          <Pressable onPress={cancelSelection} hitSlop={12}>
+            <Feather name="x" size={22} color={colors.foreground} />
+          </Pressable>
+        ) : (
+          <Pressable onPress={() => router.back()} hitSlop={12}>
+            <Feather name={backIcon} size={22} color={colors.foreground} />
+          </Pressable>
+        )}
         <View style={styles.headerLeft}>
-          <Text style={styles.headerTitle}>{t('log.title')}</Text>
-          <Text style={styles.headerSub}>{t('log.subtitle')}</Text>
+          {selectionMode ? (
+            <Text style={styles.headerTitle}>
+              {selectedIds.size} {selectedIds.size === 1 ? t('log.entry') : t('log.entries')}
+            </Text>
+          ) : (
+            <>
+              <Text style={styles.headerTitle}>{t('log.title')}</Text>
+              <Text style={styles.headerSub}>{t('log.subtitle')}</Text>
+            </>
+          )}
         </View>
-        {encounters.length > 0 && (
+        {!selectionMode && encounters.length > 0 && (
           <Pressable style={styles.exportBtn} onPress={handleExport} disabled={isExporting}>
             <Feather name="share" size={18} color={isExporting ? colors.mutedForeground : colors.foreground} />
           </Pressable>
         )}
-        <Pressable style={styles.addBtn} onPress={navigateToNew}>
-          <Feather name="plus" size={22} color="#FFFFFF" />
-        </Pressable>
+        {!selectionMode && (
+          <Pressable style={styles.addBtn} onPress={navigateToNew}>
+            <Feather name="plus" size={22} color="#FFFFFF" />
+          </Pressable>
+        )}
       </View>
 
       {encounters.length === 0 ? (
@@ -648,28 +784,62 @@ export default function LogListScreen() {
         </View>
       ) : (
         <>
-          <View style={styles.privacyNote}>
-            <Feather name="lock" size={13} color={colors.mutedForeground} />
-            <Text style={styles.privacyText}>
-              {encounters.length} {encounters.length === 1 ? t('log.entry') : t('log.entries')} · {t('log.stored_device')}
-            </Text>
-          </View>
+          {selectionMode ? (
+            <Text style={styles.selectHint}>{t('log.select_hint')}</Text>
+          ) : (
+            <View style={styles.privacyNote}>
+              <Feather name="lock" size={13} color={colors.mutedForeground} />
+              <Text style={styles.privacyText}>
+                {encounters.length} {encounters.length === 1 ? t('log.entry') : t('log.entries')} · {t('log.stored_device')}
+              </Text>
+            </View>
+          )}
           <FlatList
             data={encounters}
             keyExtractor={(item) => item.id}
             contentContainerStyle={styles.listContent}
             renderItem={({ item }) => (
-              <EncounterCard encounter={item} onDelete={() => deleteEncounter(item.id)} />
+              <EncounterCard
+                encounter={item}
+                onDelete={() => deleteEncounter(item.id)}
+                selectionMode={selectionMode}
+                selected={selectedIds.has(item.id)}
+                onLongPress={() => enterSelectionMode(item.id)}
+                onToggleSelect={() => toggleSelect(item.id)}
+              />
             )}
             showsVerticalScrollIndicator={false}
           />
         </>
       )}
 
+      {selectionMode && (
+        <View style={styles.selectionBar}>
+          <Pressable
+            style={styles.shareSelectedBtn}
+            onPress={handleMultiExportPress}
+            disabled={selectedIds.size === 0 || isExporting}
+          >
+            <Feather name="share" size={16} color={colors.primaryForeground} />
+            <Text style={styles.shareSelectedText}>
+              {t('log.select_share')} ({selectedIds.size})
+            </Text>
+          </Pressable>
+          <Pressable style={styles.cancelSelectionBtn} onPress={cancelSelection}>
+            <Feather name="x" size={20} color={colors.foreground} />
+          </Pressable>
+        </View>
+      )}
+
       <PasswordModal
         visible={passwordModalVisible}
         onCancel={() => setPasswordModalVisible(false)}
         onShare={doExport}
+      />
+      <PasswordModal
+        visible={multiPasswordModalVisible}
+        onCancel={() => setMultiPasswordModalVisible(false)}
+        onShare={doMultiExport}
       />
     </View>
   );
