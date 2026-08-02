@@ -678,7 +678,7 @@ export default function SettingsScreen() {
             icon="lock"
             label={t('security.title')}
             description={appLockEnabled ? t('security.app_lock_on') : t('security.app_lock_off')}
-            onPress={() => router.push('/security')}
+            onPress={() => router.push('/security' as any)}
           />
         </View>
 

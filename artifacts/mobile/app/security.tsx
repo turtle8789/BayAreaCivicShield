@@ -14,6 +14,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
+import * as LocalAuthentication from 'expo-local-authentication';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useApp } from '@/context/AppContext';
 import { useColors } from '@/hooks/useColors';
@@ -35,7 +36,22 @@ export default function SecurityScreen() {
   const insets = useSafeAreaInsets();
   const { t } = useT();
   const { rowDir, backIcon } = useRTL();
-  const { fs, appLockEnabled, appPin, setAppLock, lockTimeout, setLockTimeout } = useApp();
+  const { fs, appLockEnabled, appPin, setAppLock, lockTimeout, setLockTimeout,
+          biometricUnlockEnabled, setBiometricUnlockEnabled } = useApp();
+
+  const [bioAvailable, setBioAvailable] = useState(false);
+  useEffect(() => {
+    if (Platform.OS === 'web') return;
+    (async () => {
+      try {
+        const hasHw    = await LocalAuthentication.hasHardwareAsync();
+        const enrolled = await LocalAuthentication.isEnrolledAsync();
+        setBioAvailable(hasHw && enrolled);
+      } catch {
+        setBioAvailable(false);
+      }
+    })();
+  }, []);
   const topPad = Platform.OS === 'web' ? 67 : insets.top;
 
   const [dismissed, setDismissed]   = useState(false);
@@ -266,6 +282,37 @@ export default function SecurityScreen() {
                 </View>
                 <Feather name="chevron-right" size={16} color={colors.mutedForeground} />
               </Pressable>
+
+              {/* Biometric toggle — only shown when hardware is available */}
+              {bioAvailable && (
+                <>
+                  <View style={{ height: 1, backgroundColor: colors.border }} />
+                  <View style={{ flexDirection: rowDir, alignItems: 'center', padding: 14, gap: 12 }}>
+                    <View style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: colors.primary + '18',
+                      alignItems: 'center', justifyContent: 'center' }}>
+                      <Feather name="aperture" size={18} color={colors.primary} />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={{ fontSize: fs(15), fontFamily: 'Inter_500Medium', color: colors.foreground }}>
+                        Use biometrics to unlock
+                      </Text>
+                      <Text style={{ fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginTop: 1 }}>
+                        {biometricUnlockEnabled ? 'Face ID / fingerprint offered first' : 'PIN only — biometrics skipped'}
+                      </Text>
+                    </View>
+                    <Switch
+                      value={biometricUnlockEnabled}
+                      onValueChange={(v) => {
+                        setBiometricUnlockEnabled(v);
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                      }}
+                      trackColor={{ false: colors.muted, true: colors.primary + '80' }}
+                      thumbColor={biometricUnlockEnabled ? colors.primary : '#F4F4F4'}
+                      accessibilityLabel="Use biometrics to unlock"
+                    />
+                  </View>
+                </>
+              )}
             </>
           )}
         </View>

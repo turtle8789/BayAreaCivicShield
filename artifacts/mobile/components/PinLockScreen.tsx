@@ -11,6 +11,7 @@ import { Feather } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { useColors } from '@/hooks/useColors';
+import { useApp } from '@/context/AppContext';
 
 interface Props {
   pin: string;
@@ -21,6 +22,7 @@ type Screen = 'biometric' | 'pin';
 
 export default function PinLockScreen({ pin, onUnlock }: Props) {
   const colors = useColors();
+  const { biometricUnlockEnabled } = useApp();
 
   const [screen, setScreen]           = useState<Screen>('biometric');
   const [bioAvailable, setBioAvailable] = useState(false);
@@ -34,7 +36,12 @@ export default function PinLockScreen({ pin, onUnlock }: Props) {
 
   // ── Biometric probe ────────────────────────────────────────────────────────
   const checkBio = useCallback(async () => {
-    if (Platform.OS === 'web') { setBioChecked(true); setScreen('pin'); return; }
+    // Skip biometrics entirely if the user has opted out
+    if (!biometricUnlockEnabled || Platform.OS === 'web') {
+      setBioChecked(true);
+      setScreen('pin');
+      return;
+    }
     try {
       const hasHw      = await LocalAuthentication.hasHardwareAsync();
       const enrolled   = await LocalAuthentication.isEnrolledAsync();
@@ -48,7 +55,7 @@ export default function PinLockScreen({ pin, onUnlock }: Props) {
       setBioChecked(true);
       setScreen('pin');
     }
-  }, []);
+  }, [biometricUnlockEnabled]);
 
   // ── Trigger biometric prompt ───────────────────────────────────────────────
   const promptBio = useCallback(async () => {

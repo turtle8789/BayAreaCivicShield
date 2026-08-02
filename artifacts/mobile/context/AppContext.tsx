@@ -77,6 +77,8 @@ interface AppContextValue {
   setAppLock: (enabled: boolean, pin: string) => Promise<void>;
   lockTimeout: number; // minutes; -1 = Never, 0 = Immediately
   setLockTimeout: (minutes: number) => Promise<void>;
+  biometricUnlockEnabled: boolean;
+  setBiometricUnlockEnabled: (enabled: boolean) => Promise<void>;
 
   // Auto-backup
   autoBackupEnabled: boolean;
@@ -139,8 +141,9 @@ const STORAGE_LANGUAGE         = 'civicshield_language';
 const STORAGE_APP_LOCK         = 'civicshield_app_lock';
 const STORAGE_APP_PIN          = 'civicshield_app_pin';
 const STORAGE_LOCK_TIMEOUT     = 'civicshield_lock_timeout';
-const STORAGE_AUTO_BACKUP      = 'civicshield_auto_backup';
-const STORAGE_LAST_AUTO_BACKUP = 'civicshield_last_auto_backup';
+const STORAGE_AUTO_BACKUP          = 'civicshield_auto_backup';
+const STORAGE_LAST_AUTO_BACKUP     = 'civicshield_last_auto_backup';
+const STORAGE_BIOMETRIC_UNLOCK     = 'civicshield_biometric_unlock';
 
 // ─── Translation via free MyMemory API ───────────────────────────────────────
 
@@ -161,11 +164,12 @@ async function translateWithMyMemory(text: string, targetLang: string): Promise<
 // ─── Provider ─────────────────────────────────────────────────────────────────
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
-  const [hydrated, setHydrated]                  = useState(false);
-  const [appLockEnabled, setAppLockEnabled]      = useState(false);
-  const [appPin, setAppPinState]                 = useState('');
-  const [lockTimeout, setLockTimeoutState]       = useState<number>(5); // default 5 min
-  const [autoBackupEnabled, setAutoBackupState]  = useState(false);
+  const [hydrated, setHydrated]                          = useState(false);
+  const [appLockEnabled, setAppLockEnabled]              = useState(false);
+  const [appPin, setAppPinState]                         = useState('');
+  const [lockTimeout, setLockTimeoutState]               = useState<number>(5); // default 5 min
+  const [biometricUnlockEnabled, setBiometricUnlockState]= useState(true); // default enabled
+  const [autoBackupEnabled, setAutoBackupState]          = useState(false);
   const [lastAutoBackupAt, setLastAutoBackupAt]  = useState<string | null>(null);
   const [language, setLanguageState]             = useState<Language>(DEFAULT_LANGUAGE);
   const [encounters, setEncounters]           = useState<Encounter[]>([]);
@@ -192,22 +196,24 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       AsyncStorage.getItem(STORAGE_APP_LOCK),
       AsyncStorage.getItem(STORAGE_APP_PIN),
       AsyncStorage.getItem(STORAGE_LOCK_TIMEOUT),
+      AsyncStorage.getItem(STORAGE_BIOMETRIC_UNLOCK),
       AsyncStorage.getItem(STORAGE_AUTO_BACKUP),
       AsyncStorage.getItem(STORAGE_LAST_AUTO_BACKUP),
-    ]).then(([enc, dead, font, tour, hc, forum, helpful, lang, lock, pin, timeout, autoBak, lastBak]) => {
-      if (enc)     setEncounters(JSON.parse(enc) as Encounter[]);
-      if (dead)    setSavedDeadlines(JSON.parse(dead) as SavedDeadline[]);
-      if (font)    setFontSizeState(font as FontSizeLevel);
-      if (tour)    setTourCompletedState(tour === 'true');
-      if (hc)      setHighContrastState(hc === 'true');
-      if (forum)   setForumPosts(JSON.parse(forum) as ForumPost[]);
-      if (helpful) setHelpfulIds(new Set(JSON.parse(helpful) as string[]));
-      if (lang)    setLanguageState(getLanguageByCode(lang));
-      if (lock)    setAppLockEnabled(lock === 'true');
-      if (pin)     setAppPinState(pin);
-      if (timeout) setLockTimeoutState(Number(timeout));
-      if (autoBak) setAutoBackupState(autoBak === 'true');
-      if (lastBak) setLastAutoBackupAt(lastBak);
+    ]).then(([enc, dead, font, tour, hc, forum, helpful, lang, lock, pin, timeout, bioUnlock, autoBak, lastBak]) => {
+      if (enc)      setEncounters(JSON.parse(enc) as Encounter[]);
+      if (dead)     setSavedDeadlines(JSON.parse(dead) as SavedDeadline[]);
+      if (font)     setFontSizeState(font as FontSizeLevel);
+      if (tour)     setTourCompletedState(tour === 'true');
+      if (hc)       setHighContrastState(hc === 'true');
+      if (forum)    setForumPosts(JSON.parse(forum) as ForumPost[]);
+      if (helpful)  setHelpfulIds(new Set(JSON.parse(helpful) as string[]));
+      if (lang)     setLanguageState(getLanguageByCode(lang));
+      if (lock)     setAppLockEnabled(lock === 'true');
+      if (pin)      setAppPinState(pin);
+      if (timeout)  setLockTimeoutState(Number(timeout));
+      if (bioUnlock !== null) setBiometricUnlockState(bioUnlock !== 'false'); // default true
+      if (autoBak)  setAutoBackupState(autoBak === 'true');
+      if (lastBak)  setLastAutoBackupAt(lastBak);
     }).catch(() => {}).finally(() => setHydrated(true));
   }, []);
 
@@ -221,6 +227,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const setLockTimeout = useCallback(async (minutes: number) => {
     setLockTimeoutState(minutes);
     await AsyncStorage.setItem(STORAGE_LOCK_TIMEOUT, String(minutes));
+  }, []);
+
+  const setBiometricUnlockEnabled = useCallback(async (enabled: boolean) => {
+    setBiometricUnlockState(enabled);
+    await AsyncStorage.setItem(STORAGE_BIOMETRIC_UNLOCK, enabled ? 'true' : 'false');
   }, []);
 
   const setAutoBackupEnabled = useCallback(async (enabled: boolean) => {
@@ -387,6 +398,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         hydrated,
         appLockEnabled, appPin, setAppLock,
         lockTimeout, setLockTimeout,
+        biometricUnlockEnabled, setBiometricUnlockEnabled,
         autoBackupEnabled, setAutoBackupEnabled, lastAutoBackupAt,
         language, setLanguage, isRTL,
         encounters, addEncounter, deleteEncounter, importEncounters,
