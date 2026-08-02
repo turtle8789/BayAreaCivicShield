@@ -14,7 +14,6 @@ import {
 import { router } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import * as ExpoCrypto from 'expo-crypto';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
@@ -250,24 +249,18 @@ function buildEncounterHtml(encounters: Encounter[], exportTitle: string): strin
 
 // ─── Encryption helpers ────────────────────────────────────────────────────────
 
-/** Converts a Uint8Array to a lowercase hex string. */
-function uint8ToHex(bytes: Uint8Array): string {
-  return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
 /**
  * Encrypts plaintext with AES-256-CBC using a PBKDF2-derived key.
  * Key derivation: PBKDF2-SHA256, 100 000 iterations, 16-byte random salt.
- * Random bytes are sourced from expo-crypto (native CSPRNG) to avoid
- * the crypto.getRandomValues dependency that CryptoJS.lib.WordArray.random
- * requires in React Native.
+ * CryptoJS.lib.WordArray.random uses Hermes's built-in crypto.getRandomValues
+ * (available since Expo 50+) — no native module required.
  * Returns a JSON payload string containing version, salt (hex), IV (hex), and
  * ciphertext (Base64) — safe to embed in an HTML template literal.
  */
 function aesEncryptStrong(plaintext: string, password: string): string {
-  // Use expo-crypto for cryptographically secure random bytes (16 bytes each)
-  const saltHex = uint8ToHex(ExpoCrypto.getRandomBytes(16));
-  const ivHex   = uint8ToHex(ExpoCrypto.getRandomBytes(16));
+  // 16 random bytes each — CryptoJS uses crypto.getRandomValues on Hermes
+  const saltHex = CryptoJS.lib.WordArray.random(16).toString(CryptoJS.enc.Hex);
+  const ivHex   = CryptoJS.lib.WordArray.random(16).toString(CryptoJS.enc.Hex);
 
   const salt = CryptoJS.enc.Hex.parse(saltHex);
   const iv   = CryptoJS.enc.Hex.parse(ivHex);
