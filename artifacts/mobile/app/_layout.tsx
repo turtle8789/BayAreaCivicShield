@@ -16,6 +16,7 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { AppProvider, useApp } from '@/context/AppContext';
 import PinLockScreen from '@/components/PinLockScreen';
+import { AutoBackupToast } from '@/components/AutoBackupToast';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -76,7 +77,12 @@ function AppShell() {
   if (appLockEnabled && appPin && !unlocked) {
     return <PinLockScreen pin={appPin} onUnlock={() => setUnlocked(true)} />;
   }
-  return <RootLayoutNav />;
+  return (
+    <>
+      <RootLayoutNav />
+      <AutoBackupToast />
+    </>
+  );
 }
 
 export default function RootLayout() {

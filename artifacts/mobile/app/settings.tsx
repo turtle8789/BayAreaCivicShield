@@ -85,12 +85,25 @@ export default function SettingsScreen() {
     encounters, clearDeadlines, savedDeadlines,
     appLockEnabled, appPin, setAppLock,
     lockTimeout, setLockTimeout,
+    autoBackupEnabled, setAutoBackupEnabled, lastAutoBackupAt,
     importEncounters,
   } = useApp();
 
   // ── Backup ────────────────────────────────────────────────────────────────
   const [isBackingUp, setIsBackingUp]   = useState(false);
   const [isRestoring, setIsRestoring]   = useState(false);
+
+  /** Friendly label for the last auto-backup timestamp. */
+  const formatLastBackup = (iso: string | null): string => {
+    if (!iso) return 'Never backed up yet';
+    const diff = Date.now() - new Date(iso).getTime();
+    const mins  = Math.floor(diff / 60_000);
+    if (mins < 1)  return 'Backed up just now';
+    if (mins < 60) return `Backed up ${mins} min ago`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24)  return `Backed up ${hrs}h ago`;
+    return `Backed up ${Math.floor(hrs / 24)}d ago`;
+  };
 
   const handleBackup = async () => {
     if (encounters.length === 0) {
@@ -622,6 +635,28 @@ export default function SettingsScreen() {
             label={t('settings.restore_label')}
             description={isRestoring ? 'Importing…' : t('settings.restore_desc')}
             onPress={handleRestore}
+          />
+          <View style={styles.divider} />
+          <SettingsRow
+            icon="refresh-cw"
+            label="Auto-backup"
+            description={
+              autoBackupEnabled
+                ? formatLastBackup(lastAutoBackupAt)
+                : 'Saves a local backup after each new encounter'
+            }
+            right={
+              <Switch
+                value={autoBackupEnabled}
+                onValueChange={(v) => {
+                  setAutoBackupEnabled(v);
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                }}
+                trackColor={{ false: colors.muted, true: colors.primary + '80' }}
+                thumbColor={autoBackupEnabled ? colors.primary : '#F4F4F4'}
+                accessibilityLabel="Auto-backup"
+              />
+            }
           />
           <View style={styles.divider} />
           <SettingsRow

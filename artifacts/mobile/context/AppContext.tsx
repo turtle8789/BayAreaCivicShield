@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as FileSystem from 'expo-file-system/legacy';
 import { DEFAULT_LANGUAGE, Language, getLanguageByCode } from '@/constants/languages';
 import { ForumPost, SEED_POSTS } from '@/constants/forum-data';
 
@@ -77,6 +78,11 @@ interface AppContextValue {
   lockTimeout: number; // minutes; -1 = Never, 0 = Immediately
   setLockTimeout: (minutes: number) => Promise<void>;
 
+  // Auto-backup
+  autoBackupEnabled: boolean;
+  setAutoBackupEnabled: (enabled: boolean) => Promise<void>;
+  lastAutoBackupAt: string | null; // ISO timestamp of last successful auto-backup
+
   // Language
   language: Language;
   setLanguage: (lang: Language) => Promise<void>;
@@ -122,17 +128,19 @@ interface AppContextValue {
 // Exported so useColors can read highContrast without a circular-dep issue
 export const AppContext = createContext<AppContextValue | null>(null);
 
-const STORAGE_ENCOUNTERS    = 'civicshield_encounters';
-const STORAGE_DEADLINES     = 'civicshield_deadlines';
-const STORAGE_FONT_SIZE     = 'civicshield_fontsize';
-const STORAGE_TOUR          = 'civicshield_tour_done';
-const STORAGE_HIGH_CONTRAST = 'civicshield_high_contrast';
-const STORAGE_FORUM_POSTS   = 'civicshield_forum_posts';
-const STORAGE_FORUM_HELPFUL = 'civicshield_forum_helpful';
-const STORAGE_LANGUAGE      = 'civicshield_language';
-const STORAGE_APP_LOCK      = 'civicshield_app_lock';
-const STORAGE_APP_PIN       = 'civicshield_app_pin';
-const STORAGE_LOCK_TIMEOUT  = 'civicshield_lock_timeout';
+const STORAGE_ENCOUNTERS       = 'civicshield_encounters';
+const STORAGE_DEADLINES        = 'civicshield_deadlines';
+const STORAGE_FONT_SIZE        = 'civicshield_fontsize';
+const STORAGE_TOUR             = 'civicshield_tour_done';
+const STORAGE_HIGH_CONTRAST    = 'civicshield_high_contrast';
+const STORAGE_FORUM_POSTS      = 'civicshield_forum_posts';
+const STORAGE_FORUM_HELPFUL    = 'civicshield_forum_helpful';
+const STORAGE_LANGUAGE         = 'civicshield_language';
+const STORAGE_APP_LOCK         = 'civicshield_app_lock';
+const STORAGE_APP_PIN          = 'civicshield_app_pin';
+const STORAGE_LOCK_TIMEOUT     = 'civicshield_lock_timeout';
+const STORAGE_AUTO_BACKUP      = 'civicshield_auto_backup';
+const STORAGE_LAST_AUTO_BACKUP = 'civicshield_last_auto_backup';
 
 // ─── Translation via free MyMemory API ───────────────────────────────────────
 
@@ -153,11 +161,13 @@ async function translateWithMyMemory(text: string, targetLang: string): Promise<
 // ─── Provider ─────────────────────────────────────────────────────────────────
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
-  const [hydrated, setHydrated]              = useState(false);
-  const [appLockEnabled, setAppLockEnabled]  = useState(false);
-  const [appPin, setAppPinState]             = useState('');
-  const [lockTimeout, setLockTimeoutState]   = useState<number>(5); // default 5 min
-  const [language, setLanguageState]         = useState<Language>(DEFAULT_LANGUAGE);
+  const [hydrated, setHydrated]                  = useState(false);
+  const [appLockEnabled, setAppLockEnabled]      = useState(false);
+  const [appPin, setAppPinState]                 = useState('');
+  const [lockTimeout, setLockTimeoutState]       = useState<number>(5); // default 5 min
+  const [autoBackupEnabled, setAutoBackupState]  = useState(false);
+  const [lastAutoBackupAt, setLastAutoBackupAt]  = useState<string | null>(null);
+  const [language, setLanguageState]             = useState<Language>(DEFAULT_LANGUAGE);
   const [encounters, setEncounters]           = useState<Encounter[]>([]);
   const [isTranslating, setIsTranslating]     = useState(false);
   const [savedDeadlines, setSavedDeadlines]   = useState<SavedDeadline[]>([]);
@@ -182,7 +192,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       AsyncStorage.getItem(STORAGE_APP_LOCK),
       AsyncStorage.getItem(STORAGE_APP_PIN),
       AsyncStorage.getItem(STORAGE_LOCK_TIMEOUT),
-    ]).then(([enc, dead, font, tour, hc, forum, helpful, lang, lock, pin, timeout]) => {
+      AsyncStorage.getItem(STORAGE_AUTO_BACKUP),
+      AsyncStorage.getItem(STORAGE_LAST_AUTO_BACKUP),
+    ]).then(([enc, dead, font, tour, hc, forum, helpful, lang, lock, pin, timeout, autoBak, lastBak]) => {
       if (enc)     setEncounters(JSON.parse(enc) as Encounter[]);
       if (dead)    setSavedDeadlines(JSON.parse(dead) as SavedDeadline[]);
       if (font)    setFontSizeState(font as FontSizeLevel);
@@ -194,6 +206,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (lock)    setAppLockEnabled(lock === 'true');
       if (pin)     setAppPinState(pin);
       if (timeout) setLockTimeoutState(Number(timeout));
+      if (autoBak) setAutoBackupState(autoBak === 'true');
+      if (lastBak) setLastAutoBackupAt(lastBak);
     }).catch(() => {}).finally(() => setHydrated(true));
   }, []);
 
@@ -207,6 +221,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const setLockTimeout = useCallback(async (minutes: number) => {
     setLockTimeoutState(minutes);
     await AsyncStorage.setItem(STORAGE_LOCK_TIMEOUT, String(minutes));
+  }, []);
+
+  const setAutoBackupEnabled = useCallback(async (enabled: boolean) => {
+    setAutoBackupState(enabled);
+    await AsyncStorage.setItem(STORAGE_AUTO_BACKUP, enabled ? 'true' : 'false');
   }, []);
 
   const setLanguage = useCallback(async (lang: Language) => {
@@ -223,7 +242,28 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const updated = [enc, ...encounters];
     setEncounters(updated);
     await AsyncStorage.setItem(STORAGE_ENCOUNTERS, JSON.stringify(updated));
-  }, [encounters]);
+
+    // ── Auto-backup: silently write to document storage after each save ──
+    if (autoBackupEnabled) {
+      try {
+        const payload = JSON.stringify({
+          version: 1,
+          app: 'CivicShield Pro',
+          exportedAt: new Date().toISOString(),
+          encounters: updated,
+        });
+        const fileUri = (FileSystem.documentDirectory ?? FileSystem.cacheDirectory ?? '') + 'civicshield-auto-backup.json';
+        await FileSystem.writeAsStringAsync(fileUri, payload, {
+          encoding: FileSystem.EncodingType.UTF8,
+        });
+        const now = new Date().toISOString();
+        setLastAutoBackupAt(now);
+        await AsyncStorage.setItem(STORAGE_LAST_AUTO_BACKUP, now);
+      } catch {
+        // Silent — never interrupt the user's flow
+      }
+    }
+  }, [encounters, autoBackupEnabled]);
 
   const deleteEncounter = useCallback(async (id: string) => {
     const updated = encounters.filter((e) => e.id !== id);
@@ -347,6 +387,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         hydrated,
         appLockEnabled, appPin, setAppLock,
         lockTimeout, setLockTimeout,
+        autoBackupEnabled, setAutoBackupEnabled, lastAutoBackupAt,
         language, setLanguage, isRTL,
         encounters, addEncounter, deleteEncounter, importEncounters,
         translateText, isTranslating,
