@@ -83,6 +83,8 @@ export type I18nKey =
   | 'log.officer_info' | 'log.description_label' | 'log.outcome_label' | 'log.at'
   | 'log.export_btn' | 'log.export_error' | 'log.export_empty' | 'log.export_title'
   | 'log.location_label'
+  | 'log.protect_title' | 'log.protect_desc' | 'log.protect_ph'
+  | 'log.protect_skip' | 'log.protect_btn' | 'log.protect_cancel'
   // New log form
   | 'newlog.title' | 'newlog.save' | 'newlog.type_label'
   | 'newlog.location' | 'newlog.location_ph'
@@ -2231,6 +2233,86 @@ export const TRANSLATIONS: Translations = {
     ja: '場所',  am: 'ቦታ',
     te: 'స్థానం',  pa: 'ਸਥਾਨ',  ta: 'இடம்',  bn: 'স্থান',  id: 'Lokasi',  ur: 'مقام',  tr: 'Konum',
     sw: 'Mahali',  it: 'Luogo',  th: 'สถานที่',  ms: 'Lokasi',  ne: 'स्थान',  so: 'Goobta',  ht: 'Kote',
+  },
+
+  // ── Password-protect export modal ─────────────────────────────────────────────
+  'log.protect_title': {
+    en: 'Protect Your Export',          es: 'Protege tu exportación',       'zh-CN': '保护导出文件',           'zh-TW': '保護匯出檔案',
+    vi: 'Bảo vệ xuất khẩu',             tl: 'Protektahan ang Export',        hi: 'अपना निर्यात सुरक्षित करें',  ko: '내보내기 보호',
+    ar: 'حماية ملفك المُصدَّر',           fr: 'Protéger votre export',         pt: 'Proteger seu export',          ru: 'Защитить экспорт',
+    ja: 'エクスポートを保護',              am: 'ወጪዎን ይጠብቁ',
+    te: 'మీ ఎగుమతిని రక్షించండి',         pa: 'ਆਪਣੀ ਨਿਰਯਾਤ ਸੁਰੱਖਿਅਤ ਕਰੋ',    ta: 'உங்கள் ஏற்றுமதியை பாதுகாக்கவும்', bn: 'আপনার রপ্তানি রক্ষা করুন',
+    id: 'Lindungi Ekspor',               ur: 'اپنی برآمد کو محفوظ کریں',      tr: 'Dışa aktarımı koru',
+    sw: 'Linda Usafirishaji',            it: 'Proteggi esportazione',          th: 'ปกป้องการส่งออก',              ms: 'Lindungi Eksport',
+    ne: 'आफ्नो निर्यात सुरक्षित गर्नुहोस्', so: 'Xami dhoofintagaaga',         ht: 'Pwoteje ekspò ou',
+  },
+  'log.protect_desc': {
+    en: 'Add an optional password. Recipients will need it to open the protected file.',
+    es: 'Añade una contraseña opcional. Los destinatarios la necesitarán para abrir el archivo.',
+    'zh-CN': '添加可选密码。收件人需要输入密码才能打开受保护的文件。',
+    'zh-TW': '新增可選密碼。收件者需要輸入密碼才能開啟受保護的檔案。',
+    vi: 'Thêm mật khẩu tuỳ chọn. Người nhận cần có nó để mở tệp được bảo vệ.',
+    tl: 'Magdagdag ng opsyonal na password. Kailangan ito ng mga tatanggap para buksan ang protected na file.',
+    hi: 'वैकल्पिक पासवर्ड जोड़ें। प्राप्तकर्ताओं को सुरक्षित फ़ाइल खोलने के लिए इसकी आवश्यकता होगी।',
+    ko: '선택적 비밀번호를 추가하세요. 수신자는 보호된 파일을 열기 위해 비밀번호가 필요합니다.',
+    ar: 'أضف كلمة مرور اختيارية. سيحتاج المستلمون إليها لفتح الملف المحمي.',
+    fr: 'Ajoutez un mot de passe optionnel. Les destinataires en auront besoin pour ouvrir le fichier protégé.',
+    pt: 'Adicione uma senha opcional. Os destinatários precisarão dela para abrir o arquivo protegido.',
+    ru: 'Добавьте необязательный пароль. Получателям он понадобится для открытия защищённого файла.',
+    ja: 'オプションのパスワードを追加します。受信者は保護されたファイルを開くために必要です。',
+    am: 'አማራጭ የይለፍ ቃል ያክሉ። ተቀባዮች የተጠበቀ ፋይሉን ለመክፈት ያስፈልጋቸዋል።',
+    te: 'ఐచ్ఛిక పాస్‌వర్డ్ జోడించండి. గ్రహీతలు రక్షిత ఫైల్ తెరవడానికి దీన్ని అవసరం.',
+    pa: 'ਵਿਕਲਪਿਕ ਪਾਸਵਰਡ ਜੋੜੋ। ਪ੍ਰਾਪਤਕਰਤਾਵਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਫ਼ਾਈਲ ਖੋਲ੍ਹਣ ਲਈ ਇਸਦੀ ਲੋੜ ਹੋਵੇਗੀ।',
+    ta: 'விருப்பமான கடவுச்சொல்லை சேர்க்கவும். பெறுநர்களுக்கு பாதுகாக்கப்பட்ட கோப்பை திறக்க இது தேவைப்படும்.',
+    bn: 'একটি ঐচ্ছিক পাসওয়ার্ড যোগ করুন। প্রাপকদের সুরক্ষিত ফাইলটি খুলতে এটি প্রয়োজন হবে।',
+    id: 'Tambahkan kata sandi opsional. Penerima memerlukannya untuk membuka file yang dilindungi.',
+    ur: 'اختیاری پاس ورڈ شامل کریں۔ وصول کنندگان کو محفوظ فائل کھولنے کے لیے اس کی ضرورت ہوگی۔',
+    tr: 'İsteğe bağlı şifre ekleyin. Alıcıların korumalı dosyayı açmak için buna ihtiyacı olacak.',
+    sw: 'Ongeza nenosiri la hiari. Wapokeaji watahitaji ili kufungua faili iliyolindwa.',
+    it: 'Aggiungi una password opzionale. I destinatari ne avranno bisogno per aprire il file protetto.',
+    th: 'เพิ่มรหัสผ่านที่เป็นตัวเลือก ผู้รับจะต้องใช้เพื่อเปิดไฟล์ที่ป้องกัน',
+    ms: 'Tambahkan kata laluan pilihan. Penerima memerlukannya untuk membuka fail yang dilindungi.',
+    ne: 'वैकल्पिक पासवर्ड थप्नुहोस्। प्राप्तकर्ताहरूलाई सुरक्षित फाइल खोल्न यो चाहिन्छ।',
+    so: 'Ku dar erayga sirta ikhtiyaariga ah. Kuwa helaya waxay u baahan yihiin si ay u furaan faylka la ilaashiyo.',
+    ht: 'Ajoute yon modpas opsyonèl. Moun k ap resevwa yo pral bezwen li pou louvri fichye pwoteje a.',
+  },
+  'log.protect_ph': {
+    en: 'Password (optional)',           es: 'Contraseña (opcional)',          'zh-CN': '密码（可选）',              'zh-TW': '密碼（可選）',
+    vi: 'Mật khẩu (tuỳ chọn)',           tl: 'Password (opsyonal)',             hi: 'पासवर्ड (वैकल्पिक)',            ko: '비밀번호 (선택사항)',
+    ar: 'كلمة المرور (اختياري)',           fr: 'Mot de passe (optionnel)',        pt: 'Senha (opcional)',               ru: 'Пароль (необязательно)',
+    ja: 'パスワード（任意）',               am: 'የይለፍ ቃል (አማራጭ)',
+    te: 'పాస్‌వర్డ్ (ఐచ్ఛిక)',              pa: 'ਪਾਸਵਰਡ (ਵਿਕਲਪਿਕ)',              ta: 'கடவுச்சொல் (விருப்பம்)',          bn: 'পাসওয়ার্ড (ঐচ্ছিক)',
+    id: 'Kata sandi (opsional)',           ur: 'پاس ورڈ (اختیاری)',               tr: 'Şifre (isteğe bağlı)',
+    sw: 'Nenosiri (si lazima)',            it: 'Password (opzionale)',            th: 'รหัสผ่าน (ตัวเลือก)',             ms: 'Kata laluan (pilihan)',
+    ne: 'पासवर्ड (वैकल्पिक)',              so: 'Erayga sirta (ikhtiyaari)',        ht: 'Modpas (opsyonèl)',
+  },
+  'log.protect_skip': {
+    en: 'Share as PDF',                  es: 'Compartir como PDF',             'zh-CN': '以 PDF 分享',               'zh-TW': '以 PDF 分享',
+    vi: 'Chia sẻ dưới dạng PDF',         tl: 'Ibahagi bilang PDF',              hi: 'PDF के रूप में साझा करें',       ko: 'PDF로 공유',
+    ar: 'مشاركة كـ PDF',                 fr: 'Partager en PDF',                pt: 'Compartilhar como PDF',          ru: 'Поделиться как PDF',
+    ja: 'PDFとして共有',                  am: 'እንደ PDF አጋራ',
+    te: 'PDF గా షేర్ చేయండి',            pa: 'PDF ਵਜੋਂ ਸਾਂਝਾ ਕਰੋ',             ta: 'PDF ஆக பகிரவும்',                bn: 'PDF হিসেবে শেয়ার করুন',
+    id: 'Bagikan sebagai PDF',            ur: 'PDF کے طور پر شیئر کریں',        tr: 'PDF olarak paylaş',
+    sw: 'Shiriki kama PDF',               it: 'Condividi come PDF',              th: 'แชร์เป็น PDF',                    ms: 'Kongsi sebagai PDF',
+    ne: 'PDF को रूपमा साझा गर्नुहोस्',   so: 'La wadaag PDF ahaan',             ht: 'Pataje kòm PDF',
+  },
+  'log.protect_btn': {
+    en: 'Share Protected',               es: 'Compartir protegido',            'zh-CN': '加密分享',                  'zh-TW': '加密分享',
+    vi: 'Chia sẻ được bảo vệ',           tl: 'Ibahagi nang protektado',         hi: 'सुरक्षित साझा करें',             ko: '보호하여 공유',
+    ar: 'مشاركة محمية',                  fr: 'Partager protégé',               pt: 'Compartilhar protegido',         ru: 'Поделиться с защитой',
+    ja: '保護して共有',                   am: 'ተጠብቆ አጋራ',
+    te: 'రక్షించి షేర్ చేయండి',          pa: 'ਸੁਰੱਖਿਅਤ ਸਾਂਝਾ ਕਰੋ',             ta: 'பாதுகாத்து பகிரவும்',            bn: 'সুরক্ষিতভাবে শেয়ার করুন',
+    id: 'Bagikan terlindungi',            ur: 'محفوظ طریقے سے شیئر کریں',       tr: 'Korumalı paylaş',
+    sw: 'Shiriki ukiwa umelindwa',        it: 'Condividi protetto',              th: 'แชร์แบบป้องกัน',                  ms: 'Kongsi dilindungi',
+    ne: 'सुरक्षित साझा गर्नुहोस्',       so: 'La wadaag si xafidan',            ht: 'Pataje pwoteje',
+  },
+  'log.protect_cancel': {
+    en: 'Cancel',         es: 'Cancelar',       'zh-CN': '取消',     'zh-TW': '取消',
+    vi: 'Hủy',            tl: 'Kanselahin',      hi: 'रद्द करें',    ko: '취소',
+    ar: 'إلغاء',           fr: 'Annuler',         pt: 'Cancelar',     ru: 'Отмена',
+    ja: 'キャンセル',      am: 'ሰርዝ',
+    te: 'రద్దు చేయండి',   pa: 'ਰੱਦ ਕਰੋ',        ta: 'ரத்துசெய்',    bn: 'বাতিল করুন',   id: 'Batal',   ur: 'منسوخ کریں',   tr: 'İptal',
+    sw: 'Ghairi',          it: 'Annulla',          th: 'ยกเลิก',       ms: 'Batal',   ne: 'रद्द गर्नुहोस्',   so: 'Jooji',   ht: 'Anile',
   },
 
   // ── New log form ──────────────────────────────────────────────────────────────

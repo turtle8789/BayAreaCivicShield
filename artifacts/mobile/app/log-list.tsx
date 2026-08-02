@@ -2,22 +2,30 @@ import React, { useState } from 'react';
 import {
   Alert,
   FlatList,
+  KeyboardAvoidingView,
+  Modal,
   Platform,
   Pressable,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import { router } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
+import * as ExpoCrypto from 'expo-crypto';
+import * as FileSystem from 'expo-file-system/legacy';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import CryptoJS from 'crypto-js';
 import { Encounter, ENCOUNTER_TYPE_LABELS, useApp } from '@/context/AppContext';
 import { useColors } from '@/hooks/useColors';
 import { useRTL } from '@/hooks/useRTL';
 import { useT } from '@/hooks/useTranslation';
+
+// ─── EncounterCard ─────────────────────────────────────────────────────────────
 
 function EncounterCard({ encounter, onDelete }: { encounter: Encounter; onDelete: () => void }) {
   const colors = useColors();
@@ -48,7 +56,6 @@ function EncounterCard({ encounter, onDelete }: { encounter: Encounter; onDelete
     ]);
   };
 
-  // Translate encounter type using i18n key
   const typeKey = `encounter.${encounter.type}` as any;
 
   const styles = StyleSheet.create({
@@ -114,6 +121,8 @@ function EncounterCard({ encounter, onDelete }: { encounter: Encounter; onDelete
   );
 }
 
+// ─── HTML builder ──────────────────────────────────────────────────────────────
+
 function buildEncounterHtml(encounters: Encounter[], exportTitle: string): string {
   const now = new Date().toLocaleDateString(undefined, {
     month: 'long', day: 'numeric', year: 'numeric',
@@ -171,6 +180,236 @@ function buildEncounterHtml(encounters: Encounter[], exportTitle: string): strin
 </html>`;
 }
 
+// ─── Encryption helpers ────────────────────────────────────────────────────────
+
+/** Converts a Uint8Array to a lowercase hex string. */
+function uint8ToHex(bytes: Uint8Array): string {
+  return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+/**
+ * Encrypts plaintext with AES-256-CBC using a PBKDF2-derived key.
+ * Key derivation: PBKDF2-SHA256, 100 000 iterations, 16-byte random salt.
+ * Random bytes are sourced from expo-crypto (native CSPRNG) to avoid
+ * the crypto.getRandomValues dependency that CryptoJS.lib.WordArray.random
+ * requires in React Native.
+ * Returns a JSON payload string containing version, salt (hex), IV (hex), and
+ * ciphertext (Base64) — safe to embed in an HTML template literal.
+ */
+function aesEncryptStrong(plaintext: string, password: string): string {
+  // Use expo-crypto for cryptographically secure random bytes (16 bytes each)
+  const saltHex = uint8ToHex(ExpoCrypto.getRandomBytes(16));
+  const ivHex   = uint8ToHex(ExpoCrypto.getRandomBytes(16));
+
+  const salt = CryptoJS.enc.Hex.parse(saltHex);
+  const iv   = CryptoJS.enc.Hex.parse(ivHex);
+
+  const key = CryptoJS.PBKDF2(password, salt, {
+    keySize:    256 / 32, // 256-bit key
+    iterations: 100_000,
+    hasher:     CryptoJS.algo.SHA256,
+  });
+  const ciphertext = CryptoJS.AES.encrypt(plaintext, key, {
+    iv,
+    mode:    CryptoJS.mode.CBC,
+    padding: CryptoJS.pad.Pkcs7,
+  });
+  return JSON.stringify({
+    v: 1,
+    s: saltHex,
+    i: ivHex,
+    c: ciphertext.toString(),  // Base64
+  });
+}
+
+// ─── Self-decrypting HTML wrapper ──────────────────────────────────────────────
+
+function buildProtectedHtml(encryptedPayload: string, exportTitle: string): string {
+  // Safely embed the JSON payload as a JS string literal
+  const safePayload = encryptedPayload.replace(/\\/g, '\\\\').replace(/`/g, '\\`');
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>🔒 ${exportTitle} – CivicShield Pro</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,Helvetica,Arial,sans-serif;background:#f5f5f7;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+  .card{background:#fff;border-radius:16px;padding:40px 32px;max-width:420px;width:100%;box-shadow:0 4px 24px rgba(0,0,0,0.08);text-align:center}
+  .shield{width:72px;height:72px;background:#0a7ea4;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:32px}
+  h1{font-size:20px;font-weight:700;color:#111;margin-bottom:8px}
+  p{font-size:14px;color:#666;line-height:1.5;margin-bottom:24px}
+  input{width:100%;border:1.5px solid #ddd;border-radius:10px;padding:12px 16px;font-size:16px;outline:none;transition:border-color .2s;margin-bottom:12px}
+  input:focus{border-color:#0a7ea4}
+  button{width:100%;background:#0a7ea4;color:#fff;border:none;border-radius:10px;padding:14px;font-size:16px;font-weight:600;cursor:pointer;transition:opacity .2s}
+  button:hover{opacity:0.88}
+  button:disabled{opacity:0.5;cursor:not-allowed}
+  .err{color:#d32f2f;font-size:13px;margin-top:8px;display:none}
+  .note{font-size:11px;color:#aaa;margin-top:20px;line-height:1.5}
+  #doc{display:none}
+</style>
+</head>
+<body>
+<div class="card" id="lock-card">
+  <div class="shield">🔒</div>
+  <h1>Password Protected</h1>
+  <p>This encounter log is encrypted with AES-256 + PBKDF2. Enter the password to view its contents.</p>
+  <input type="password" id="pwd" placeholder="Enter password" autocomplete="current-password"/>
+  <button id="unlockBtn" onclick="unlock()">Unlock</button>
+  <div class="err" id="err">Incorrect password. Please try again.</div>
+  <div class="note">Encrypted by CivicShield Pro · AES-256-CBC / PBKDF2-SHA256 (100 000 iterations)<br/>An internet connection is required to load the decryption library.</div>
+</div>
+<div id="doc"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"
+  integrity="sha512-a+SUDuwNzXDvz4XrIcXHuCFDqPxFPFN3IRlhS1yVHf+CYY5wDkU3yDe5pLYGbJ4K0XE7CyFRFn3KcbZLpXZQ=="
+  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+var PAYLOAD=\`${safePayload}\`;
+function unlock(){
+  var btn=document.getElementById('unlockBtn');
+  var pwd=document.getElementById('pwd').value;
+  if(!pwd)return;
+  btn.disabled=true;
+  btn.textContent='Unlocking\u2026';
+  // Run key derivation async so the UI can update first
+  setTimeout(function(){
+    try{
+      var p=JSON.parse(PAYLOAD);
+      if(p.v!==1)throw new Error('unsupported version');
+      var salt=CryptoJS.enc.Hex.parse(p.s);
+      var iv=CryptoJS.enc.Hex.parse(p.i);
+      var key=CryptoJS.PBKDF2(pwd,salt,{keySize:8,iterations:100000,hasher:CryptoJS.algo.SHA256});
+      var decrypted=CryptoJS.AES.decrypt(p.c,key,{iv:iv,mode:CryptoJS.mode.CBC,padding:CryptoJS.pad.Pkcs7});
+      var html=decrypted.toString(CryptoJS.enc.Utf8);
+      if(!html||html.length<50)throw new Error('bad decrypt');
+      document.getElementById('lock-card').style.display='none';
+      var doc=document.getElementById('doc');
+      doc.style.display='block';
+      doc.innerHTML=html;
+    }catch(e){
+      document.getElementById('err').style.display='block';
+      btn.disabled=false;
+      btn.textContent='Unlock';
+      document.getElementById('pwd').value='';
+      document.getElementById('pwd').focus();
+    }
+  },50);
+}
+document.getElementById('pwd').addEventListener('keydown',function(e){if(e.key==='Enter')unlock();});
+</script>
+</body>
+</html>`;
+}
+
+// ─── Password Modal ────────────────────────────────────────────────────────────
+
+interface PasswordModalProps {
+  visible: boolean;
+  onCancel: () => void;
+  onShare: (password: string | null) => void;
+}
+
+function PasswordModal({ visible, onCancel, onShare }: PasswordModalProps) {
+  const colors = useColors();
+  const { fs } = useApp();
+  const { t } = useT();
+  const [password, setPassword] = useState('');
+
+  const handleClose = () => {
+    setPassword('');
+    onCancel();
+  };
+
+  const handleSkip = () => {
+    setPassword('');
+    onShare(null);
+  };
+
+  const handleProtected = () => {
+    const pwd = password.trim();
+    setPassword('');
+    onShare(pwd.length > 0 ? pwd : null);
+  };
+
+  const hasPassword = password.trim().length > 0;
+
+  const s = StyleSheet.create({
+    overlay:    { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
+    sheet:      { backgroundColor: colors.background, borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 24, paddingBottom: 36 },
+    handle:     { width: 36, height: 4, borderRadius: 2, backgroundColor: colors.border, alignSelf: 'center', marginBottom: 20 },
+    iconWrap:   { width: 56, height: 56, borderRadius: 28, backgroundColor: colors.primary + '18', alignItems: 'center', justifyContent: 'center', alignSelf: 'center', marginBottom: 14 },
+    title:      { fontSize: fs(18), fontFamily: 'Inter_700Bold', color: colors.foreground, textAlign: 'center', marginBottom: 8 },
+    desc:       { fontSize: fs(13), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, textAlign: 'center', lineHeight: 19, marginBottom: 20 },
+    input:      { backgroundColor: colors.muted, borderRadius: 12, borderWidth: 1, borderColor: colors.border, paddingHorizontal: 16, paddingVertical: 12, fontSize: fs(15), fontFamily: 'Inter_400Regular', color: colors.foreground, marginBottom: 16 },
+    btnPrimary: { backgroundColor: colors.primary, borderRadius: 12, paddingVertical: 14, alignItems: 'center', marginBottom: 10 },
+    btnOutline: { backgroundColor: 'transparent', borderRadius: 12, paddingVertical: 14, alignItems: 'center', borderWidth: 1, borderColor: colors.border, marginBottom: 10 },
+    btnCancel:  { paddingVertical: 10, alignItems: 'center' },
+    btnTextPrimary: { fontSize: fs(15), fontFamily: 'Inter_600SemiBold', color: colors.primaryForeground },
+    btnTextOutline: { fontSize: fs(15), fontFamily: 'Inter_600SemiBold', color: colors.foreground },
+    btnTextCancel:  { fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.mutedForeground },
+  });
+
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+      onRequestClose={handleClose}
+    >
+      <KeyboardAvoidingView
+        style={s.overlay}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <Pressable style={{ flex: 1 }} onPress={handleClose} />
+        <View style={s.sheet}>
+          <View style={s.handle} />
+          <View style={s.iconWrap}>
+            <Feather name="lock" size={24} color={colors.primary} />
+          </View>
+          <Text style={s.title}>{t('log.protect_title')}</Text>
+          <Text style={s.desc}>{t('log.protect_desc')}</Text>
+
+          <TextInput
+            style={s.input}
+            placeholder={t('log.protect_ph')}
+            placeholderTextColor={colors.mutedForeground}
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+            autoCapitalize="none"
+            autoCorrect={false}
+            returnKeyType="done"
+            onSubmitEditing={handleProtected}
+          />
+
+          {hasPassword ? (
+            <Pressable style={s.btnPrimary} onPress={handleProtected}>
+              <Text style={s.btnTextPrimary}>{t('log.protect_btn')}</Text>
+            </Pressable>
+          ) : (
+            <Pressable style={s.btnPrimary} onPress={handleSkip}>
+              <Text style={s.btnTextPrimary}>{t('log.protect_skip')}</Text>
+            </Pressable>
+          )}
+
+          {hasPassword && (
+            <Pressable style={s.btnOutline} onPress={handleSkip}>
+              <Text style={s.btnTextOutline}>{t('log.protect_skip')}</Text>
+            </Pressable>
+          )}
+
+          <Pressable style={s.btnCancel} onPress={handleClose}>
+            <Text style={s.btnTextCancel}>{t('log.protect_cancel')}</Text>
+          </Pressable>
+        </View>
+      </KeyboardAvoidingView>
+    </Modal>
+  );
+}
+
+// ─── LogListScreen ─────────────────────────────────────────────────────────────
+
 export default function LogListScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
@@ -180,35 +419,66 @@ export default function LogListScreen() {
   const { t } = useT();
   const { rowDir, backIcon } = useRTL();
   const [isExporting, setIsExporting] = useState(false);
+  const [passwordModalVisible, setPasswordModalVisible] = useState(false);
 
   const navigateToNew = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     router.push('/new-log');
   };
 
-  const handleExport = async () => {
+  const handleExport = () => {
     if (encounters.length === 0) {
       Alert.alert(t('log.export_btn'), t('log.export_empty'));
       return;
     }
     if (isExporting) return;
-
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setPasswordModalVisible(true);
+  };
+
+  const doExport = async (password: string | null) => {
+    setPasswordModalVisible(false);
     setIsExporting(true);
     try {
       const html = buildEncounterHtml(encounters, t('log.export_title'));
-      const { uri } = await Print.printToFileAsync({ html, base64: false });
 
-      const canShare = await Sharing.isAvailableAsync();
-      if (canShare) {
-        await Sharing.shareAsync(uri, {
-          mimeType: 'application/pdf',
-          dialogTitle: t('log.export_title'),
-          UTI: 'com.adobe.pdf',
-        });
+      if (password) {
+        // ── Encrypted path: AES-256-CBC + PBKDF2-SHA256 → self-decrypting HTML ──
+        const encryptedPayload = aesEncryptStrong(html, password);
+        const wrapperHtml = buildProtectedHtml(encryptedPayload, t('log.export_title'));
+
+        const canShare = await Sharing.isAvailableAsync();
+        if (canShare) {
+          const fileUri = (FileSystem.cacheDirectory ?? '') + 'encounter-log-protected.html';
+          await FileSystem.writeAsStringAsync(fileUri, wrapperHtml, {
+            encoding: FileSystem.EncodingType.UTF8,
+          });
+          await Sharing.shareAsync(fileUri, {
+            mimeType: 'text/html',
+            dialogTitle: t('log.export_title'),
+            UTI: 'public.html',
+          });
+        } else {
+          // Web fallback: open as data URI in a new tab
+          if (typeof window !== 'undefined') {
+            const blob = new Blob([wrapperHtml], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+          }
+        }
       } else {
-        // Web fallback: open the print dialog
-        await Print.printAsync({ html });
+        // ── Plain PDF path (original behaviour) ────────────────────────────────
+        const { uri } = await Print.printToFileAsync({ html, base64: false });
+        const canShare = await Sharing.isAvailableAsync();
+        if (canShare) {
+          await Sharing.shareAsync(uri, {
+            mimeType: 'application/pdf',
+            dialogTitle: t('log.export_title'),
+            UTI: 'com.adobe.pdf',
+          });
+        } else {
+          await Print.printAsync({ html });
+        }
       }
     } catch {
       Alert.alert(t('log.export_btn'), t('log.export_error'));
@@ -292,6 +562,12 @@ export default function LogListScreen() {
           />
         </>
       )}
+
+      <PasswordModal
+        visible={passwordModalVisible}
+        onCancel={() => setPasswordModalVisible(false)}
+        onShare={doExport}
+      />
     </View>
   );
 }
