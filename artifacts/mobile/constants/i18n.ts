@@ -85,6 +85,7 @@ export type I18nKey =
   | 'log.location_label'
   | 'log.protect_title' | 'log.protect_desc' | 'log.protect_ph'
   | 'log.protect_skip' | 'log.protect_btn' | 'log.protect_cancel'
+  | 'log.share_btn'
   // New log form
   | 'newlog.title' | 'newlog.save' | 'newlog.type_label'
   | 'newlog.location' | 'newlog.location_ph'
@@ -2313,6 +2314,14 @@ export const TRANSLATIONS: Translations = {
     ja: 'キャンセル',      am: 'ሰርዝ',
     te: 'రద్దు చేయండి',   pa: 'ਰੱਦ ਕਰੋ',        ta: 'ரத்துசெய்',    bn: 'বাতিল করুন',   id: 'Batal',   ur: 'منسوخ کریں',   tr: 'İptal',
     sw: 'Ghairi',          it: 'Annulla',          th: 'ยกเลิก',       ms: 'Batal',   ne: 'रद्द गर्नुहोस्',   so: 'Jooji',   ht: 'Anile',
+  },
+  'log.share_btn': {
+    en: 'Share',          es: 'Compartir',       'zh-CN': '分享',     'zh-TW': '分享',
+    vi: 'Chia sẻ',        tl: 'Ibahagi',          hi: 'शेयर करें',   ko: '공유',
+    ar: 'مشاركة',          fr: 'Partager',         pt: 'Compartilhar', ru: 'Поделиться',
+    ja: '共有',             am: 'አጋራ',
+    te: 'భాగస్వామ్యం చేయండి',  pa: 'ਸਾਂਝਾ ਕਰੋ',   ta: 'பகிர்',       bn: 'শেয়ার করুন',   id: 'Bagikan',   ur: 'شیئر کریں',   tr: 'Paylaş',
+    sw: 'Shiriki',         it: 'Condividi',        th: 'แชร์',         ms: 'Kongsi',   ne: 'साझा गर्नुहोस्',   so: 'La wadaag',   ht: 'Pataje',
   },
 
   // ── New log form ──────────────────────────────────────────────────────────────

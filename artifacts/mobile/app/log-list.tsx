@@ -33,6 +33,8 @@ function EncounterCard({ encounter, onDelete }: { encounter: Encounter; onDelete
   const { t } = useT();
   const { rowDir, textStyle } = useRTL();
   const [expanded, setExpanded] = useState(false);
+  const [shareModalVisible, setShareModalVisible] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
 
   const date = new Date(encounter.date);
   const formattedDate = date.toLocaleDateString(undefined, {
@@ -56,6 +58,59 @@ function EncounterCard({ encounter, onDelete }: { encounter: Encounter; onDelete
     ]);
   };
 
+  const handleShare = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setShareModalVisible(true);
+  };
+
+  const doSingleExport = async (password: string | null) => {
+    setShareModalVisible(false);
+    setIsSharing(true);
+    try {
+      const html = buildEncounterHtml([encounter], t('log.export_title'));
+
+      if (password) {
+        const encryptedPayload = aesEncryptStrong(html, password);
+        const wrapperHtml = buildProtectedHtml(encryptedPayload, t('log.export_title'));
+
+        const canShare = await Sharing.isAvailableAsync();
+        if (canShare) {
+          const fileUri = (FileSystem.cacheDirectory ?? '') + `encounter-${encounter.id}-protected.html`;
+          await FileSystem.writeAsStringAsync(fileUri, wrapperHtml, {
+            encoding: FileSystem.EncodingType.UTF8,
+          });
+          await Sharing.shareAsync(fileUri, {
+            mimeType: 'text/html',
+            dialogTitle: t('log.export_title'),
+            UTI: 'public.html',
+          });
+        } else {
+          if (typeof window !== 'undefined') {
+            const blob = new Blob([wrapperHtml], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+          }
+        }
+      } else {
+        const { uri } = await Print.printToFileAsync({ html, base64: false });
+        const canShare = await Sharing.isAvailableAsync();
+        if (canShare) {
+          await Sharing.shareAsync(uri, {
+            mimeType: 'application/pdf',
+            dialogTitle: t('log.export_title'),
+            UTI: 'com.adobe.pdf',
+          });
+        } else {
+          await Print.printAsync({ html });
+        }
+      }
+    } catch {
+      Alert.alert(t('log.export_btn'), t('log.export_error'));
+    } finally {
+      setIsSharing(false);
+    }
+  };
+
   const typeKey = `encounter.${encounter.type}` as any;
 
   const styles = StyleSheet.create({
@@ -71,6 +126,7 @@ function EncounterCard({ encounter, onDelete }: { encounter: Encounter; onDelete
     fieldLabel:     { fontSize: fs(11), fontFamily: 'Inter_600SemiBold', color: colors.mutedForeground, textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 2 },
     fieldValue:     { fontSize: fs(14), fontFamily: 'Inter_400Regular', color: colors.foreground, lineHeight: 20, ...textStyle },
     deleteBtn:      { flex: 1, flexDirection: rowDir, alignItems: 'center', justifyContent: 'center', gap: 6, borderRadius: 10, paddingVertical: 9, backgroundColor: colors.destructive + '12', borderWidth: 1, borderColor: colors.destructive + '25' },
+    shareBtn:       { flex: 1, flexDirection: rowDir, alignItems: 'center', justifyContent: 'center', gap: 6, borderRadius: 10, paddingVertical: 9, backgroundColor: colors.primary + '12', borderWidth: 1, borderColor: colors.primary + '25' },
   });
 
   return (
@@ -107,7 +163,13 @@ function EncounterCard({ encounter, onDelete }: { encounter: Encounter; onDelete
               <Text style={styles.fieldValue}>{encounter.outcome}</Text>
             </View>
           ) : null}
-          <View style={{ flexDirection: rowDir, marginTop: 4 }}>
+          <View style={{ flexDirection: rowDir, marginTop: 4, gap: 8 }}>
+            <Pressable style={styles.shareBtn} onPress={handleShare} disabled={isSharing}>
+              <Feather name="share" size={14} color={isSharing ? colors.mutedForeground : colors.primary} />
+              <Text style={{ fontSize: fs(13), fontFamily: 'Inter_500Medium', color: isSharing ? colors.mutedForeground : colors.primary }}>
+                {t('log.share_btn')}
+              </Text>
+            </Pressable>
             <Pressable style={styles.deleteBtn} onPress={handleDelete}>
               <Feather name="trash-2" size={14} color={colors.destructive} />
               <Text style={{ fontSize: fs(13), fontFamily: 'Inter_500Medium', color: colors.destructive }}>
@@ -117,6 +179,12 @@ function EncounterCard({ encounter, onDelete }: { encounter: Encounter; onDelete
           </View>
         </View>
       )}
+
+      <PasswordModal
+        visible={shareModalVisible}
+        onCancel={() => setShareModalVisible(false)}
+        onShare={doSingleExport}
+      />
     </View>
   );
 }
