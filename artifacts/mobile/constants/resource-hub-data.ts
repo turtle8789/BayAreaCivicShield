@@ -18,14 +18,14 @@ export type HubCategory =
   | 'lgbtq'
   | 'forums';
 
-export const HUB_CATEGORIES: { value: HubCategory; label: string; emoji: string; color: string }[] = [
-  { value: 'legal_aid',   label: 'Free Legal Aid',     emoji: '⚖️', color: '#C97B8E' },
-  { value: 'civil_rights',label: 'Civil Rights',        emoji: '✊', color: '#C9A050' },
-  { value: 'immigration', label: 'Immigration',         emoji: '🌎', color: '#5A9E6F' },
-  { value: 'housing',     label: 'Housing Rights',      emoji: '🏠', color: '#6B8EC9' },
-  { value: 'employment',  label: 'Employment Rights',   emoji: '💼', color: '#A07888' },
-  { value: 'lgbtq',       label: 'LGBTQ+ Legal',        emoji: '🏳️‍🌈', color: '#9B7EC9' },
-  { value: 'forums',      label: 'Community Forums',    emoji: '💬', color: '#C97B8E' },
+export const HUB_CATEGORIES: { value: HubCategory; label: string; labelKey: string; emoji: string; color: string }[] = [
+  { value: 'legal_aid',    label: 'Free Legal Aid',    labelKey: 'hub.cat_legal_aid',    emoji: '⚖️', color: '#C97B8E' },
+  { value: 'civil_rights', label: 'Civil Rights',      labelKey: 'hub.cat_civil_rights', emoji: '✊', color: '#C9A050' },
+  { value: 'immigration',  label: 'Immigration',       labelKey: 'hub.cat_immigration',  emoji: '🌎', color: '#5A9E6F' },
+  { value: 'housing',      label: 'Housing Rights',    labelKey: 'hub.cat_housing',      emoji: '🏠', color: '#6B8EC9' },
+  { value: 'employment',   label: 'Employment Rights', labelKey: 'hub.cat_employment',   emoji: '💼', color: '#A07888' },
+  { value: 'lgbtq',        label: 'LGBTQ+ Legal',      labelKey: 'hub.cat_lgbtq',        emoji: '🏳️‍🌈', color: '#9B7EC9' },
+  { value: 'forums',       label: 'Community Forums',  labelKey: 'hub.cat_forums',       emoji: '💬', color: '#C97B8E' },
 ];
 
 export const HUB_RESOURCES: HubResource[] = [

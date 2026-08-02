@@ -25,6 +25,7 @@ import { useApp } from '@/context/AppContext';
 import { useColors } from '@/hooks/useColors';
 import { useRTL } from '@/hooks/useRTL';
 import { useT } from '@/hooks/useTranslation';
+import { I18nKey } from '@/constants/i18n';
 
 async function openUrl(url: string) {
   try {
@@ -130,7 +131,7 @@ export default function ResourceHubScreen() {
         <View key={cat.value} style={styles.catSection}>
           <View style={styles.catHeader}>
             <Text style={{ fontSize: fs(16) }}>{cat.emoji}</Text>
-            <Text style={[styles.catTitle, { color: cat.color }]}>{cat.label}</Text>
+            <Text style={[styles.catTitle, { color: cat.color }]}>{t(cat.labelKey as I18nKey)}</Text>
             <View style={{ height: 1, flex: 1, backgroundColor: colors.border, marginLeft: 6 }} />
           </View>
           {items.map((r) => (
@@ -173,7 +174,7 @@ export default function ResourceHubScreen() {
           </Pressable>
           {HUB_CATEGORIES.map((cat) => (
             <Pressable key={cat.value} style={[styles.filterBtn, filter === cat.value && styles.filterActive]} onPress={() => setFilter(cat.value)} accessibilityRole="tab" accessibilityState={{ selected: filter === cat.value }}>
-              <Text style={[styles.filterText, filter === cat.value && styles.filterTextActive]}>{cat.emoji} {cat.label}</Text>
+              <Text style={[styles.filterText, filter === cat.value && styles.filterTextActive]}>{cat.emoji} {t(cat.labelKey as I18nKey)}</Text>
             </Pressable>
           ))}
         </ScrollView>
