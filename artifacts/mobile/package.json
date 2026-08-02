@@ -59,12 +59,12 @@
   "dependencies": {
     "crypto-js": "^4.2.0",
     "expo-clipboard": "^8.0.8",
-    "expo-crypto": "^57.0.1",
-    "expo-document-picker": "^57.0.1",
-    "expo-file-system": "^57.0.1",
+    "expo-crypto": "^15.0.9",
+    "expo-document-picker": "^14.0.8",
+    "expo-file-system": "^19.0.23",
     "expo-local-authentication": "~17.0.8",
-    "expo-print": "^57.0.1",
-    "expo-sharing": "^57.0.8",
+    "expo-print": "^15.0.8",
+    "expo-sharing": "^14.0.8",
     "expo-speech": "~14.0.8",
     "expo-speech-recognition": "^56.0.1",
     "react-native-qrcode-svg": "^6.3.21"
