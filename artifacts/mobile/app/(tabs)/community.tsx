@@ -20,7 +20,6 @@ import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   FORUM_CATEGORIES,
-  FORUM_DISCLAIMER,
   ForumCategory,
   ForumPost,
   SEED_POSTS,
@@ -145,8 +144,8 @@ function ForumTab() {
                 </View>
                 <Text style={{ fontSize: fs(11), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginLeft: 'auto' }}>{timeAgo(p.timestamp, t)}</Text>
               </View>
-              <Text style={{ fontSize: fs(15), fontFamily: 'Inter_600SemiBold', color: colors.foreground, lineHeight: 21, marginBottom: 4 }}>{p.title}</Text>
-              <Text style={{ fontSize: fs(13), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, lineHeight: 19 }} numberOfLines={2}>{p.content}</Text>
+              <Text style={{ fontSize: fs(15), fontFamily: 'Inter_600SemiBold', color: colors.foreground, lineHeight: 21, marginBottom: 4 }}>{p.titleKey ? t(p.titleKey as any) : p.title}</Text>
+              <Text style={{ fontSize: fs(13), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, lineHeight: 19 }} numberOfLines={2}>{p.contentKey ? t(p.contentKey as any) : p.content}</Text>
             </Pressable>
             <View style={{ flexDirection: rowDir, alignItems: 'center', paddingHorizontal: 14, paddingBottom: 12, gap: 16 }}>
               <Pressable
@@ -177,7 +176,7 @@ function ForumTab() {
       )}
 
       <View style={{ backgroundColor: colors.muted, borderRadius: colors.radius, padding: 12, marginTop: 4 }}>
-        <Text style={{ fontSize: fs(11), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, lineHeight: 17 }}>{FORUM_DISCLAIMER}</Text>
+        <Text style={{ fontSize: fs(11), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, lineHeight: 17 }}>⚠️ {t('forum.disclaimer')}</Text>
       </View>
 
       {/* Post Detail Modal */}
@@ -233,9 +232,9 @@ function DetailView({ post, onClose }: { post: ForumPost; onClose: () => void })
         </View>
       </View>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, paddingBottom: 60, flexGrow: 1 }}>
-        <Text style={{ fontSize: fs(20), fontFamily: 'Inter_700Bold', color: colors.foreground, lineHeight: 27, marginBottom: 8 }}>{post.title}</Text>
+        <Text style={{ fontSize: fs(20), fontFamily: 'Inter_700Bold', color: colors.foreground, lineHeight: 27, marginBottom: 8 }}>{post.titleKey ? t(post.titleKey as any) : post.title}</Text>
         <Text style={{ fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginBottom: 16 }}>{post.author} · {timeAgo(post.timestamp, t)}</Text>
-        <Text style={[{ fontSize: fs(15), fontFamily: 'Inter_400Regular', color: colors.foreground, lineHeight: 23, marginBottom: 20 }, textStyle]}>{post.content}</Text>
+        <Text style={[{ fontSize: fs(15), fontFamily: 'Inter_400Regular', color: colors.foreground, lineHeight: 23, marginBottom: 20 }, textStyle]}>{post.contentKey ? t(post.contentKey as any) : post.content}</Text>
         {post.replies.map((r, i) => (
           <View key={i} style={{ backgroundColor: colors.muted, borderRadius: 10, padding: 12, marginBottom: 10, borderWidth: 1, borderColor: colors.border }}>
             <View style={{ flexDirection: rowDir, alignItems: 'center', gap: 8, marginBottom: 4 }}>

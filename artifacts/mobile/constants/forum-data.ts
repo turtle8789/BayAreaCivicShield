@@ -19,6 +19,8 @@ export interface ForumPost {
   category: ForumCategory;
   title: string;
   content: string;
+  titleKey?: string;
+  contentKey?: string;
   author: string;
   timestamp: string;
   helpfulCount: number;
@@ -40,6 +42,8 @@ export const SEED_POSTS: ForumPost[] = [
   {
     id: 'seed_1',
     category: 'police',
+    titleKey: 'forum.seed1.title',
+    contentKey: 'forum.seed1.body',
     title: 'What are my rights during a traffic stop?',
     content:
       'I got pulled over last week and wasn\'t sure what I had to do. I ended up just handing over everything they asked for. Later found out I had more rights than I realized. Does anyone have a quick breakdown of what you must provide vs. what you can refuse?',
@@ -70,6 +74,8 @@ export const SEED_POSTS: ForumPost[] = [
   {
     id: 'seed_2',
     category: 'housing',
+    titleKey: 'forum.seed2.title',
+    contentKey: 'forum.seed2.body',
     title: 'Got a 3-day eviction notice — what do I do first?',
     content:
       'Landlord slipped a 3-day "pay or quit" notice under my door this morning. I\'m one month behind on rent due to a medical emergency. I\'m scared. What are the first steps I should take? I\'m in Texas.',
@@ -100,6 +106,8 @@ export const SEED_POSTS: ForumPost[] = [
   {
     id: 'seed_3',
     category: 'immigration',
+    titleKey: 'forum.seed3.title',
+    contentKey: 'forum.seed3.body',
     title: 'ICE checkpoint on the highway — what do I say?',
     content:
       'My family drives through a checkpoint regularly for work. Sometimes agents ask everyone where they were born. We\'re nervous. What exactly do we have to answer? Do we have to roll down the window all the way?',
@@ -122,6 +130,8 @@ export const SEED_POSTS: ForumPost[] = [
   {
     id: 'seed_4',
     category: 'employment',
+    titleKey: 'forum.seed4.title',
+    contentKey: 'forum.seed4.body',
     title: 'Boss told me I\'m "salary" so I don\'t get overtime — is that true?',
     content:
       'I\'m working 55+ hours a week at a small restaurant. My manager says since I have a "manager" title and get paid salary I don\'t qualify for overtime. But I\'m doing the same work as everyone else. Something feels off.',
@@ -144,6 +154,8 @@ export const SEED_POSTS: ForumPost[] = [
   {
     id: 'seed_5',
     category: 'stories',
+    titleKey: 'forum.seed5.title',
+    contentKey: 'forum.seed5.body',
     title: 'How I got free legal help after a wrongful arrest',
     content:
       'Two years ago I was wrongfully arrested during a protest. I didn\'t know where to start. I found a local legal aid office through a friend, got a pro bono lawyer, and just last month my case was dismissed and the city agreed to a settlement. It took time but don\'t give up — free help exists.',
@@ -172,6 +184,8 @@ export const SEED_POSTS: ForumPost[] = [
   {
     id: 'seed_6',
     category: 'police',
+    titleKey: 'forum.seed6.title',
+    contentKey: 'forum.seed6.body',
     title: 'Can police search my phone without a warrant?',
     content:
       'I was stopped and the officer grabbed my phone and started going through it. I didn\'t know what to do. Turns out I didn\'t have to let them. Sharing this so others know.',
@@ -194,6 +208,8 @@ export const SEED_POSTS: ForumPost[] = [
   {
     id: 'seed_7',
     category: 'general',
+    titleKey: 'forum.seed7.title',
+    contentKey: 'forum.seed7.body',
     title: 'Can I record the police in public?',
     content:
       'I\'ve heard different things. Some say it\'s legal, some say you can be arrested for it. What\'s the actual law? I\'m in Florida.',

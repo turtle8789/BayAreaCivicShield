@@ -17,7 +17,6 @@ import * as WebBrowser from 'expo-web-browser';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   HUB_CATEGORIES,
-  HUB_DISCLAIMER,
   HUB_RESOURCES,
   HubCategory,
 } from '@/constants/resource-hub-data';
@@ -183,7 +182,7 @@ export default function ResourceHubScreen() {
       <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {renderContent()}
         <View style={styles.disclaimer}>
-          <Text style={styles.disclaimerTxt}>{HUB_DISCLAIMER}</Text>
+          <Text style={styles.disclaimerTxt}>⚠️ {t('hub.disclaimer')}</Text>
         </View>
       </ScrollView>
     </View>
@@ -202,7 +201,7 @@ function ResourceCard({ resource, styles, colors, fs }: { resource: (typeof HUB_
           <Text style={r.free ? styles.freeBadgeTxt : styles.paidBadgeTxt}>{r.free ? t('hub.free') : t('hub.paid')}</Text>
         </View>
       </View>
-      <Text style={styles.desc}>{r.description}</Text>
+      <Text style={styles.desc}>{t(('hub.res.' + r.id) as any)}</Text>
       <View style={styles.tags}>
         {r.tags.slice(0, 3).map((tag: string) => (
           <View key={tag} style={styles.tag}><Text style={styles.tagText}>{tag}</Text></View>

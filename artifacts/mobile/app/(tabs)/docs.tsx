@@ -503,6 +503,12 @@ export default function DocsScreen() {
             </View>
           )}
 
+          <View style={{ backgroundColor: colors.muted, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 8, marginBottom: 12, flexDirection: rowDir, gap: 8, alignItems: 'flex-start' }}>
+            <Feather name="info" size={13} color={colors.mutedForeground} style={{ marginTop: 1 }} />
+            <Text style={{ flex: 1, fontSize: fs(11), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, lineHeight: 16 }}>
+              {t('docs.extracted_note')}
+            </Text>
+          </View>
           <ResultSection label={t('docs.important_dates')} icon="calendar" color="#C9A050" items={result.dates} emptyMsg={t('docs.no_dates')} />
           <ResultSection label={t('docs.deadlines_section')} icon="alert-circle" color={colors.primary} items={result.deadlines} emptyMsg={t('docs.no_deadlines')} />
           <ResultSection label={t('docs.penalties_section')} icon="alert-triangle" color="#E05252" items={result.penalties} emptyMsg={t('docs.no_penalties')} />

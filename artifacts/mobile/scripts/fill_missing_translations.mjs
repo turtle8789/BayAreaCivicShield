@@ -84,24 +84,33 @@ RULES:
 Strings to translate:
 ${numbered}`;
 
-  const res = await fetch(`${OPENAI_URL}/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${OPENAI_KEY}`,
-    },
-    body: JSON.stringify({
-      model: 'gpt-5.4-mini',
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 0.2,
-      max_tokens: 16000,
-    }),
-  });
+  const controller = new AbortController();
+  const tid = setTimeout(() => controller.abort(), 25_000);
+  let res;
+  try {
+    res = await fetch(`${OPENAI_URL}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${OPENAI_KEY}`,
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.2,
+        max_tokens: 4096,
+      }),
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(tid);
+  }
   if (!res.ok) {
     const errText = await res.text();
     throw new Error(`OpenAI error ${res.status}: ${errText.slice(0, 200)}`);
   }
   const data = await res.json();
+  if (data.error) throw new Error(`API error: ${JSON.stringify(data.error).slice(0,200)}`);
   const raw = data.choices[0].message.content.trim();
   // Strip markdown fences if present
   const jsonStr = raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
@@ -148,51 +157,54 @@ async function main() {
     return;
   }
 
-  const BATCH_SIZE = 4;
+  const BATCH_SIZE = 1;          // one key at a time for longer strings
+  const LANG_CHUNK = 9;          // translate into 9 languages per API call
   let processed = 0;
 
   for (let bStart = 0; bStart < missingEntries.length; bStart += BATCH_SIZE) {
     const batch = missingEntries.slice(bStart, bStart + BATCH_SIZE);
 
-    // Group by which languages are missing — try to do same-missing-set together
-    // For simplicity, just use all NEW_LANGS for each batch
     const texts = batch.map(e => e.en);
 
     // Find union of missing langs in this batch
     const missingSet = new Set(batch.flatMap(e => e.missing));
     const targetLangs = NEW_LANGS.filter(l => missingSet.has(l));
 
-    console.log(`Batch ${Math.floor(bStart / BATCH_SIZE) + 1}: translating ${batch.length} keys → ${targetLangs.join(', ')}`);
+    console.log(`Key ${Math.floor(bStart / BATCH_SIZE) + 1}/${missingEntries.length}: ${batch[0].key}`);
 
-    let result;
-    // Retry up to 3 times on JSON parse failure
-    let attempts = 0;
-    while (attempts < 3) {
-      try {
-        result = await translateBatch(texts, targetLangs);
-        break;
-      } catch (err) {
-        attempts++;
-        if (attempts >= 3) {
-          console.error('  Translation error after 3 attempts:', err.message);
-          result = null;
-        } else {
-          console.log(`  Retrying (attempt ${attempts + 1})...`);
-          await new Promise(r => setTimeout(r, 1000));
+    // Process this key in language chunks so each API call stays within 25s
+    const mergedLangMap = {};
+    for (let cStart = 0; cStart < targetLangs.length; cStart += LANG_CHUNK) {
+      const langChunk = targetLangs.slice(cStart, cStart + LANG_CHUNK);
+      let result;
+      let attempts = 0;
+      while (attempts < 3) {
+        try {
+          result = await translateBatch(texts, langChunk);
+          break;
+        } catch (err) {
+          attempts++;
+          if (attempts >= 3) {
+            console.error(`  Error on langs ${langChunk.join(',')}: ${err.message}`);
+            result = null;
+          } else {
+            await new Promise(r => setTimeout(r, 800));
+          }
         }
       }
+      if (!result) continue;
+      for (const lang of langChunk) {
+        const vals = result[lang];
+        if (vals && vals[0] !== undefined) mergedLangMap[lang] = vals[0];
+      }
     }
-    if (!result) continue;
 
     // Inject each key's translations
     for (let i = 0; i < batch.length; i++) {
       const entry = batch[i];
       const newLangMap = {};
       for (const lang of entry.missing) {
-        const vals = result[lang];
-        if (vals && vals[i] !== undefined) {
-          newLangMap[lang] = vals[i];
-        }
+        if (mergedLangMap[lang] !== undefined) newLangMap[lang] = mergedLangMap[lang];
       }
       if (Object.keys(newLangMap).length > 0) {
         src = injectTranslations(src, entry.key, newLangMap);
