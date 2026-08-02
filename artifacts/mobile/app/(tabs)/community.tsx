@@ -135,8 +135,9 @@ function ForumTab() {
       {/* Category chips */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
         <View style={{ flexDirection: rowDir, gap: 6, paddingRight: 8 }}>
-          {[{ value: 'all' as const, label: 'All', emoji: '📋' }, ...FORUM_CATEGORIES].map((c) => {
+          {[{ value: 'all' as const, label: t('hub.filter_all'), labelKey: '', emoji: '📋' }, ...FORUM_CATEGORIES].map((c) => {
             const active = catFilter === c.value;
+            const displayLabel = c.labelKey ? t(c.labelKey as I18nKey) : c.label;
             return (
               <Pressable
                 key={c.value}
@@ -145,7 +146,7 @@ function ForumTab() {
               >
                 <Text style={{ fontSize: fs(11) }}>{c.emoji}</Text>
                 <Text style={{ fontSize: fs(12), fontFamily: active ? 'Inter_600SemiBold' : 'Inter_400Regular', color: active ? colors.primary : colors.mutedForeground }}>
-                  {c.label}
+                  {displayLabel}
                 </Text>
               </Pressable>
             );
@@ -163,7 +164,7 @@ function ForumTab() {
               <View style={{ flexDirection: rowDir, alignItems: 'center', gap: 8, marginBottom: 6 }}>
                 <View style={{ backgroundColor: meta.color + '18', borderRadius: 20, paddingHorizontal: 8, paddingVertical: 3, flexDirection: rowDir, alignItems: 'center', gap: 4 }}>
                   <Text style={{ fontSize: 11 }}>{meta.emoji}</Text>
-                  <Text style={{ fontSize: fs(11), fontFamily: 'Inter_600SemiBold', color: meta.color }}>{meta.label}</Text>
+                  <Text style={{ fontSize: fs(11), fontFamily: 'Inter_600SemiBold', color: meta.color }}>{t(meta.labelKey as I18nKey)}</Text>
                 </View>
                 <Text style={{ fontSize: fs(11), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginLeft: 'auto' }}>{timeAgo(p.timestamp, t)}</Text>
               </View>
@@ -251,7 +252,7 @@ function DetailView({ post, onClose }: { post: ForumPost; onClose: () => void })
         </Pressable>
         <View style={{ backgroundColor: meta.color + '18', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4, flexDirection: rowDir, alignItems: 'center', gap: 4 }}>
           <Text>{meta.emoji}</Text>
-          <Text style={{ fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: meta.color }}>{meta.label}</Text>
+          <Text style={{ fontSize: fs(12), fontFamily: 'Inter_600SemiBold', color: meta.color }}>{t(meta.labelKey as I18nKey)}</Text>
         </View>
       </View>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, paddingBottom: 60, flexGrow: 1 }}>
@@ -296,7 +297,7 @@ function NewPostView({ title, setTitle, body, setBody, cat, setCat, submitting, 
               {FORUM_CATEGORIES.map((c) => (
                 <Pressable key={c.value} onPress={() => setCat(c.value)} style={{ flexDirection: rowDir, alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 7, borderRadius: 20, borderWidth: 1.5, borderColor: cat === c.value ? colors.primary : colors.border, backgroundColor: cat === c.value ? colors.primary + '14' : colors.muted }}>
                   <Text style={{ fontSize: 12 }}>{c.emoji}</Text>
-                  <Text style={{ fontSize: fs(12), fontFamily: cat === c.value ? 'Inter_600SemiBold' : 'Inter_400Regular', color: cat === c.value ? colors.primary : colors.mutedForeground }}>{c.label}</Text>
+                  <Text style={{ fontSize: fs(12), fontFamily: cat === c.value ? 'Inter_600SemiBold' : 'Inter_400Regular', color: cat === c.value ? colors.primary : colors.mutedForeground }}>{t(c.labelKey as I18nKey)}</Text>
                 </Pressable>
               ))}
             </View>
@@ -349,13 +350,14 @@ function HubTab() {
       {/* Category tabs */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 12 }}>
         <View style={{ flexDirection: rowDir, gap: 6, paddingRight: 8 }}>
-          {[{ value: 'all' as const, label: 'All', emoji: '📋' }, ...HUB_CATEGORIES].map((c) => {
+          {[{ value: 'all' as const, label: t('hub.filter_all'), labelKey: '', emoji: '📋' }, ...HUB_CATEGORIES].map((c) => {
             const active = filter === c.value;
+            const chipLabel = c.labelKey ? t(c.labelKey as I18nKey) : c.label;
             return (
               <Pressable key={c.value} onPress={() => { setFilter(c.value as HubCategory | 'all'); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
                 style={{ flexDirection: rowDir, alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1.5, borderColor: active ? colors.primary : colors.border, backgroundColor: active ? colors.primary + '14' : colors.muted }}>
                 <Text style={{ fontSize: 11 }}>{c.emoji}</Text>
-                <Text style={{ fontSize: fs(12), fontFamily: active ? 'Inter_600SemiBold' : 'Inter_400Regular', color: active ? colors.primary : colors.mutedForeground }}>{c.label}</Text>
+                <Text style={{ fontSize: fs(12), fontFamily: active ? 'Inter_600SemiBold' : 'Inter_400Regular', color: active ? colors.primary : colors.mutedForeground }}>{chipLabel}</Text>
               </Pressable>
             );
           })}

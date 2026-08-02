@@ -14,7 +14,7 @@ export function useT() {
   const code = language.code;
 
   const t = (key: I18nKey): string => {
-    const entry = TRANSLATIONS[key];
+    const entry = TRANSLATIONS[key] as Record<string, string> | undefined;
     if (!entry) return key;
     return entry[code] ?? entry['en'] ?? key;
   };

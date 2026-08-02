@@ -27,13 +27,13 @@ export interface ForumPost {
   replies: ForumReply[];
 }
 
-export const FORUM_CATEGORIES: { value: ForumCategory; label: string; emoji: string; color: string }[] = [
-  { value: 'police',      label: 'Police Encounters', emoji: '🚔', color: '#C97B8E' },
-  { value: 'immigration', label: 'Immigration',        emoji: '🌎', color: '#5A9E6F' },
-  { value: 'housing',     label: 'Housing Rights',     emoji: '🏠', color: '#C9A050' },
-  { value: 'employment',  label: 'Employment',         emoji: '💼', color: '#6B8EC9' },
-  { value: 'general',     label: 'General Q&A',        emoji: '❓', color: '#A07888' },
-  { value: 'stories',     label: 'Share Your Story',   emoji: '📖', color: '#9B7EC9' },
+export const FORUM_CATEGORIES: { value: ForumCategory; label: string; labelKey: string; emoji: string; color: string }[] = [
+  { value: 'police',      label: 'Police Encounters', labelKey: 'forum.cat_police',      emoji: '🚔', color: '#C97B8E' },
+  { value: 'immigration', label: 'Immigration',        labelKey: 'forum.cat_immigration',  emoji: '🌎', color: '#5A9E6F' },
+  { value: 'housing',     label: 'Housing Rights',     labelKey: 'forum.cat_housing',      emoji: '🏠', color: '#C9A050' },
+  { value: 'employment',  label: 'Employment',         labelKey: 'forum.cat_employment',   emoji: '💼', color: '#6B8EC9' },
+  { value: 'general',     label: 'General Q&A',        labelKey: 'forum.cat_general',      emoji: '❓', color: '#A07888' },
+  { value: 'stories',     label: 'Share Your Story',   labelKey: 'forum.cat_stories',      emoji: '📖', color: '#9B7EC9' },
 ];
 
 export const SEED_POSTS: ForumPost[] = [

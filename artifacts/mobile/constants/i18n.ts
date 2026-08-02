@@ -4,202 +4,11 @@
  * Falls back to English when a translation is missing.
  */
 
-export type I18nKey =
-  // Navigation tabs
-  | 'nav.home' | 'nav.docs' | 'nav.translate' | 'nav.rights' | 'nav.resources' | 'nav.community'
-  // Home screen
-  | 'home.tagline' | 'home.emergency' | 'home.tools_section'
-  | 'home.saved_deadlines' | 'home.view_case' | 'home.clear_all' | 'home.dismiss' | 'home.disclaimer'
-  | 'home.important_date'
-  // Common buttons / labels
-  | 'common.settings' | 'common.accessibility' | 'common.tour'
-  | 'common.back' | 'common.call' | 'common.website' | 'common.directions'
-  | 'common.search' | 'common.close' | 'common.copy' | 'common.done'
-  | 'common.open_maps' | 'common.out_of'
-  // Rights screen
-  | 'rights.title' | 'rights.subtitle'
-  | 'rights.quiz_banner_title' | 'rights.quiz_banner_sub'
-  | 'rights.quiz_complete' | 'rights.next_question' | 'rights.see_results' | 'rights.try_again'
-  | 'rights.correct' | 'rights.incorrect' | 'rights.correct_was'
-  | 'rights.rights_by_situation' | 'rights.key_rights'
-  // Resources screen
-  | 'resources.title' | 'resources.subtitle'
-  | 'resources.hotlines' | 'resources.legal_aid' | 'resources.near_me'
-  | 'resources.emergency' | 'resources.find_near_you'
-  | 'resources.use_my_location' | 'resources.enter_city_zip'
-  | 'resources.filter_type' | 'resources.all_types'
-  | 'resources.showing_near' | 'resources.no_results'
-  | 'resources.search_tip'
-  // QR / Expo Go
-  | 'qr.title' | 'qr.subtitle' | 'qr.url_label' | 'qr.copy_url' | 'qr.copied'
-  // Docs screen
-  | 'docs.title' | 'docs.subtitle' | 'docs.tab_analyze' | 'docs.tab_guide'
-  | 'docs.input_label' | 'docs.placeholder' | 'docs.scan_image' | 'docs.sample'
-  | 'docs.extract_btn' | 'docs.analyzing' | 'docs.results'
-  | 'docs.important_dates' | 'docs.deadlines_section' | 'docs.penalties_section' | 'docs.actions_section'
-  | 'docs.save_btn' | 'docs.no_dates' | 'docs.no_deadlines' | 'docs.no_penalties' | 'docs.no_actions'
-  // Translate screen
-  | 'translate.subtitle' | 'translate.original' | 'translate.clear' | 'translate.btn'
-  | 'translate.placeholder' | 'translate.result_placeholder' | 'translate.translating'
-  | 'translate.voice_btn' | 'translate.stop' | 'translate.auto_detect'
-  // Community screen
-  | 'community.subtitle' | 'community.tab_forum' | 'community.tab_hub'
-  | 'community.search_forum' | 'community.search_hub'
-  | 'community.post_btn' | 'community.new_post' | 'community.open_website'
-  | 'community.no_posts' | 'community.free_badge' | 'community.no_resources'
-  // Home feature card titles
-  | 'home.feature_docs' | 'home.feature_translate' | 'home.feature_rights'
-  | 'home.feature_resources' | 'home.feature_hotlines' | 'home.feature_forum'
-  | 'home.feature_hub' | 'home.feature_log'
-  // Settings screen
-  | 'settings.title' | 'settings.section_language' | 'settings.app_language'
-  | 'settings.section_accessibility' | 'settings.font_size' | 'settings.font_size_desc'
-  | 'settings.font_small' | 'settings.font_medium' | 'settings.font_large'
-  | 'settings.high_contrast' | 'settings.high_contrast_on' | 'settings.high_contrast_off'
-  | 'settings.screen_reader' | 'settings.screen_reader_desc'
-  | 'settings.section_tour' | 'settings.guided_tour' | 'settings.guided_tour_desc'
-  | 'settings.expo_qr' | 'settings.expo_qr_desc'
-  | 'settings.section_data' | 'settings.deadlines_label' | 'settings.log_label'
-  | 'settings.clear_deadlines' | 'settings.clear_deadlines_desc'
-  | 'settings.section_about' | 'settings.privacy_row' | 'settings.privacy_desc'
-  | 'settings.built_for' | 'settings.built_for_desc' | 'settings.app_desc'
-  | 'settings.disclaimer' | 'settings.clear_title' | 'settings.clear_cancel'
-  | 'settings.clear_confirm' | 'settings.cleared_title' | 'settings.cleared_msg'
-  | 'settings.backup_label' | 'settings.backup_desc'
-  | 'settings.restore_label' | 'settings.restore_desc'
-  | 'settings.restore_pw_title' | 'settings.restore_pw_desc' | 'settings.restore_pw_ph'
-  | 'settings.restore_pw_btn' | 'settings.restore_pw_cancel' | 'settings.restore_pw_wrong'
-  // Rights quiz extras
-  | 'rights.general_info' | 'rights.quiz_title'
-  | 'rights.score_great' | 'rights.score_good' | 'rights.score_keep'
-  | 'rights.score_great_msg' | 'rights.score_good_msg' | 'rights.score_keep_msg'
-  | 'rights.correct_label'
-  // Resources filters
-  | 'resources.filter_all' | 'resources.filter_legal_aid' | 'resources.filter_defender'
-  | 'resources.filter_nonprofit' | 'resources.filter_clinic' | 'resources.filter_bar'
-  | 'resources.radius_label' | 'resources.radius_any' | 'resources.your_location'
-  | 'resources.perm_denied' | 'resources.location_error' | 'resources.enter_location'
-  | 'resources.not_found' | 'resources.geocode_error'
-  // Encounter log list
-  | 'log.title' | 'log.subtitle' | 'log.empty_title' | 'log.empty_desc' | 'log.first_btn'
-  | 'log.entry' | 'log.entries' | 'log.stored_device'
-  | 'log.delete_title' | 'log.delete_msg' | 'log.delete_cancel' | 'log.delete_btn'
-  | 'log.officer_info' | 'log.description_label' | 'log.outcome_label' | 'log.at'
-  | 'log.export_btn' | 'log.export_error' | 'log.export_empty' | 'log.export_title'
-  | 'log.location_label'
-  | 'log.protect_title' | 'log.protect_desc' | 'log.protect_ph'
-  | 'log.protect_confirm_ph' | 'log.protect_mismatch'
-  | 'log.protect_skip' | 'log.protect_btn' | 'log.protect_cancel'
-  | 'log.share_btn'
-  | 'log.select_hint' | 'log.select_cancel' | 'log.select_share'
-  // New log form
-  | 'newlog.title' | 'newlog.save' | 'newlog.type_label'
-  | 'newlog.location' | 'newlog.location_ph'
-  | 'newlog.officer' | 'newlog.officer_ph'
-  | 'newlog.description' | 'newlog.description_ph' | 'newlog.description_hint'
-  | 'newlog.outcome' | 'newlog.outcome_ph'
-  | 'newlog.legal_note' | 'newlog.required_msg' | 'newlog.error_msg'
-  // Home feature card descriptions
-  | 'home.desc_docs' | 'home.desc_translate' | 'home.desc_rights'
-  | 'home.desc_resources' | 'home.desc_hotlines' | 'home.desc_forum'
-  | 'home.desc_hub' | 'home.desc_log'
-  // Forum screen
-  | 'forum.title' | 'forum.post_btn' | 'forum.search_ph' | 'forum.filter_all'
-  | 'forum.helpful' | 'forum.reply' | 'forum.replies'
-  | 'forum.reply_submitted' | 'forum.reply_submitted_msg'
-  | 'forum.add_reply' | 'forum.reply_ph' | 'forum.post_reply_btn'
-  | 'forum.cancel' | 'forum.new_post' | 'forum.post_submit'
-  | 'forum.category_label' | 'forum.title_label' | 'forum.title_ph'
-  | 'forum.details_label' | 'forum.details_ph' | 'forum.display_name'
-  | 'forum.no_posts' | 'forum.start_discussion' | 'forum.required'
-  // Resource hub screen
-  | 'hub.title' | 'hub.search_ph' | 'hub.filter_all' | 'hub.not_found'
-  | 'hub.cat_legal_aid' | 'hub.cat_civil_rights' | 'hub.cat_immigration'
-  | 'hub.cat_housing' | 'hub.cat_employment' | 'hub.cat_lgbtq' | 'hub.cat_forums'
-  | 'hub.open_website' | 'hub.call' | 'hub.free' | 'hub.paid' | 'hub.curated_count'
-  // Tour screen
-  | 'tour.skip' | 'tour.next' | 'tour.back' | 'tour.get_started' | 'tour.try_now'
-  // Encounter types
-  | 'encounter.traffic_stop' | 'encounter.arrest' | 'encounter.questioning'
-  | 'encounter.citation' | 'encounter.search' | 'encounter.other'
-  // Language picker
-  | 'langpicker.title' | 'langpicker.search_ph'
-  // Community extras
-  | 'community.title' | 'community.share' | 'community.anon_note'
-  | 'community.link_error_title' | 'community.link_error_msg'
-  | 'community.missing_fields_title' | 'community.missing_fields_msg'
-  // Community relative timestamps ({n} is replaced with the numeric value)
-  | 'community.time_just_now' | 'community.time_m_ago' | 'community.time_h_ago' | 'community.time_d_ago'
-  // New log alert titles
-  | 'newlog.required_title' | 'newlog.error_title'
-  // Tour step content
-  | 'tour.welcome_title' | 'tour.welcome_desc' | 'tour.welcome_tip'
-  | 'tour.docs_title'    | 'tour.docs_desc'    | 'tour.docs_tip'
-  | 'tour.translate_title' | 'tour.translate_desc' | 'tour.translate_tip'
-  | 'tour.rights_title'  | 'tour.rights_desc'  | 'tour.rights_tip'
-  | 'tour.resources_title' | 'tour.resources_desc' | 'tour.resources_tip'
-  | 'tour.log_title'     | 'tour.log_desc'     | 'tour.log_tip'
-  | 'tour.ready_title'   | 'tour.ready_desc'   | 'tour.ready_tip'
-  // Translate screen — header, card labels, mic, alerts
-  | 'translate.title' | 'translate.your_language'
-  | 'translate.clip1_title' | 'translate.clip1_desc'
-  | 'translate.clip2_title' | 'translate.clip2_desc'
-  | 'translate.clip3_title' | 'translate.clip3_desc'
-  | 'translate.officer_script_label' | 'translate.says_in'
-  | 'translate.play_to_officer'
-  | 'translate.mic_title' | 'translate.mic_hint'
-  | 'translate.listening' | 'translate.start_rec' | 'translate.stop_rec'
-  | 'translate.captured' | 'translate.input_label' | 'translate.input_ph'
-  | 'translate.get_advice_loading' | 'translate.get_advice_btn'
-  | 'translate.rights_label' | 'translate.play_advice'
-  | 'translate.unavailable' | 'translate.advice_fallback'
-  | 'translate.tts_na_title' | 'translate.tts_na_msg'
-  | 'translate.voice_ns_title' | 'translate.voice_ns_msg'
-  | 'translate.voice_blocked_title' | 'translate.voice_blocked_msg'
-  | 'translate.voice_mobile_title' | 'translate.voice_mobile_msg' | 'translate.voice_mobile_ok'
-  | 'translate.voice_perm_title' | 'translate.voice_perm_msg'
-  | 'translate.voice_err_title'
-  | 'translate.voice_eas_title' | 'translate.voice_eas_msg'
-  // Docs screen — alerts and inline text
-  | 'docs.no_text_title' | 'docs.no_text_msg'
-  | 'docs.perm_title' | 'docs.camera_perm_msg' | 'docs.library_perm_msg'
-  | 'docs.error_title' | 'docs.img_error_msg'
-  | 'docs.no_text_found_title' | 'docs.no_text_found_msg'
-  | 'docs.ocr_fail_title' | 'docs.ocr_fail_msg'
-  | 'docs.scan_doc_title' | 'docs.scan_doc_msg'
-  | 'docs.scan_take_photo' | 'docs.scan_library'
-  | 'docs.saved_title' | 'docs.saved_msg'
-  | 'docs.nothing_save_title' | 'docs.nothing_save_msg' | 'docs.save_all_msg'
-  | 'docs.copied_title' | 'docs.copied_msg'
-  | 'docs.ocr_loading' | 'docs.ocr_loading_sub' | 'docs.qr_share_hint'
-  | 'docs.no_items_tip' | 'docs.input_tip' | 'docs.chars'
-  | 'docs.guide_detect_title' | 'docs.guide_detect_body'
-  | 'docs.guide_docs_title'   | 'docs.guide_docs_body'
-  | 'docs.guide_scan_title'   | 'docs.guide_scan_body'
-  | 'docs.guide_qr_title'     | 'docs.guide_qr_body'
-  | 'docs.guide_save_title'   | 'docs.guide_save_body'
-  | 'docs.guide_disclaimer'
-  // Resources screen — alerts and inline text
-  | 'resources.emergency_title' | 'resources.emergency_msg'
-  | 'resources.search_radius' | 'resources.result' | 'resources.results'
-  | 'resources.within' | 'resources.mi' | 'resources.location_ph'
-  // QR screen — status, how-to steps, share button, tunnel note
-  | 'qr.status_live' | 'qr.status_connect' | 'qr.share'
-  | 'qr.howto_title' | 'qr.howto_1' | 'qr.howto_2' | 'qr.howto_3' | 'qr.howto_4'
-  | 'qr.tunnel_title' | 'qr.tunnel_note'
-  // Nearby tab — live Overpass search UI
-  | 'resources.nearby.live_source' | 'resources.nearby.show_within'
-  | 'resources.nearby.no_results_radius' | 'resources.nearby.no_resources'
-  | 'resources.nearby.expand_tip' | 'resources.nearby.searching'
-  | 'resources.nearby.error'
-  | 'resources.nearby.type_lawyer' | 'resources.nearby.type_legal_services'
-  | 'resources.nearby.type_legal_aid' | 'resources.nearby.type_legal_advice'
-  | 'resources.nearby.type_courthouse' | 'resources.nearby.type_legal_resource'
-  | 'resources.nearby.maps' | 'resources.nearby.osm_note';
 
-type Translations = Record<I18nKey, Record<string, string>>;
+// I18nKey is auto-derived at the bottom of this file from typeof TRANSLATIONS.
+// Do not add keys here manually — just add them to the TRANSLATIONS object.
 
-export const TRANSLATIONS: Translations = {
+export const TRANSLATIONS = {
   // ── Navigation ──────────────────────────────────────────────────────────────
   'nav.home': {
     en: 'Home',       es: 'Inicio',       'zh-CN': '主页',       'zh-TW': '主頁',
@@ -4971,6 +4780,8 @@ export const TRANSLATIONS: Translations = {
     ne: 'यस वातावरणमा पाठ-देखि-स्वर उपलब्ध छैन।',
     so: 'Qoraalka-iyo-codku ma heli karo deegaankaani.',
     ht: 'Tèks-a-pawòl pa disponib nan anviwònman sa a.',
+    tl: 'Hindi available ang text-to-speech sa kapaligirang ito.',
+    am: 'በዚህ አካባቢ የጽሁፍ ወደ ድምፅ ማለት አልቻልኩም።',
   },
   'translate.voice_ns_title': {
     en: 'Not Supported', es: 'No Compatible', 'zh-CN': '不支持', 'zh-TW': '不支援',
@@ -5018,6 +4829,8 @@ export const TRANSLATIONS: Translations = {
     ne: 'भ्वाइस इनपुटको लागि क्रोम वा सफारीको आवश्यकता छ।',
     so: 'Gelinta codku waxay u baahan tahay Chrome ama Safari.',
     ht: 'Antre vwa mande Chrome oswa Safari.',
+    tl: 'Kailangan ng Chrome o Safari ang voice input.',
+    am: 'የድምፅ ግቤት ክሮም ወይም ሳፋሪ ይፈልጋል።',
   },
   'translate.voice_blocked_title': {
     en: 'Blocked', es: 'Bloqueado', 'zh-CN': '已阻止', 'zh-TW': '已封鎖',
@@ -5065,6 +4878,8 @@ export const TRANSLATIONS: Translations = {
     ne: 'ब्राउजर सेटिङहरूमा माइक्रोफोन पहुँचलाई अनुमति दिनुहोस्।',
     so: 'Ogolaada gelitaanka makarafoonka ee dejimaha biraawsarka.',
     ht: 'Pèmèt aksè mikwofòn nan anviwònman navigatè a.',
+    tl: 'Payagan ang access sa mikropono sa mga setting ng browser.',
+    am: 'በአውታረ መሳሪያ ቅንብር ውስጥ የሚኖር የማይክሮፕን መዳረሻ ይፈቀድ።',
   },
   'translate.voice_mobile_title': {
     en: '🎤 Voice on Mobile', es: '🎤 Voz en Móvil',
@@ -5116,6 +4931,8 @@ export const TRANSLATIONS: Translations = {
     ne: 'आवाज इनपुटको लागि पूर्ण एप निर्माणको आवश्यकता पर्छ र यो एक्स्पो गोमा उपलब्ध छैन।\n\nअधिकारीले भनेको कुरा पाठ बाकसमा टाइप गर्नुहोस् - वा आज आवाज काम गर्ने वेब संस्करण प्रयोग गर्नुहोस्।',
     so: 'Gelinta codka waxay u baahan tahay dhismaha buuxa ee barnaamijka mana laga heli karo Expo Go.\n\nQor waxa sarkaalka uu sheegay sanduuqa qoraalka - ama isticmaal nooca webka halkaas oo codku maanta shaqeeyo.',
     ht: 'Antre vwa a mande yon konstriksyon aplikasyon konplè e li pa disponib nan Expo Go.\n\nTape sa ofisye a te di nan bwat tèks la - oswa itilize vèsyon entènèt la kote vwa a ap travay jodi a.',
+    tl: 'Kailangan ng buong app build ang voice input at hindi available sa Expo Go.',
+    am: 'የድምፅ ግቤት ሙሉ መተግበሪያ ማስተካከል ይፈልጋል እና በ Expo Go ውስጥ አልተደገፈም።',
   },
   'translate.voice_mobile_ok': {
     en: 'Got it', es: 'Entendido', 'zh-CN': '知道了', 'zh-TW': '知道了',
@@ -5187,6 +5004,7 @@ export const TRANSLATIONS: Translations = {
     ne: 'कृपया सेटिङमा माइक्रोफोन पहुँचको अनुमति दिनुहोस्।',
     so: 'Fadlan ogolaada helitaanka mikrofoonka ee Dejinta.',
     ht: 'Tanpri pèmèt aksè mikwofòn nan Anviwònman.',
+    tl: 'Mangyaring payagan ang pag-access sa mikropono sa Mga Setting.',
   },
   'translate.voice_err_title': {
     en: 'Voice Error', es: 'Error de Voz',
@@ -5261,6 +5079,8 @@ export const TRANSLATIONS: Translations = {
     ne: 'आवाज इनपुटको लागि पूर्ण एप निर्माणको आवश्यकता पर्छ (EAS निर्माण), एक्स्पो गो होइन।\n\nअधिकारीले भनेको कुरा यसको सट्टा टाइप गर्नुहोस्।',
     so: 'Gelinta codka waxay u baahan tahay dhismaha buuxa ee barnaamijka (EAS Build), ma aha Expo Go.\n\nQor waxa sarkaalka uu sheegay bedelkeeda.',
     ht: 'Antre vwa a mande yon konstriksyon aplikasyon konplè (EAS Konstriksyon), pa Expo Go.\n\nTape sa ofisye a te di olye.',
+    tl: 'Ang input ng boses ay nangangailangan ng isang buong build ng app (EAS Build), hindi Expo Go.',
+    am: 'የድምፅ ግቤት ሙሉ የአፕ ማስተካከል (EAS ማስተካከል) ይፈልጋል፣ እንደ እንቅስቃሴ አይደለም።',
   },
 
   // ── Docs screen alerts and inline text ───────────────────────────────────────
@@ -5311,6 +5131,7 @@ export const TRANSLATIONS: Translations = {
     ne: 'कृपया कानूनी पाठ टाँस्नुहोस्, एक नमूना लोड गर्नुहोस्, वा एक कागजातको छवि स्क्यान गर्नुहोस्।',
     so: 'Fadlan ku dheji qoraal sharci ah, soo rar muunad, ama sawir dukumeenti ah iskaanka.',
     ht: 'Tanpri kole tèks legal la, chaje yon echantiyon, oswa eskane yon imaj dokiman.',
+    tl: 'Mangyaring i-paste ang legal na teksto, mag-load ng sample, o i-scan ang isang imahe ng dokumento.',
   },
   'docs.perm_title': {
     en: 'Permission Required', es: 'Permiso Requerido',
@@ -5361,6 +5182,8 @@ export const TRANSLATIONS: Translations = {
     ne: 'कागजातहरू स्क्यान गर्न क्यामेरा अनुमति आवश्यक छ।',
     so: 'Ogolaanshaha kamaradda ayaa loo baahan yahay si loo iskaanku dukumeentiyada.',
     ht: 'Otorizasyon kamera a nesesè pou eskane dokiman yo.',
+    tl: 'Kailangan ang pahintulot ng kamera upang i-scan ang mga dokumento.',
+    am: 'ሰነዶችን ለማስነሳት የካሜራ ፈቃድ ይፈልጋል።',
   },
   'docs.library_perm_msg': {
     en: 'Photo library permission is needed to select images.',
@@ -5388,6 +5211,8 @@ export const TRANSLATIONS: Translations = {
     ne: 'तस्बिरहरू चयन गर्न फोटो पुस्तकालय अनुमति आवश्यक छ।',
     so: 'Ogolaanshaha maktabadda sawirada ayaa loo baahan yahay si loo doorto sawirada.',
     ht: 'Otorizasyon bibliyotèk foto a nesesè pou chwazi imaj.',
+    tl: 'Kailangan ang pahintulot ng photo library upang pumili ng mga imahe.',
+    am: 'ምስሎችን ለማምረጥ የፎቶ ቤት ፈቃድ ይፈልጋል።',
   },
   'docs.error_title': {
     en: 'Error', es: 'Error', 'zh-CN': '错误', 'zh-TW': '錯誤',
@@ -5435,6 +5260,8 @@ export const TRANSLATIONS: Translations = {
     ne: 'तस्बिरको डेटा पढ्न सकिएन। कृपया अर्को तस्बिर प्रयास गर्नुहोस्।',
     so: 'Ma akhriyi karno xogta sawirka. Fadlan isku day sawir kale.',
     ht: 'Pa t kapab li done imaj la. Tanpri eseye yon lòt imaj.',
+    tl: 'Hindi mabasa ang data ng imahe. Mangyaring subukan ang ibang imahe.',
+    am: 'የምስል ውሂብ ማንበብ አልቻልኩም። እባኮትን ሌላ ምስል ይሞክሩ።',
   },
   'docs.no_text_found_title': {
     en: 'No Text Found', es: 'Sin Texto Encontrado',
@@ -5486,6 +5313,8 @@ export const TRANSLATIONS: Translations = {
     ne: 'यस चित्रबाट पाठ निकाल्न सकिएन। कृपया स्पष्ट, राम्रो प्रकाशमा भएको फोटो प्रयास गर्नुहोस्, वा पाठलाई म्यानुअल रूपमा टाइप/पेस्ट गर्नुहोस्।',
     so: 'Ma aanan ka saari karin qoraalka sawirkan. Isku day sawir cad, iftiin fiican leh, ama qoraalka gacanta ku qor/ku dhaji.',
     ht: 'Pa ka ekstrè tèks nan imaj sa a. Eseye yon foto ki pi klè, byen limen, oswa tape/kolye tèks la manyèlman.',
+    tl: 'Hindi makuha ang teksto mula sa larawang ito. Subukan ang mas malinaw, maayos na ilaw na larawan, o i-type/i-paste ang teksto nang manu-mano.',
+    am: 'ከዚህ ምስል ጽሁፍ ማውጣት አልቻልኩም። አንዳንድ ግልጽ ወይም በግምባር ብርሃን የሚታይ ፎቶ ይሞክሩ፣ ወይም ጽሁፍ በማንኛውም መንገድ ይጻፉ/ይቅርብ።',
   },
   'docs.ocr_fail_title': {
     en: 'OCR Failed', es: 'OCR Falló',
@@ -5536,6 +5365,8 @@ export const TRANSLATIONS: Translations = {
     ne: 'चित्रबाट पाठ पढ्न सकिएन। कृपया पुनः प्रयास गर्नुहोस् वा पाठलाई म्यानुअल रूपमा पेस्ट गर्नुहोस्।',
     so: 'Qoraalka sawirka lagama akhriyi karo. Fadlan mar kale isku day ama qoraalka gacanta ku dhaji.',
     ht: 'Pa ka li tèks la nan imaj la. Tanpri eseye ankò oswa kolye tèks la manyèlman.',
+    tl: 'Hindi mabasa ang teksto mula sa imahe. Pakisubukan muli o i-paste ang teksto nang manu-mano.',
+    am: 'ከምስል ጽሑፍ ማንበብ አልቻልኩም። እባኮትን ይሞክሩ ወይም ጽሑፍ በእጅ ይገናኙ።',
   },
   'docs.scan_doc_title': {
     en: 'Scan Document', es: 'Escanear Documento',
@@ -5679,6 +5510,8 @@ export const TRANSLATIONS: Translations = {
     ne: 'यो महत्त्वपूर्ण मिति अब तपाईंको होम स्क्रिनको शीर्षमा पिन गरिएको छ। यस कागजातमा फर्कनको लागि यसलाई ट्याप गर्नुहोस्।',
     so: 'Taariikhda muhiimka ah hadda waxaa lagu dhejiyay dusha sare ee shaashaddaada Guriga. Taabo si aad ugu laabato dukumintigan.',
     ht: 'Dat enpòtan sa a kounye a ap pwen nan tèt ekran Akèy ou an. Tape li pou retounen nan dokiman sa a.',
+    tl: 'Ang mahalagang petsang ito ay nakapirmi na ngayon sa itaas ng iyong Home screen. I-tap ito upang bumalik sa dokumentong ito.',
+    am: 'ይህ አስፈላጊ ቀን አሁን በየዕለቱ የመነሻ ገጽ ጫፍ ላይ ተያይዞ አለ። ወደ ዚህ ሰነድ ለመመለስ ይጫኑ።',
   },
   'docs.nothing_save_title': {
     en: 'Nothing to Save', es: 'Nada que Guardar',
@@ -5729,6 +5562,8 @@ export const TRANSLATIONS: Translations = {
     ne: 'सुरक्षित गर्नको लागि कुनै समयसीमा वा मिति फेला परेन।',
     so: 'Wax waqtiga kama dambeysta ah ama taariikho ah laguma helin in la keydiyo.',
     ht: 'Pa gen dat limit oswa dat ki te jwenn pou sove.',
+    tl: 'Walang natagpuang mga deadline o petsa upang i-save.',
+    am: 'የሚያስቀርቡ ቀን ወይም ቀን አልተገኙም።',
   },
   'docs.save_all_msg': {
     en: 'These are pinned at the top of your Home screen. Tap any one to return to this document.',
@@ -5757,6 +5592,8 @@ export const TRANSLATIONS: Translations = {
     ne: 'यी तपाईंको होम स्क्रिनको शीर्षमा पिन गरिएको छन्। यस कागजातमा फर्कनको लागि कुनै एकमा ट्याप गर्नुहोस्।',
     so: 'Kuwani waxay ku dheggan yihiin dusha sare ee shaashaddaada Guriga. Taabo midkood si aad ugu laabato dukumintigan.',
     ht: 'Sa yo ap pwen nan tèt ekran Akèy ou an. Tape nenpòt youn pou retounen nan dokiman sa a.',
+    tl: 'Ito ay naka-pin sa itaas ng iyong Home screen. Tapikin ang alinman upang bumalik sa dokumentong ito.',
+    am: 'እነዚህ በየቤተሰቡ መስክ ላይ ይገኛሉ። ወይም ወይም ይገናኙ ወደ ዚህ ሰነድ ይመለሱ።',
   },
   'docs.copied_title': {
     en: 'Copied', es: 'Copiado', 'zh-CN': '已复制', 'zh-TW': '已複製',
@@ -5805,6 +5642,7 @@ export const TRANSLATIONS: Translations = {
     ne: 'सारांश क्लिपबोर्डमा प्रतिलिपि गरियो।',
     so: 'Dulmar ayaa lagu nuqulay clipboard-ka.',
     ht: 'Rezime a kopi nan clipboard la.',
+    tl: 'Nakapag-kopya ng buod sa clipboard.',
   },
   'docs.ocr_loading': {
     en: 'Reading document…', es: 'Leyendo documento…',
@@ -5856,6 +5694,7 @@ export const TRANSLATIONS: Translations = {
     ne: 'OCR तपाईंको छविबाट पाठ निकाल्दैछ',
     so: 'OCR waxay ka soo saaraysaa qoraalka sawirkaaga',
     ht: 'OCR ap ekstrè tèks nan imaj ou',
+    tl: 'Nangangalap ang OCR ng teksto mula sa iyong imahe',
   },
   'docs.qr_share_hint': {
     en: 'Scan to share extracted deadlines',
@@ -5884,6 +5723,7 @@ export const TRANSLATIONS: Translations = {
     ne: 'निकालीएका म्यादहरू साझा गर्न स्क्यान गर्नुहोस्',
     so: 'Scan si aad ula wadaagto taariikhaha la soo saaray',
     ht: 'Eskane pou pataje dat limit ki sòti',
+    tl: 'I-scan upang ibahagi ang mga nakuha na deadline',
   },
   'docs.no_items_tip': {
     en: 'No structured items detected. Try the sample document or paste more complete legal text.',
@@ -5912,6 +5752,8 @@ export const TRANSLATIONS: Translations = {
     ne: 'कुनै संरचित वस्तु पत्ता लगाइएको छैन। नमूना कागजात प्रयास गर्नुहोस् वा थप पूर्ण कानूनी पाठ पेस्ट गर्नुहोस्।',
     so: 'Wax shay ah oo qaabaysan lama oga. Isku day dukumint tusaale ah ama ku dhaji qoraal sharci oo dhammaystiran.',
     ht: 'Pa gen okenn atik estriktire ki detekte. Eseye dokiman echantiyon an oswa kole plis tèks legal konplè.',
+    tl: 'Walang nakitang estrukturadong mga item. Subukan ang sample na dokumento o i-paste ang mas kumpletong legal na teksto.',
+    am: 'የተወሰኑ እቃዎች አልተገኙም። እባኮትን አንደኛ የምስል ወይም ወይም ይገናኙ ወደ ዚህ ሰነድ ይመለሱ።',
   },
   'docs.input_tip': {
     en: 'Paste text from a court notice or tap Scan Image to photograph a document. The analyzer finds dates, deadlines, penalties, and required actions.',
@@ -7127,4 +6969,386 @@ export const TRANSLATIONS: Translations = {
     so: 'Erayga sirta waa khalad — kaydka lama furi karin.',
     ht: 'Modpas la pa kòrèk — pa kapab dekripte kopi sovgad la.',
   },
+  'nav.hub': {
+    en: 'Hub',
+  },
+  'nav.log': {
+    en: 'Log',
+  },
+  'rights.cat_traffic': {
+    en: 'Traffic Stops',
+  },
+  'rights.cat_police': {
+    en: 'Police Encounters',
+  },
+  'rights.cat_arrest': {
+    en: 'Arrest Rights',
+  },
+  'rights.cat_immigration': {
+    en: 'Immigration Rights',
+  },
+  'rights.cat_home': {
+    en: 'At Home',
+  },
+  'rights.cat_search': {
+    en: 'Searches & Seizures',
+  },
+  'rights.traffic_r1': {
+    en: 'You must show your license, registration, and proof of insurance.',
+  },
+  'rights.traffic_r2': {
+    en: 'You have the right to remain silent beyond providing ID documents.',
+  },
+  'rights.traffic_r3': {
+    en: 'You can refuse a search — say clearly: "I do not consent to this search."',
+  },
+  'rights.traffic_r4': {
+    en: 'Keep your hands visible at all times and move slowly.',
+  },
+  'rights.traffic_r5': {
+    en: 'You can record the encounter as long as you don\'t interfere.',
+  },
+  'rights.traffic_r6': {
+    en: 'If you are arrested, say: "I am invoking my right to remain silent and want a lawyer."',
+  },
+  'rights.traffic_r7': {
+    en: 'Do not argue or resist — challenge it in court instead.',
+  },
+  'rights.police_r1': {
+    en: 'You have the right to remain silent. Use it.',
+  },
+  'rights.police_r2': {
+    en: 'You can ask: "Am I being detained or am I free to go?"',
+  },
+  'rights.police_r3': {
+    en: 'If detained, you can ask why you are being held.',
+  },
+  'rights.police_r4': {
+    en: 'You can film police in public — it is a protected First Amendment right.',
+  },
+  'rights.police_r5': {
+    en: 'Never physically resist an officer, even if the stop is unlawful.',
+  },
+  'rights.police_r6': {
+    en: 'Officers can pat down your outer clothing if they suspect a weapon.',
+  },
+  'rights.police_r7': {
+    en: 'You can always say "I want a lawyer" at any point.',
+  },
+  'rights.arrest_r1': {
+    en: 'You have the right to know why you are being arrested.',
+  },
+  'rights.arrest_r2': {
+    en: 'Miranda rights must be read before a custodial interrogation.',
+  },
+  'rights.arrest_r3': {
+    en: 'You have the right to an attorney. If you can\'t afford one, one will be provided.',
+  },
+  'rights.arrest_r4': {
+    en: 'You can remain silent — say: "I am invoking my right to remain silent."',
+  },
+  'rights.arrest_r5': {
+    en: 'Do not sign any documents without a lawyer present.',
+  },
+  'rights.arrest_r6': {
+    en: 'You have the right to make a phone call after being booked.',
+  },
+  'rights.arrest_r7': {
+    en: 'You must be brought before a judge within 48 hours of arrest.',
+  },
+  'rights.immigration_r1': {
+    en: 'You have the right to remain silent regardless of immigration status.',
+  },
+  'rights.immigration_r2': {
+    en: 'You do not have to open the door to ICE without a signed judicial warrant.',
+  },
+  'rights.immigration_r3': {
+    en: 'Ask to see the warrant — an ICE administrative warrant is NOT a court order.',
+  },
+  'rights.immigration_r4': {
+    en: 'Do not sign any documents (like "voluntary departure") without a lawyer.',
+  },
+  'rights.immigration_r5': {
+    en: 'You have the right to contact your consulate if detained.',
+  },
+  'rights.immigration_r6': {
+    en: 'Anything you say can be used in immigration proceedings.',
+  },
+  'rights.immigration_r7': {
+    en: 'Contact an immigration lawyer immediately if detained.',
+  },
+  'rights.home_r1': {
+    en: 'Police generally need a warrant signed by a judge to enter your home.',
+  },
+  'rights.home_r2': {
+    en: 'You can ask to see the warrant through a window or door.',
+  },
+  'rights.home_r3': {
+    en: 'If officers enter by force, do not resist — challenge it in court.',
+  },
+  'rights.home_r4': {
+    en: 'A "knock and announce" is usually required before entry.',
+  },
+  'rights.home_r5': {
+    en: 'Consent to search is voluntary — you can say no.',
+  },
+  'rights.home_r6': {
+    en: 'If you open the door, step outside and close the door behind you.',
+  },
+  'rights.home_r7': {
+    en: 'Anything in plain view may be seized without a warrant.',
+  },
+  'rights.search_r1': {
+    en: 'The 4th Amendment protects against unreasonable searches.',
+  },
+  'rights.search_r2': {
+    en: 'Police need a warrant, probable cause, or consent to search.',
+  },
+  'rights.search_r3': {
+    en: 'Clearly say: "I do not consent to this search."',
+  },
+  'rights.search_r4': {
+    en: 'Your refusal to consent cannot be used as probable cause.',
+  },
+  'rights.search_r5': {
+    en: 'Searches can be challenged in court as unlawful.',
+  },
+  'rights.search_r6': {
+    en: 'Evidence from an illegal search may be suppressed ("fruit of the poisonous tree").',
+  },
+  'rights.search_r7': {
+    en: 'You can complain about an illegal search after the fact — not during.',
+  },
+  'rights.q1_q': {
+    en: 'During a traffic stop, which documents must you provide?',
+  },
+  'rights.q1_a0': {
+    en: 'License only',
+  },
+  'rights.q1_a1': {
+    en: 'License, registration, and proof of insurance',
+  },
+  'rights.q1_a2': {
+    en: 'Nothing — you can remain silent',
+  },
+  'rights.q1_a3': {
+    en: 'Only your name',
+  },
+  'rights.q1_exp': {
+    en: 'Drivers must provide their license, vehicle registration, and proof of insurance when lawfully stopped.',
+  },
+  'rights.q2_q': {
+    en: 'How do you properly invoke your right to remain silent?',
+  },
+  'rights.q2_a0': {
+    en: 'Just stay quiet without saying anything',
+  },
+  'rights.q2_a1': {
+    en: 'Say "I plead the fifth" repeatedly',
+  },
+  'rights.q2_a2': {
+    en: 'Clearly say "I am invoking my right to remain silent"',
+  },
+  'rights.q2_a3': {
+    en: 'Walk away from the officer',
+  },
+  'rights.q2_exp': {
+    en: 'Since 2013 (Salinas v. Texas), you must explicitly state you are invoking your right to silence — staying quiet alone may not protect you.',
+  },
+  'rights.q3_q': {
+    en: 'Can you legally record the police in public?',
+  },
+  'rights.q3_a0': {
+    en: 'Never — it is always illegal',
+  },
+  'rights.q3_a1': {
+    en: 'Only with written permission',
+  },
+  'rights.q3_a2': {
+    en: 'Yes, it is a protected First Amendment right',
+  },
+  'rights.q3_a3': {
+    en: 'Only in California',
+  },
+  'rights.q3_exp': {
+    en: 'Recording police performing their duties in public is protected by the First Amendment across the US, as long as you don\'t physically interfere.',
+  },
+  'rights.q4_q': {
+    en: 'If ICE comes to your door, must you let them in?',
+  },
+  'rights.q4_a0': {
+    en: 'Yes, always',
+  },
+  'rights.q4_a1': {
+    en: 'Only if they show any badge',
+  },
+  'rights.q4_a2': {
+    en: 'No — only if they have a signed judicial warrant',
+  },
+  'rights.q4_a3': {
+    en: 'Yes, if they identify themselves as officers',
+  },
+  'rights.q4_exp': {
+    en: 'An ICE administrative warrant is not a court order. You only must allow entry with a judicial (signed by a judge) warrant.',
+  },
+  'rights.q5_q': {
+    en: 'When can you ask "Am I free to go?" during a stop?',
+  },
+  'rights.q5_a0': {
+    en: 'Never — you must wait to be released',
+  },
+  'rights.q5_a1': {
+    en: 'Only after 15 minutes',
+  },
+  'rights.q5_a2': {
+    en: 'At any point during the encounter',
+  },
+  'rights.q5_a3': {
+    en: 'Only if you are not under arrest',
+  },
+  'rights.q5_exp': {
+    en: 'You can ask at any time whether you are free to go. If not detained, you may calmly walk away.',
+  },
+  'rights.q6_q': {
+    en: 'What should you do if police enter your home without a warrant?',
+  },
+  'rights.q6_a0': {
+    en: 'Physically block them from entering',
+  },
+  'rights.q6_a1': {
+    en: 'Comply and challenge the entry in court afterward',
+  },
+  'rights.q6_a2': {
+    en: 'Call 911 immediately',
+  },
+  'rights.q6_a3': {
+    en: 'Lock all the doors',
+  },
+  'rights.q6_exp': {
+    en: 'Never physically resist even an unlawful entry — it can lead to additional charges. Document everything and challenge it in court.',
+  },
+  'rights.q7_q': {
+    en: 'What is the "fruit of the poisonous tree" doctrine?',
+  },
+  'rights.q7_a0': {
+    en: 'Agricultural regulations on police property',
+  },
+  'rights.q7_a1': {
+    en: 'Evidence gathered from an illegal search can be excluded in court',
+  },
+  'rights.q7_a2': {
+    en: 'A rule about planting evidence',
+  },
+  'rights.q7_a3': {
+    en: 'Police must disclose all evidence before trial',
+  },
+  'rights.q7_exp': {
+    en: 'Under this exclusionary rule, evidence obtained from an unlawful search or seizure may be suppressed — it cannot be used against you in court.',
+  },
+  'rights.q8_q': {
+    en: 'How long can you legally be held after arrest before seeing a judge?',
+  },
+  'rights.q8_a0': {
+    en: '24 hours',
+  },
+  'rights.q8_a1': {
+    en: '48 hours',
+  },
+  'rights.q8_a2': {
+    en: '72 hours',
+  },
+  'rights.q8_a3': {
+    en: 'Until trial',
+  },
+  'rights.q8_exp': {
+    en: 'In California and most US jurisdictions, you must be brought before a judge within 48 hours of arrest (excluding weekends/holidays in some cases).',
+  },
+  'rights.q9_q': {
+    en: 'Does refusing a police search give officers probable cause?',
+  },
+  'rights.q9_a0': {
+    en: 'Yes, it looks suspicious',
+  },
+  'rights.q9_a1': {
+    en: 'Only at night',
+  },
+  'rights.q9_a2': {
+    en: 'No — your refusal cannot be used as probable cause',
+  },
+  'rights.q9_a3': {
+    en: 'Yes, in high-crime areas',
+  },
+  'rights.q9_exp': {
+    en: 'The Supreme Court has held that exercising your 4th Amendment right to refuse a search cannot by itself constitute probable cause for a search.',
+  },
+  'rights.q10_q': {
+    en: 'When must Miranda rights be read to you?',
+  },
+  'rights.q10_a0': {
+    en: 'Immediately upon arrest',
+  },
+  'rights.q10_a1': {
+    en: 'Before any police questioning ever',
+  },
+  'rights.q10_a2': {
+    en: 'Before a custodial interrogation',
+  },
+  'rights.q10_a3': {
+    en: 'Only at the police station',
+  },
+  'rights.q10_exp': {
+    en: 'Miranda warnings are required before a custodial interrogation — when you are in custody and being questioned. Not merely upon arrest.',
+  },
+  'security.title': {
+    en: 'Privacy & Security',
+  },
+  'security.recommend': {
+    en: 'For the safety of your encounter log, we recommend setting up an App Lock.',
+  },
+  'security.setup_lock': {
+    en: 'Set up App Lock',
+  },
+  'security.dismiss': {
+    en: 'Dismiss',
+  },
+  'security.dont_show': {
+    en: 'Don\'t show again',
+  },
+  'security.lock_enabled': {
+    en: 'Your app is protected',
+  },
+  'security.lock_enabled_desc': {
+    en: 'A PIN and biometric lock are active.',
+  },
+  'security.change_pin': {
+    en: 'Change PIN',
+  },
+  'security.change_pin_desc': {
+    en: 'Update your 4-digit PIN',
+  },
+  'security.lock_after': {
+    en: 'Lock after',
+  },
+  'security.lock_after_desc': {
+    en: 'How long in background before re-locking',
+  },
+  'security.app_lock': {
+    en: 'App Lock',
+  },
+  'security.app_lock_on': {
+    en: 'PIN required to open the app',
+  },
+  'security.app_lock_off': {
+    en: 'Anyone can open the app',
+  },
+  'forum.cat_police':      { en: 'Police Encounters' },
+  'forum.cat_immigration':  { en: 'Immigration' },
+  'forum.cat_housing':      { en: 'Housing Rights' },
+  'forum.cat_employment':   { en: 'Employment' },
+  'forum.cat_general':      { en: 'General Q&A' },
+  'forum.cat_stories':      { en: 'Share Your Story' },
 };
+
+/** Auto-derived from TRANSLATIONS — includes every key added to the object. */
+export type I18nKey = keyof typeof TRANSLATIONS;
+

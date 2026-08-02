@@ -12,7 +12,8 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const I18N_PATH = path.resolve(__dirname, '../constants/i18n.ts');
 
-const NEW_LANGS = ['te','pa','ta','bn','id','ur','tr','sw','it','th','ms','ne','so','ht'];
+// All 27 non-English languages — so newly added English-only keys get fully translated
+const NEW_LANGS = ['es','zh-CN','zh-TW','vi','tl','hi','ko','ar','fr','pt','ru','ja','am','te','pa','ta','bn','id','ur','tr','sw','it','th','ms','ne','so','ht'];
 
 const LANG_NAMES = {
   te: 'Telugu', pa: 'Punjabi', ta: 'Tamil', bn: 'Bengali',
@@ -52,7 +53,9 @@ function findMissingKeys(src) {
     if (enVal) {
       const missing = NEW_LANGS.filter(l => {
         // Check if language code appears as a key in the body
-        return !new RegExp(`\\b${l}\\s*:`).test(body);
+        // Handle quoted keys (e.g. 'zh-CN':) and unquoted keys (e.g. es:)
+        const escaped = l.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+        return !new RegExp(`(?:'${escaped}'|\\b${escaped})\\s*:`).test(body);
       });
       if (missing.length > 0) {
         results.push({ key, en: enVal, missing, startLine: i, endLine: j });

@@ -19,21 +19,29 @@ function NativeTabLayout() {
         <Icon sf={{ default: 'house', selected: 'house.fill' }} />
         <Text>{t('nav.home')}</Text>
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="docs">
-        <Icon sf={{ default: 'doc.text', selected: 'doc.text.fill' }} />
-        <Text>{t('nav.docs')}</Text>
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="translate">
-        <Icon sf={{ default: 'globe', selected: 'globe.fill' }} />
-        <Text>{t('nav.translate')}</Text>
-      </NativeTabs.Trigger>
       <NativeTabs.Trigger name="rights">
         <Icon sf={{ default: 'book', selected: 'book.fill' }} />
         <Text>{t('nav.rights')}</Text>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="resources">
-        <Icon sf={{ default: 'phone', selected: 'phone.fill' }} />
+        <Icon sf={{ default: 'location', selected: 'location.fill' }} />
         <Text>{t('nav.resources')}</Text>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="hub">
+        <Icon sf={{ default: 'square.grid.2x2', selected: 'square.grid.2x2.fill' }} />
+        <Text>{t('nav.hub')}</Text>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="log">
+        <Icon sf={{ default: 'list.clipboard', selected: 'list.clipboard.fill' }} />
+        <Text>{t('nav.log')}</Text>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="translate">
+        <Icon sf={{ default: 'globe', selected: 'globe.fill' }} />
+        <Text>{t('nav.translate')}</Text>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="docs">
+        <Icon sf={{ default: 'doc.text', selected: 'doc.text.fill' }} />
+        <Text>{t('nav.docs')}</Text>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="community">
         <Icon sf={{ default: 'bubble.left.and.bubble.right', selected: 'bubble.left.and.bubble.right.fill' }} />
@@ -81,7 +89,7 @@ function ClassicTabLayout() {
           ) : null,
         tabBarLabelStyle: {
           fontFamily: 'Inter_500Medium',
-          fontSize: 11,
+          fontSize: 10,
         },
       }}
     >
@@ -91,22 +99,6 @@ function ClassicTabLayout() {
           title: t('nav.home'),
           tabBarIcon: ({ color }) =>
             isIOS ? <SymbolView name="house" tintColor={color} size={22} /> : <Feather name="home" size={22} color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="docs"
-        options={{
-          title: t('nav.docs'),
-          tabBarIcon: ({ color }) =>
-            isIOS ? <SymbolView name="doc.text" tintColor={color} size={22} /> : <Feather name="file-text" size={22} color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="translate"
-        options={{
-          title: t('nav.translate'),
-          tabBarIcon: ({ color }) =>
-            isIOS ? <SymbolView name="globe" tintColor={color} size={22} /> : <Feather name="globe" size={22} color={color} />,
         }}
       />
       <Tabs.Screen
@@ -122,7 +114,39 @@ function ClassicTabLayout() {
         options={{
           title: t('nav.resources'),
           tabBarIcon: ({ color }) =>
-            isIOS ? <SymbolView name="phone" tintColor={color} size={22} /> : <Feather name="phone-call" size={22} color={color} />,
+            isIOS ? <SymbolView name="location" tintColor={color} size={22} /> : <Feather name="map-pin" size={22} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="hub"
+        options={{
+          title: t('nav.hub'),
+          tabBarIcon: ({ color }) =>
+            isIOS ? <SymbolView name="square.grid.2x2" tintColor={color} size={22} /> : <Feather name="grid" size={22} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="log"
+        options={{
+          title: t('nav.log'),
+          tabBarIcon: ({ color }) =>
+            isIOS ? <SymbolView name="list.clipboard" tintColor={color} size={22} /> : <Feather name="clipboard" size={22} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="translate"
+        options={{
+          title: t('nav.translate'),
+          tabBarIcon: ({ color }) =>
+            isIOS ? <SymbolView name="globe" tintColor={color} size={22} /> : <Feather name="globe" size={22} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="docs"
+        options={{
+          title: t('nav.docs'),
+          tabBarIcon: ({ color }) =>
+            isIOS ? <SymbolView name="doc.text" tintColor={color} size={22} /> : <Feather name="file-text" size={22} color={color} />,
         }}
       />
       <Tabs.Screen

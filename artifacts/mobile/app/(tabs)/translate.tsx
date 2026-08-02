@@ -165,13 +165,15 @@ export default function TranslateScreen() {
     setCategory(cat);
 
     try {
+      // Use the i18n key for the category title (works for any app language)
+      const catTitleI18n = t(`rights.cat_${cat.id}` as any);
       if (targetLang.code === 'en') {
-        const combined = `${cat.title.toUpperCase()} RIGHTS:\n\n` + cat.rights.map((r) => `• ${r}`).join('\n');
+        const combined = `${catTitleI18n.toUpperCase()} RIGHTS:\n\n` + cat.rights.map((r) => `• ${r}`).join('\n');
         setAdviceText(combined);
         setAdvisorySpeech(combined);
       } else {
-        // Translate the title and each right
-        const titleTrans = await translateText(cat.title, targetLang.code);
+        // Translate the title and each right into the chosen target language
+        const titleTrans = await translateText(catTitleI18n, targetLang.code);
         const rightsTrans = await Promise.allSettled(
           cat.rights.map((r) => translateText(r, targetLang.code))
         );

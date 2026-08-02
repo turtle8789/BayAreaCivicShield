@@ -10,7 +10,7 @@ import {
 import { Feather } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { QUIZ_QUESTIONS, RIGHTS_CATEGORIES, RightsCategory } from '@/constants/rights-data';
+import { getQuizQuestions, getRightsCategories, RightsCategory } from '@/constants/rights-data';
 import { useColors } from '@/hooks/useColors';
 import { useRTL } from '@/hooks/useRTL';
 import { useT } from '@/hooks/useTranslation';
@@ -112,8 +112,9 @@ function QuizScreen({ onBack }: { onBack: () => void }) {
   const [score, setScore]               = useState(0);
   const [finished, setFinished]         = useState(false);
 
-  const question = QUIZ_QUESTIONS[currentIdx];
-  const total    = QUIZ_QUESTIONS.length;
+  const questions = getQuizQuestions(t);
+  const question = questions[currentIdx];
+  const total    = questions.length;
   const isCorrect = selectedAnswer !== null && selectedAnswer === question.correctIndex;
 
   const handleAnswer = (optionIdx: number) => {
@@ -382,7 +383,7 @@ export default function RightsScreen() {
           {t('rights.rights_by_situation')}
         </Text>
 
-        {RIGHTS_CATEGORIES.map((cat) => (
+        {getRightsCategories(t).map((cat) => (
           <CategoryCard
             key={cat.id}
             category={cat}
