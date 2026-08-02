@@ -35,6 +35,10 @@ export default function PinLockScreen({ pin, onUnlock }: Props) {
   const [bioTypes, setBioTypes]       = useState<LocalAuthentication.AuthenticationType[]>([]);
   const [bioChecked, setBioChecked]   = useState(false);
 
+  // Why biometrics fell back to PIN — shown briefly then auto-dismissed
+  const [bioFallbackReason, setBioFallbackReason] = useState<'not_enrolled' | 'failed' | null>(null);
+  const [showBioMessage, setShowBioMessage]       = useState(false);
+
   // PIN state
   const [entered, setEntered]   = useState('');
   const [pinError, setPinError] = useState(false);
@@ -130,9 +134,15 @@ export default function PinLockScreen({ pin, onUnlock }: Props) {
       setBioAvailable(available);
       setBioTypes(types);
       setBioChecked(true);
-      if (!available) setScreen('pin');
+      if (!available) {
+        setBioFallbackReason('not_enrolled');
+        setShowBioMessage(true);
+        setScreen('pin');
+      }
     } catch {
       setBioChecked(true);
+      setBioFallbackReason('failed');
+      setShowBioMessage(true);
       setScreen('pin');
     }
   }, [biometricUnlockEnabled]);
@@ -149,12 +159,20 @@ export default function PinLockScreen({ pin, onUnlock }: Props) {
       if (result.success) {
         if (Platform.OS !== 'web') Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         onUnlock();
+        return;
       }
-      // If the user tapped "Use PIN" (fallback), switch to PIN screen
-      if (!result.success && (result as any).error === 'user_fallback') {
+      // If the user tapped "Use PIN" (fallback), switch silently — it was their choice
+      if ((result as any).error === 'user_fallback') {
+        setScreen('pin');
+      } else {
+        // Auth was attempted but failed (face not recognized, sensor error, etc.)
+        setBioFallbackReason('failed');
+        setShowBioMessage(true);
         setScreen('pin');
       }
     } catch {
+      setBioFallbackReason('failed');
+      setShowBioMessage(true);
       setScreen('pin');
     }
   }, [onUnlock]);
@@ -170,6 +188,13 @@ export default function PinLockScreen({ pin, onUnlock }: Props) {
       promptBio();
     }
   }, [bioChecked, bioAvailable, screen, promptBio]);
+
+  // Auto-dismiss biometric fallback message after 4 seconds
+  useEffect(() => {
+    if (!showBioMessage) return;
+    const timer = setTimeout(() => setShowBioMessage(false), 4000);
+    return () => clearTimeout(timer);
+  }, [showBioMessage]);
 
   // ── PIN handlers ───────────────────────────────────────────────────────────
   const triggerShake = () => {
@@ -298,6 +323,18 @@ export default function PinLockScreen({ pin, onUnlock }: Props) {
           Enter your PIN to continue
         </Text>
 
+        {/* Biometric fallback info note — auto-dismisses after 4 s */}
+        {showBioMessage && bioFallbackReason && (
+          <View style={s.bioInfoBox}>
+            <Feather name="info" size={13} color={colors.mutedForeground} style={{ marginTop: 1 }} />
+            <Text style={[s.bioInfoText, { color: colors.mutedForeground }]}>
+              {bioFallbackReason === 'not_enrolled'
+                ? `Set up ${isFaceId ? 'Face ID' : 'fingerprint'} in Settings to use biometric unlock`
+                : 'Biometric unlock failed — enter your PIN'}
+            </Text>
+          </View>
+        )}
+
         {/* Dots */}
         <Animated.View style={[s.dotsRow, { transform: [{ translateX: shake }] }]}>
           {[0, 1, 2, 3].map(i => (
@@ -417,7 +454,9 @@ const s = StyleSheet.create({
   altBtnText:  { fontSize: 13, fontFamily: 'Inter_500Medium' },
 
   // PIN screen
-  pinSubtitle: { fontSize: 14, fontFamily: 'Inter_400Regular', marginBottom: 28, textAlign: 'center' },
+  pinSubtitle: { fontSize: 14, fontFamily: 'Inter_400Regular', marginBottom: 16, textAlign: 'center' },
+  bioInfoBox:  { flexDirection: 'row', alignItems: 'flex-start', gap: 6, marginBottom: 14, paddingVertical: 7, paddingHorizontal: 12, borderRadius: 8, backgroundColor: 'rgba(128,128,128,0.10)' },
+  bioInfoText: { fontSize: 12, fontFamily: 'Inter_400Regular', flex: 1, lineHeight: 17 },
   dotsRow:     { flexDirection: 'row', gap: 18, marginBottom: 10 },
   dot:         { width: 16, height: 16, borderRadius: 8, borderWidth: 2 },
   errorText:   { fontSize: 13, fontFamily: 'Inter_500Medium', color: '#E05252', marginBottom: 8 },
