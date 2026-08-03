@@ -13,6 +13,13 @@ import * as Haptics from 'expo-haptics';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { useColors } from '@/hooks/useColors';
 import { useApp } from '@/context/AppContext';
+import {
+  MAX_ATTEMPTS,
+  KEY_ATTEMPTS,
+  KEY_LOCKED_UNTIL,
+  parseLockoutState,
+  computeAttemptResult,
+} from '@/utils/pinLockout';
 
 interface Props {
   pin: string;
@@ -20,11 +27,6 @@ interface Props {
 }
 
 type Screen = 'biometric' | 'pin';
-
-const MAX_ATTEMPTS     = 5;
-const LOCKOUT_SECONDS  = 30;
-const KEY_ATTEMPTS     = '@pin_attempts';
-const KEY_LOCKED_UNTIL = '@pin_locked_until';
 
 export default function PinLockScreen({ pin, onUnlock }: Props) {
   const colors = useColors();
@@ -59,18 +61,20 @@ export default function PinLockScreen({ pin, onUnlock }: Props) {
           AsyncStorage.getItem(KEY_ATTEMPTS),
           AsyncStorage.getItem(KEY_LOCKED_UNTIL),
         ]);
-        const parsedAttempts = storedAttempts ? parseInt(storedAttempts, 10) : 0;
-        const parsedLocked   = storedLocked   ? parseInt(storedLocked,   10) : NaN;
 
-        // Guard against corrupted/non-finite values
-        const safeAttempts = Number.isFinite(parsedAttempts) ? parsedAttempts : 0;
-        const safeExpiry   = Number.isFinite(parsedLocked)   ? parsedLocked   : null;
+        const hydrated = parseLockoutState(storedAttempts, storedLocked, Date.now());
 
-        setAttempts(safeAttempts);
-        if (safeExpiry !== null && safeExpiry > Date.now()) {
-          setLockedUntil(safeExpiry);
-        } else if (safeExpiry !== null) {
-          // Expired — clear it
+        // Always apply the parsed attempt count first.
+        // parseLockoutState resets it to 0 when an expired lockout is detected,
+        // which prevents a stale MAX_ATTEMPTS value from immediately re-locking
+        // the user on their next wrong PIN after a lockout has expired.
+        setAttempts(hydrated.attempts);
+
+        if (hydrated.lockedUntil !== null) {
+          setLockedUntil(hydrated.lockedUntil);
+        }
+
+        if (hydrated.shouldClearStorage) {
           await AsyncStorage.multiRemove([KEY_ATTEMPTS, KEY_LOCKED_UNTIL]);
         }
       } catch {
@@ -226,16 +230,15 @@ export default function PinLockScreen({ pin, onUnlock }: Props) {
         setPinError(true);
         triggerShake();
 
-        const newAttempts = attempts + 1;
+        const { newAttempts, lockedUntilExpiry } = computeAttemptResult(attempts, Date.now());
         setAttempts(newAttempts);
 
-        if (newAttempts >= MAX_ATTEMPTS) {
+        if (lockedUntilExpiry !== null) {
           // Trigger lockout
-          const expiry = Date.now() + LOCKOUT_SECONDS * 1000;
-          setLockedUntil(expiry);
+          setLockedUntil(lockedUntilExpiry);
           AsyncStorage.multiSet([
             [KEY_ATTEMPTS,     String(newAttempts)],
-            [KEY_LOCKED_UNTIL, String(expiry)],
+            [KEY_LOCKED_UNTIL, String(lockedUntilExpiry)],
           ]).catch(() => {});
           setEntered('');
           setPinError(false);
