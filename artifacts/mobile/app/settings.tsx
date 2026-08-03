@@ -531,16 +531,29 @@ export default function SettingsScreen() {
   const handleClearData = () => {
     Alert.alert(
       t('settings.clear_title'),
-      `${t('settings.clear_title')}: ${encounters.length} encounter log${encounters.length === 1 ? '' : 's'} + ${savedDeadlines.length} deadline${savedDeadlines.length === 1 ? '' : 's'}.`,
+      `${t('settings.clear_title')}: ${encounters.length} encounter${encounters.length === 1 ? '' : 's'} + ${savedDeadlines.length} deadline${savedDeadlines.length === 1 ? '' : 's'}.`,
       [
         { text: t('settings.clear_cancel'), style: 'cancel' },
         {
           text: t('settings.clear_confirm'),
           style: 'destructive',
           onPress: () => {
-            clearDeadlines();
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-            Alert.alert(t('settings.cleared_title'), t('settings.cleared_msg'));
+            Alert.alert(
+              t('settings.clear_confirm2_title'),
+              `This will permanently delete all ${encounters.length} encounter${encounters.length === 1 ? '' : 's'} and ${savedDeadlines.length} deadline${savedDeadlines.length === 1 ? '' : 's'}.\n\nThis cannot be undone.`,
+              [
+                { text: t('settings.clear_cancel'), style: 'cancel' },
+                {
+                  text: t('settings.clear_confirm2_btn'),
+                  style: 'destructive',
+                  onPress: () => {
+                    clearDeadlines();
+                    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+                    Alert.alert(t('settings.cleared_title'), t('settings.cleared_msg'));
+                  },
+                },
+              ],
+            );
           },
         },
       ],
