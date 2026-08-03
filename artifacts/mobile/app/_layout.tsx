@@ -28,6 +28,10 @@ import { AppProvider, useApp } from '@/context/AppContext';
 import PinLockScreen from '@/components/PinLockScreen';
 import { AutoBackupToast } from '@/components/AutoBackupToast';
 import { useColors } from '@/hooks/useColors';
+import {
+  hasExceededLockTimeout,
+  shouldLockOnStoredTimestamp,
+} from '@/utils/pinLockTiming';
 
 /** Persisted keys */
 const STORAGE_BACKGROUNDED_AT          = 'civicshield_backgrounded_at';
@@ -223,16 +227,11 @@ function AppShell() {
     if (!appLockEnabled || !appPin || lockTimeout === -1) return;
 
     AsyncStorage.getItem(STORAGE_BACKGROUNDED_AT).then((stored) => {
+      if (shouldLockOnStoredTimestamp(stored, lockTimeout, Date.now())) {
+        setUnlocked(false);
+      }
+      // Clear once consumed so it doesn't affect future launches
       if (stored) {
-        const ts = Number(stored);
-        if (!Number.isNaN(ts)) {
-          const elapsedMs = Date.now() - ts;
-          const thresholdMs = lockTimeout * 60 * 1000;
-          if (elapsedMs >= thresholdMs) {
-            setUnlocked(false);
-          }
-        }
-        // Clear once consumed so it doesn't affect future launches
         AsyncStorage.removeItem(STORAGE_BACKGROUNDED_AT).catch(() => {});
       }
     }).catch(() => {});
@@ -249,12 +248,8 @@ function AppShell() {
       } else if (nextState === 'active') {
         if (appLockEnabled && appPin) {
           const ts = backgroundedAt.current;
-          if (ts !== null && lockTimeout !== -1) {
-            const elapsedMs = Date.now() - ts;
-            const thresholdMs = lockTimeout * 60 * 1000;
-            if (elapsedMs >= thresholdMs) {
-              setUnlocked(false);
-            }
+          if (ts !== null && hasExceededLockTimeout(Date.now() - ts, lockTimeout)) {
+            setUnlocked(false);
           }
         }
         backgroundedAt.current = null;
