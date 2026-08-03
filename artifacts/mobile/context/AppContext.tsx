@@ -251,6 +251,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setAppPinState(pin);
     await AsyncStorage.setItem(STORAGE_APP_LOCK, enabled ? 'true' : 'false');
     await AsyncStorage.setItem(STORAGE_APP_PIN, pin);
+    // Clear any accumulated wrong-attempt counter and lockout expiry so a
+    // freshly-set PIN always starts with zero failed attempts.
+    await AsyncStorage.multiRemove(['@pin_attempts', '@pin_locked_until']);
   }, []);
 
   const setLockTimeout = useCallback(async (minutes: number) => {
