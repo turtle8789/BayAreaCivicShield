@@ -492,6 +492,42 @@ export default function SettingsScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   };
 
+  /** Share the latest auto-backup file so users can move it to email, Files, or cloud storage. */
+  const [isSharingAutoBackup, setIsSharingAutoBackup] = useState(false);
+  const handleShareAutoBackup = async () => {
+    if (isSharingAutoBackup) return;
+    setIsSharingAutoBackup(true);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    try {
+      const fileUri =
+        (FileSystem.documentDirectory ?? FileSystem.cacheDirectory ?? '') +
+        'civicshield-auto-backup.json';
+
+      // Verify the file actually exists before trying to share it
+      const info = await FileSystem.getInfoAsync(fileUri);
+      if (!info.exists) {
+        Alert.alert('Auto-backup', 'No auto-backup file found. Wait for the next scheduled backup or record an encounter.');
+        return;
+      }
+
+      const canShare = await Sharing.isAvailableAsync();
+      if (!canShare) {
+        Alert.alert('Auto-backup', 'Sharing is not available on this device.');
+        return;
+      }
+
+      await Sharing.shareAsync(fileUri, {
+        mimeType: 'application/json',
+        dialogTitle: 'Share auto-backup',
+        UTI: 'public.json',
+      });
+    } catch {
+      Alert.alert('Auto-backup', 'Could not share the backup file. Please try again.');
+    } finally {
+      setIsSharingAutoBackup(false);
+    }
+  };
+
   const handleClearData = () => {
     Alert.alert(
       t('settings.clear_title'),
@@ -726,6 +762,22 @@ export default function SettingsScreen() {
               setShowSchedulePicker(true);
             }}
           />
+          {/* Share auto-backup — only shown when auto-backup is on and a backup exists */}
+          {autoBackupEnabled && lastAutoBackupAt ? (
+            <>
+              <View style={styles.divider} />
+              <SettingsRow
+                icon="share-2"
+                label="Share auto-backup"
+                description={
+                  isSharingAutoBackup
+                    ? 'Preparing…'
+                    : `Latest: ${formatLastBackup(lastAutoBackupAt)} · Tap to share or restore`
+                }
+                onPress={handleShareAutoBackup}
+              />
+            </>
+          ) : null}
           <View style={styles.divider} />
           <SettingsRow
             icon="trash-2"
