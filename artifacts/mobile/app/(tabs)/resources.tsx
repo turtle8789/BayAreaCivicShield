@@ -283,14 +283,14 @@ export default function ResourcesScreen() {
       setLoading(true);
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert(t('resources.perm_denied'), t('resources.perm_denied'));
+        Alert.alert(t('resources.perm_denied_title'), t('resources.perm_denied'));
         setLoading(false);
         return;
       }
       const loc = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
       await runSearch(loc.coords.latitude, loc.coords.longitude, t('resources.your_location'));
     } catch {
-      Alert.alert('Error', t('resources.location_error'));
+      Alert.alert(t('resources.error_title'), t('resources.location_error'));
       setLoading(false);
     }
   };
@@ -360,7 +360,7 @@ export default function ResourcesScreen() {
       }
       await runSearch(lat, lon!, name);
     } catch {
-      Alert.alert('Error', t('resources.geocode_error'));
+      Alert.alert(t('resources.error_title'), t('resources.geocode_error'));
       setLoading(false);
     }
   };
@@ -473,7 +473,7 @@ export default function ResourcesScreen() {
               {overpassError}
             </Text>
             <Text style={{ fontSize: 12, fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginTop: 4 }}>
-              The live search service is unavailable. Use the Google Maps button below to find legal aid near you.
+              {t('resources.service_unavailable')}
             </Text>
           </View>
         ) : null}
@@ -540,7 +540,7 @@ export default function ResourcesScreen() {
               {t('resources.nearby.no_resources').replace('{radius}', String(radiusMiles))}
             </Text>
             <Text style={{ fontSize: 13, fontFamily: 'Inter_400Regular', color: colors.mutedForeground, textAlign: 'center', lineHeight: 18 }}>
-              OpenStreetMap data is sparse for legal offices in many areas. Try Google Maps below for the most complete results.
+              {t('resources.osm_sparse')}
             </Text>
           </View>
         )}
@@ -563,10 +563,10 @@ export default function ResourcesScreen() {
               Linking.openURL(`https://www.google.com/maps/search/${q}/@${userLat},${userLon},13z`);
             }}
             accessibilityRole="button"
-            accessibilityLabel="Search Google Maps for legal aid">
+            accessibilityLabel={t('resources.maps_btn')}>
             <Feather name="map" size={16} color="#FFFFFF" />
             <Text style={{ fontSize: 14, fontFamily: 'Inter_600SemiBold', color: '#FFFFFF' }}>
-              Search Google Maps for More Results
+              {t('resources.maps_btn')}
             </Text>
           </Pressable>
         )}
