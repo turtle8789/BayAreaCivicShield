@@ -22,6 +22,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PasswordModal } from '@/components/PasswordModal';
 import { LanguagePicker } from '@/components/LanguagePicker';
 import { Encounter, FontSizeLevel, useApp } from '@/context/AppContext';
+import { BackupSchedule, BACKUP_SCHEDULE_LABELS } from '@/utils/backupSchedule';
 import { useColors } from '@/hooks/useColors';
 import { useRTL } from '@/hooks/useRTL';
 import { useT } from '@/hooks/useTranslation';
@@ -193,7 +194,7 @@ export default function SettingsScreen() {
     highContrast, setHighContrast,
     encounters, clearDeadlines, savedDeadlines,
     appLockEnabled,
-    autoBackupEnabled, setAutoBackupEnabled, lastAutoBackupAt,
+    backupSchedule, setBackupSchedule, lastAutoBackupAt,
     importEncounters,
   } = useApp();
 
@@ -483,7 +484,8 @@ export default function SettingsScreen() {
     { labelKey: 'settings.font_large',  value: 'large',  preview: 18 },
   ];
 
-  const [showLangPicker, setShowLangPicker] = useState(false);
+  const [showLangPicker, setShowLangPicker]           = useState(false);
+  const [showSchedulePicker, setShowSchedulePicker]   = useState(false);
 
   const handleHighContrast = (v: boolean) => {
     setHighContrast(v);
@@ -713,24 +715,16 @@ export default function SettingsScreen() {
           <View style={styles.divider} />
           <SettingsRow
             icon="refresh-cw"
-            label="Auto-backup"
+            label="Backup schedule"
             description={
-              autoBackupEnabled
-                ? formatLastBackup(lastAutoBackupAt)
-                : 'Saves a local backup after each new encounter'
+              backupSchedule === 'off'
+                ? 'Auto-backup is off'
+                : `${BACKUP_SCHEDULE_LABELS[backupSchedule]} · ${formatLastBackup(lastAutoBackupAt)}`
             }
-            right={
-              <Switch
-                value={autoBackupEnabled}
-                onValueChange={(v) => {
-                  setAutoBackupEnabled(v);
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                }}
-                trackColor={{ false: colors.muted, true: colors.primary + '80' }}
-                thumbColor={autoBackupEnabled ? colors.primary : '#F4F4F4'}
-                accessibilityLabel="Auto-backup"
-              />
-            }
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              setShowSchedulePicker(true);
+            }}
           />
           <View style={styles.divider} />
           <SettingsRow
@@ -779,6 +773,103 @@ export default function SettingsScreen() {
         onCancel={handleDecryptCancel}
         onDecrypt={handleDecryptAndRestore}
       />
+
+      {/* Backup schedule picker — bottom sheet */}
+      <Modal
+        visible={showSchedulePicker}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowSchedulePicker(false)}
+      >
+        <Pressable
+          style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.45)' }}
+          onPress={() => setShowSchedulePicker(false)}
+        />
+        <View style={{
+          backgroundColor: colors.background,
+          borderTopLeftRadius: 20, borderTopRightRadius: 20,
+          padding: 24, paddingBottom: 40,
+        }}>
+          {/* Handle */}
+          <View style={{ width: 36, height: 4, borderRadius: 2, backgroundColor: colors.border, alignSelf: 'center', marginBottom: 20 }} />
+
+          {/* Title */}
+          <View style={{ flexDirection: rowDir, alignItems: 'center', gap: 10, marginBottom: 6 }}>
+            <View style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: colors.primary + '18', alignItems: 'center', justifyContent: 'center' }}>
+              <Feather name="refresh-cw" size={18} color={colors.primary} />
+            </View>
+            <Text style={{ fontSize: fs(17), fontFamily: 'Inter_700Bold', color: colors.foreground }}>
+              Backup schedule
+            </Text>
+          </View>
+          <Text style={{ fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginBottom: 20, marginLeft: 46 }}>
+            A silent backup is saved locally on-device — no account needed.
+          </Text>
+
+          {/* Options */}
+          {(['off', 'each', 'daily', 'weekly'] as BackupSchedule[]).map((opt, idx, arr) => {
+            const selected = backupSchedule === opt;
+            const subtitles: Record<BackupSchedule, string> = {
+              off:    'No automatic backups',
+              each:   'Backup runs whenever you log an encounter',
+              daily:  'Backup runs once per day when you open the app',
+              weekly: 'Backup runs once per week when you open the app',
+            };
+            return (
+              <React.Fragment key={opt}>
+                <Pressable
+                  style={{
+                    flexDirection: rowDir, alignItems: 'center', gap: 14,
+                    paddingVertical: 13, paddingHorizontal: 4,
+                  }}
+                  onPress={() => {
+                    setBackupSchedule(opt);
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                    setShowSchedulePicker(false);
+                  }}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected }}
+                  accessibilityLabel={BACKUP_SCHEDULE_LABELS[opt]}
+                >
+                  <View style={{
+                    width: 22, height: 22, borderRadius: 11,
+                    borderWidth: 2,
+                    borderColor: selected ? colors.primary : colors.border,
+                    backgroundColor: selected ? colors.primary : 'transparent',
+                    alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    {selected && <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: colors.primaryForeground }} />}
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: fs(15), fontFamily: selected ? 'Inter_600SemiBold' : 'Inter_500Medium', color: colors.foreground }}>
+                      {BACKUP_SCHEDULE_LABELS[opt]}
+                    </Text>
+                    <Text style={{ fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginTop: 1 }}>
+                      {subtitles[opt]}
+                    </Text>
+                  </View>
+                </Pressable>
+                {idx < arr.length - 1 && (
+                  <View style={{ height: 1, backgroundColor: colors.border, marginLeft: 36 }} />
+                )}
+              </React.Fragment>
+            );
+          })}
+
+          {/* Last backup note */}
+          {backupSchedule !== 'off' && (
+            <View style={{
+              marginTop: 20, backgroundColor: colors.muted,
+              borderRadius: 10, padding: 12, flexDirection: rowDir, gap: 8, alignItems: 'center',
+            }}>
+              <Feather name="clock" size={14} color={colors.mutedForeground} />
+              <Text style={{ fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.mutedForeground }}>
+                {formatLastBackup(lastAutoBackupAt)}
+              </Text>
+            </View>
+          )}
+        </View>
+      </Modal>
     </View>
   );
 }

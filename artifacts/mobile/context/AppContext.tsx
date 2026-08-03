@@ -1,8 +1,10 @@
-import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system/legacy';
+import { AppState, AppStateStatus } from 'react-native';
 import { DEFAULT_LANGUAGE, Language, getLanguageByCode } from '@/constants/languages';
 import { ForumPost, SEED_POSTS } from '@/constants/forum-data';
+import { BackupSchedule, BACKUP_SCHEDULE_LABELS, isBackupDue } from '@/utils/backupSchedule';
 
 // ─── Encounter types ─────────────────────────────────────────────────────────
 
@@ -43,6 +45,10 @@ export interface SavedDeadline {
   docText?: string; // original document text — for "View Case Details" navigation
 }
 
+// Re-export so callers that import from AppContext still work
+export type { BackupSchedule } from '@/utils/backupSchedule';
+export { BACKUP_SCHEDULE_LABELS, isBackupDue } from '@/utils/backupSchedule';
+
 // ─── Accessibility / Settings ─────────────────────────────────────────────────
 
 export type FontSizeLevel = 'small' | 'medium' | 'large';
@@ -81,9 +87,11 @@ interface AppContextValue {
   setBiometricUnlockEnabled: (enabled: boolean) => Promise<void>;
 
   // Auto-backup
-  autoBackupEnabled: boolean;
-  setAutoBackupEnabled: (enabled: boolean) => Promise<void>;
+  autoBackupEnabled: boolean; // derived: backupSchedule !== 'off'
+  setAutoBackupEnabled: (enabled: boolean) => Promise<void>; // compat: toggles off/each
   lastAutoBackupAt: string | null; // ISO timestamp of last successful auto-backup
+  backupSchedule: BackupSchedule;
+  setBackupSchedule: (schedule: BackupSchedule) => Promise<void>;
 
   // Language
   language: Language;
@@ -143,8 +151,15 @@ const STORAGE_APP_PIN          = 'civicshield_app_pin';
 const STORAGE_LOCK_TIMEOUT     = 'civicshield_lock_timeout';
 const STORAGE_AUTO_BACKUP          = 'civicshield_auto_backup';
 const STORAGE_LAST_AUTO_BACKUP     = 'civicshield_last_auto_backup';
+const STORAGE_BACKUP_SCHEDULE      = 'civicshield_backup_schedule';
 const STORAGE_BIOMETRIC_UNLOCK     = 'civicshield_biometric_unlock';
 
+// ─── Pure backup-schedule helpers (exported for unit-testing) ────────────────
+
+/**
+ * Returns true when a scheduled backup is overdue.
+ * 'off' and 'each' are never due via the timer path.
+ */
 // ─── Translation via free MyMemory API ───────────────────────────────────────
 
 async function translateWithMyMemory(text: string, targetLang: string): Promise<string> {
@@ -169,10 +184,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [appPin, setAppPinState]                         = useState('');
   const [lockTimeout, setLockTimeoutState]               = useState<number>(5); // default 5 min
   const [biometricUnlockEnabled, setBiometricUnlockState]= useState(true); // default enabled
-  const [autoBackupEnabled, setAutoBackupState]          = useState(false);
+  const [backupSchedule, setBackupScheduleState]         = useState<BackupSchedule>('off');
   const [lastAutoBackupAt, setLastAutoBackupAt]  = useState<string | null>(null);
   const [language, setLanguageState]             = useState<Language>(DEFAULT_LANGUAGE);
   const [encounters, setEncounters]           = useState<Encounter[]>([]);
+
+  // Refs for the AppState foreground-check (avoids stale-closure issues in listener)
+  const backupScheduleRef   = useRef<BackupSchedule>('off');
+  const lastAutoBackupAtRef = useRef<string | null>(null);
+  const encountersRef       = useRef<Encounter[]>([]);
+  useEffect(() => { backupScheduleRef.current   = backupSchedule;   }, [backupSchedule]);
+  useEffect(() => { lastAutoBackupAtRef.current = lastAutoBackupAt; }, [lastAutoBackupAt]);
+  useEffect(() => { encountersRef.current       = encounters;       }, [encounters]);
   const [isTranslating, setIsTranslating]     = useState(false);
   const [savedDeadlines, setSavedDeadlines]   = useState<SavedDeadline[]>([]);
   const [forumPosts, setForumPosts]           = useState<ForumPost[]>([]);
@@ -199,7 +222,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       AsyncStorage.getItem(STORAGE_BIOMETRIC_UNLOCK),
       AsyncStorage.getItem(STORAGE_AUTO_BACKUP),
       AsyncStorage.getItem(STORAGE_LAST_AUTO_BACKUP),
-    ]).then(([enc, dead, font, tour, hc, forum, helpful, lang, lock, pin, timeout, bioUnlock, autoBak, lastBak]) => {
+      AsyncStorage.getItem(STORAGE_BACKUP_SCHEDULE),
+    ]).then(([enc, dead, font, tour, hc, forum, helpful, lang, lock, pin, timeout, bioUnlock, autoBak, lastBak, sched]) => {
       if (enc)      setEncounters(JSON.parse(enc) as Encounter[]);
       if (dead)     setSavedDeadlines(JSON.parse(dead) as SavedDeadline[]);
       if (font)     setFontSizeState(font as FontSizeLevel);
@@ -212,8 +236,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (pin)      setAppPinState(pin);
       if (timeout)  setLockTimeoutState(Number(timeout));
       if (bioUnlock !== null) setBiometricUnlockState(bioUnlock !== 'false'); // default true
-      if (autoBak)  setAutoBackupState(autoBak === 'true');
       if (lastBak)  setLastAutoBackupAt(lastBak);
+      // Migrate: old boolean auto-backup → schedule; new schedule key wins if present
+      if (sched) {
+        setBackupScheduleState(sched as BackupSchedule);
+      } else if (autoBak === 'true') {
+        setBackupScheduleState('each'); // migrate old "enabled" toggle → 'each'
+      }
     }).catch(() => {}).finally(() => setHydrated(true));
   }, []);
 
@@ -234,10 +263,63 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     await AsyncStorage.setItem(STORAGE_BIOMETRIC_UNLOCK, enabled ? 'true' : 'false');
   }, []);
 
-  const setAutoBackupEnabled = useCallback(async (enabled: boolean) => {
-    setAutoBackupState(enabled);
-    await AsyncStorage.setItem(STORAGE_AUTO_BACKUP, enabled ? 'true' : 'false');
+  // ── Silent backup (shared by 'each' trigger and foreground schedule check) ──
+  const performSilentBackup = useCallback(async (encs: Encounter[]) => {
+    try {
+      const payload = JSON.stringify({
+        version: 1,
+        app: 'CivicShield Pro',
+        exportedAt: new Date().toISOString(),
+        encounters: encs,
+      });
+      const fileUri = (FileSystem.documentDirectory ?? FileSystem.cacheDirectory ?? '') + 'civicshield-auto-backup.json';
+      await FileSystem.writeAsStringAsync(fileUri, payload, {
+        encoding: FileSystem.EncodingType.UTF8,
+      });
+      const now = new Date().toISOString();
+      setLastAutoBackupAt(now);
+      await AsyncStorage.setItem(STORAGE_LAST_AUTO_BACKUP, now);
+    } catch {
+      // Silent — never interrupt the user's flow
+    }
   }, []);
+
+  // ── Backup schedule setter ────────────────────────────────────────────────
+  const setBackupSchedule = useCallback(async (schedule: BackupSchedule) => {
+    setBackupScheduleState(schedule);
+    await AsyncStorage.setItem(STORAGE_BACKUP_SCHEDULE, schedule);
+    // Keep legacy key in sync so old restore paths still work
+    await AsyncStorage.setItem(STORAGE_AUTO_BACKUP, schedule !== 'off' ? 'true' : 'false');
+  }, []);
+
+  // Compat shim: keeps any existing callers that use the old boolean API working
+  const setAutoBackupEnabled = useCallback(async (enabled: boolean) => {
+    await setBackupSchedule(enabled ? 'each' : 'off');
+  }, [setBackupSchedule]);
+
+  // ── Scheduled backup: cold-start check (runs once after hydration) ──────
+  useEffect(() => {
+    if (!hydrated) return;
+    // Refs are synced in earlier effects that run on the same render, so they
+    // already hold the freshly-hydrated values when this effect executes.
+    if (isBackupDue(backupScheduleRef.current, lastAutoBackupAtRef.current)) {
+      performSilentBackup(encountersRef.current);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hydrated, performSilentBackup]); // intentionally omit refs — they're always current
+
+  // ── Foreground-check: trigger daily/weekly backup on app resume ───────────
+  useEffect(() => {
+    const handleAppStateChange = (state: AppStateStatus) => {
+      if (state !== 'active') return;
+      if (isBackupDue(backupScheduleRef.current, lastAutoBackupAtRef.current)) {
+        performSilentBackup(encountersRef.current);
+      }
+    };
+
+    const sub = AppState.addEventListener('change', handleAppStateChange);
+    return () => sub.remove();
+  }, [performSilentBackup]);
 
   const setLanguage = useCallback(async (lang: Language) => {
     setLanguageState(lang);
@@ -255,26 +337,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     await AsyncStorage.setItem(STORAGE_ENCOUNTERS, JSON.stringify(updated));
 
     // ── Auto-backup: silently write to document storage after each save ──
-    if (autoBackupEnabled) {
-      try {
-        const payload = JSON.stringify({
-          version: 1,
-          app: 'CivicShield Pro',
-          exportedAt: new Date().toISOString(),
-          encounters: updated,
-        });
-        const fileUri = (FileSystem.documentDirectory ?? FileSystem.cacheDirectory ?? '') + 'civicshield-auto-backup.json';
-        await FileSystem.writeAsStringAsync(fileUri, payload, {
-          encoding: FileSystem.EncodingType.UTF8,
-        });
-        const now = new Date().toISOString();
-        setLastAutoBackupAt(now);
-        await AsyncStorage.setItem(STORAGE_LAST_AUTO_BACKUP, now);
-      } catch {
-        // Silent — never interrupt the user's flow
-      }
+    if (backupSchedule === 'each') {
+      await performSilentBackup(updated);
     }
-  }, [encounters, autoBackupEnabled]);
+  }, [encounters, backupSchedule, performSilentBackup]);
 
   const deleteEncounter = useCallback(async (id: string) => {
     const updated = encounters.filter((e) => e.id !== id);
@@ -399,7 +465,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         appLockEnabled, appPin, setAppLock,
         lockTimeout, setLockTimeout,
         biometricUnlockEnabled, setBiometricUnlockEnabled,
-        autoBackupEnabled, setAutoBackupEnabled, lastAutoBackupAt,
+        autoBackupEnabled: backupSchedule !== 'off', setAutoBackupEnabled, lastAutoBackupAt,
+        backupSchedule, setBackupSchedule,
         language, setLanguage, isRTL,
         encounters, addEncounter, deleteEncounter, importEncounters,
         translateText, isTranslating,
