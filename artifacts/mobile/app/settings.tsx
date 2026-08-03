@@ -776,7 +776,7 @@ export default function SettingsScreen() {
             }}
           />
           {/* Share auto-backup — only shown when auto-backup is on and a backup exists */}
-          {autoBackupEnabled && lastAutoBackupAt ? (
+          {backupSchedule !== 'off' && lastAutoBackupAt ? (
             <>
               <View style={styles.divider} />
               <SettingsRow
