@@ -67,7 +67,8 @@ export function PasswordModal({ visible, onCancel, onShare }: PasswordModalProps
     handle:     { width: 36, height: 4, borderRadius: 2, backgroundColor: colors.border, alignSelf: 'center', marginBottom: 20 },
     iconWrap:   { width: 56, height: 56, borderRadius: 28, backgroundColor: colors.primary + '18', alignItems: 'center', justifyContent: 'center', alignSelf: 'center', marginBottom: 14 },
     title:      { fontSize: fs(18), fontFamily: 'Inter_700Bold', color: colors.foreground, textAlign: 'center', marginBottom: 8 },
-    desc:       { fontSize: fs(13), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, textAlign: 'center', lineHeight: 19, marginBottom: 20 },
+    desc:       { fontSize: fs(13), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, textAlign: 'center', lineHeight: 19, marginBottom: 10 },
+    noStore:    { fontSize: fs(11), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, textAlign: 'center', opacity: 0.7, marginBottom: 20 },
     input:      { backgroundColor: colors.muted, borderRadius: 12, borderWidth: 1, borderColor: colors.border, paddingHorizontal: 16, paddingVertical: 12, fontSize: fs(15), fontFamily: 'Inter_400Regular', color: colors.foreground, marginBottom: 16 },
     inputError: { backgroundColor: colors.muted, borderRadius: 12, borderWidth: 1, borderColor: colors.destructive, paddingHorizontal: 16, paddingVertical: 12, fontSize: fs(15), fontFamily: 'Inter_400Regular', color: colors.foreground, marginBottom: 6 },
     mismatch:   { fontSize: fs(12), fontFamily: 'Inter_400Regular', color: colors.destructive, marginBottom: 12 },
@@ -99,6 +100,7 @@ export function PasswordModal({ visible, onCancel, onShare }: PasswordModalProps
           </View>
           <Text style={s.title}>{t('log.protect_title')}</Text>
           <Text style={s.desc}>{t('log.protect_desc')}</Text>
+          <Text style={s.noStore}>{t('log.protect_no_store')}</Text>
 
           <TextInput
             style={s.input}
@@ -109,7 +111,8 @@ export function PasswordModal({ visible, onCancel, onShare }: PasswordModalProps
             onChangeText={setPassword}
             autoCapitalize="none"
             autoCorrect={false}
-            autoComplete="new-password"
+            autoComplete="off"
+            textContentType="none"
             returnKeyType="next"
           />
 
@@ -124,7 +127,8 @@ export function PasswordModal({ visible, onCancel, onShare }: PasswordModalProps
                 onChangeText={setConfirm}
                 autoCapitalize="none"
                 autoCorrect={false}
-                autoComplete="new-password"
+                autoComplete="off"
+                textContentType="none"
                 returnKeyType="done"
                 onSubmitEditing={canShareProtected ? handleProtected : undefined}
               />
