@@ -23,6 +23,7 @@ import { useT } from '@/hooks/useTranslation';
 
 const LOCK_TIMEOUT_OPTIONS = [
   { label: 'Immediately', value: 0 },
+  { label: '30 sec',      value: 0.5 },
   { label: '1 min',       value: 1 },
   { label: '5 min',       value: 5 },
   { label: '15 min',      value: 15 },
