@@ -300,27 +300,65 @@ export default function ResourcesScreen() {
     if (!q) return;
     setLoading(true);
     try {
-      const controller = new AbortController();
-      const tid = setTimeout(() => controller.abort(), 15_000);
-      let data: Array<{ lat: string; lon: string; display_name: string }> = [];
+      // 1. Try native device geocoding (Google on Android, Apple Maps on iOS)
+      let lat: number | null = null;
+      let lon: number | null = null;
+      let name: string = q;
+
       try {
-        const res = await fetch(
-          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1`,
-          { signal: controller.signal },
-        );
-        data = await res.json();
-      } finally {
-        clearTimeout(tid);
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status === 'granted') {
+          const results = await Location.geocodeAsync(q);
+          if (results.length > 0) {
+            lat = results[0].latitude;
+            lon = results[0].longitude;
+          }
+        }
+      } catch {
+        // native geocoding unavailable — fall through to Nominatim
       }
-      if (!data?.length) {
+
+      // 2. Fall back to Nominatim if native geocoding returned nothing
+      if (lat === null) {
+        const MIRRORS = [
+          'https://nominatim.openstreetmap.org',
+          'https://nominatim.geocoding.ai',
+        ];
+        for (const base of MIRRORS) {
+          try {
+            const controller = new AbortController();
+            const tid = setTimeout(() => controller.abort(), 12_000);
+            let data: Array<{ lat: string; lon: string; display_name: string }> = [];
+            try {
+              const res = await fetch(
+                `${base}/search?q=${encodeURIComponent(q)}&format=json&limit=1`,
+                {
+                  signal: controller.signal,
+                  headers: { 'User-Agent': 'CivicShieldPro/1.0 (civicshield.app)' },
+                },
+              );
+              data = await res.json();
+            } finally {
+              clearTimeout(tid);
+            }
+            if (data?.length) {
+              lat  = parseFloat(data[0].lat);
+              lon  = parseFloat(data[0].lon);
+              name = data[0].display_name.split(',').slice(0, 2).join(',');
+              break;
+            }
+          } catch {
+            // try next mirror
+          }
+        }
+      }
+
+      if (lat === null) {
         Alert.alert(t('resources.not_found'), t('resources.nearby.geocode_not_found').replace('{query}', q));
         setLoading(false);
         return;
       }
-      const lat  = parseFloat(data[0].lat);
-      const lon  = parseFloat(data[0].lon);
-      const name = data[0].display_name.split(',').slice(0, 2).join(',');
-      await runSearch(lat, lon, name);
+      await runSearch(lat, lon!, name);
     } catch {
       Alert.alert('Error', t('resources.geocode_error'));
       setLoading(false);
