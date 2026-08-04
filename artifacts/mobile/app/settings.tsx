@@ -197,6 +197,7 @@ export default function SettingsScreen() {
     appLockEnabled,
     backupSchedule, setBackupSchedule, lastAutoBackupAt,
     backupTimeWindow, setBackupTimeWindow,
+    backupScheduleLost, dismissBackupScheduleLost,
     importEncounters,
   } = useApp();
 
@@ -829,6 +830,59 @@ export default function SettingsScreen() {
 
         {/* ── Data ── */}
         <Text style={styles.sectionLabel} accessibilityRole="header">{t('settings.section_data')}</Text>
+
+        {/* Storage-wipe warning — shown when schedule key was lost during update/reinstall */}
+        {backupScheduleLost && (
+          <View style={{
+            marginHorizontal: 16, marginBottom: 8,
+            borderRadius: colors.radius, borderWidth: 1.5,
+            borderColor: '#C9A050',
+            backgroundColor: highContrast ? '#1A1200' : '#FFF9EC',
+            overflow: 'hidden',
+          }}>
+            <View style={{ padding: 14, gap: 8 }}>
+              {/* Header row */}
+              <View style={{ flexDirection: rowDir, alignItems: 'center', gap: 10 }}>
+                <Feather name="alert-triangle" size={16} color="#C9A050" />
+                <Text style={{ flex: 1, fontSize: fs(14), fontFamily: 'Inter_600SemiBold', color: colors.foreground }}>
+                  Auto-backup schedule reset
+                </Text>
+                <Pressable
+                  onPress={dismissBackupScheduleLost}
+                  hitSlop={10}
+                  accessibilityLabel="Dismiss backup schedule warning"
+                  accessibilityRole="button"
+                >
+                  <Feather name="x" size={16} color={colors.mutedForeground} />
+                </Pressable>
+              </View>
+              {/* Body */}
+              <Text style={{ fontSize: fs(13), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, lineHeight: 18 }}>
+                Your app storage was cleared (e.g. during an update). Auto-backups were paused — tap below to re-enable your schedule.
+              </Text>
+              {/* CTA */}
+              <Pressable
+                style={{
+                  alignSelf: 'flex-start',
+                  backgroundColor: colors.primary,
+                  borderRadius: 8, paddingVertical: 8, paddingHorizontal: 14, marginTop: 2,
+                }}
+                onPress={() => {
+                  dismissBackupScheduleLost();
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  setShowSchedulePicker(true);
+                }}
+                accessibilityLabel="Set backup schedule"
+                accessibilityRole="button"
+              >
+                <Text style={{ fontSize: fs(13), fontFamily: 'Inter_600SemiBold', color: colors.primaryForeground }}>
+                  Set schedule
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+        )}
+
         <View style={styles.card}>
           <SettingsRow
             icon="database"

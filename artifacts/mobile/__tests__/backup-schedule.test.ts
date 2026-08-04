@@ -12,7 +12,7 @@
  *   - Boundary conditions at exactly the threshold
  */
 
-import { isBackupDue } from '../utils/backupSchedule';
+import { detectScheduleLoss, isBackupDue, resolveScheduleOnHydration } from '../utils/backupSchedule';
 
 // ─── Convenience constants ────────────────────────────────────────────────────
 
@@ -118,5 +118,123 @@ describe('isBackupDue – daily vs weekly threshold difference', () => {
     const lastBackup = ago(8 * DAY_MS);
     expect(isBackupDue('daily',  lastBackup, NOW)).toBe(true);
     expect(isBackupDue('weekly', lastBackup, NOW)).toBe(true);
+  });
+});
+
+// ─── Hydration schedule resolution ───────────────────────────────────────────
+//
+// resolveScheduleOnHydration(schedFromStorage, legacyAutoBackup, backupFileExists)
+// covers four distinct cases that must not drift out of sync in the provider:
+//
+//   Case 1 – Normal:          schedule key present → use it (any value incl. 'off')
+//   Case 2 – Legacy migration: key absent, legacyAutoBackup='true' → silently migrate to 'each'
+//   Case 3 – Storage wipe:    both keys absent, file exists → scheduleLost=true, default off
+//   Case 4 – First install:   both keys absent, no file → scheduleLost=false, default off
+
+describe('resolveScheduleOnHydration – case 1: schedule key present', () => {
+  it('returns the stored schedule unchanged when key is present', () => {
+    expect(resolveScheduleOnHydration('each', null, false))
+      .toEqual({ schedule: 'each', scheduleLost: false });
+  });
+
+  it('returns "daily" with no loss when key is "daily"', () => {
+    expect(resolveScheduleOnHydration('daily', 'true', true))
+      .toEqual({ schedule: 'daily', scheduleLost: false });
+  });
+
+  it('returns "off" with no loss when user explicitly chose off', () => {
+    // 'off' in storage means the user deliberately disabled — not a loss
+    expect(resolveScheduleOnHydration('off', null, true))
+      .toEqual({ schedule: 'off', scheduleLost: false });
+  });
+
+  it('returns "weekly" with no loss regardless of file state', () => {
+    expect(resolveScheduleOnHydration('weekly', null, false))
+      .toEqual({ schedule: 'weekly', scheduleLost: false });
+  });
+});
+
+describe('resolveScheduleOnHydration – case 2: legacy migration', () => {
+  it('migrates to "each" when new key absent but legacy key is "true"', () => {
+    // This is the key false-positive case: a file exists AND legacy='true' — must NOT flag loss
+    expect(resolveScheduleOnHydration(null, 'true', true))
+      .toEqual({ schedule: 'each', scheduleLost: false });
+  });
+
+  it('migrates to "each" when legacy="true" even if no backup file exists yet', () => {
+    expect(resolveScheduleOnHydration(null, 'true', false))
+      .toEqual({ schedule: 'each', scheduleLost: false });
+  });
+
+  it('does NOT migrate when legacy key is "false"', () => {
+    // legacyAutoBackup='false' is different from 'true' — no migration, and no file means no loss
+    expect(resolveScheduleOnHydration(null, 'false', false))
+      .toEqual({ schedule: 'off', scheduleLost: false });
+  });
+
+  it('does NOT migrate when legacy key is null — falls through to case 3 or 4', () => {
+    expect(resolveScheduleOnHydration(null, null, true))
+      .toEqual({ schedule: 'off', scheduleLost: true }); // case 3
+  });
+});
+
+describe('resolveScheduleOnHydration – case 3: storage wipe detected', () => {
+  it('flags scheduleLost when both keys absent and backup file exists', () => {
+    // The canonical storage-wipe scenario: no schedule key, no legacy key, file survives
+    expect(resolveScheduleOnHydration(null, null, true))
+      .toEqual({ schedule: 'off', scheduleLost: true });
+  });
+
+  it('flags scheduleLost when legacy key is "false" and file exists', () => {
+    // legacyAutoBackup='false' cannot rescue the schedule — file proves it was once on
+    expect(resolveScheduleOnHydration(null, 'false', true))
+      .toEqual({ schedule: 'off', scheduleLost: true });
+  });
+});
+
+describe('resolveScheduleOnHydration – case 4: first install / clean state', () => {
+  it('returns off with no loss on first install (no keys, no file)', () => {
+    expect(resolveScheduleOnHydration(null, null, false))
+      .toEqual({ schedule: 'off', scheduleLost: false });
+  });
+
+  it('returns off with no loss when legacy key is null and no file', () => {
+    expect(resolveScheduleOnHydration(null, 'false', false))
+      .toEqual({ schedule: 'off', scheduleLost: false });
+  });
+});
+
+// ─── detectScheduleLoss (legacy helper — narrow backward-compat tests) ────────
+//
+// New code should use resolveScheduleOnHydration. These tests preserve the
+// original helper's public contract.
+
+describe('detectScheduleLoss', () => {
+  it('returns true when schedule key is absent and backup file exists on disk', () => {
+    expect(detectScheduleLoss(null, true)).toBe(true);
+  });
+
+  it('returns false when schedule key is absent and no backup file exists', () => {
+    expect(detectScheduleLoss(null, false)).toBe(false);
+  });
+
+  it('returns false when schedule is "off" and file exists', () => {
+    expect(detectScheduleLoss('off', true)).toBe(false);
+  });
+
+  it('returns false when schedule is "each" and file exists', () => {
+    expect(detectScheduleLoss('each', true)).toBe(false);
+  });
+
+  it('returns false when schedule is "daily" and file exists', () => {
+    expect(detectScheduleLoss('daily', true)).toBe(false);
+  });
+
+  it('returns false when schedule is "weekly" and file exists', () => {
+    expect(detectScheduleLoss('weekly', true)).toBe(false);
+  });
+
+  it('returns false when schedule is "daily" and no file exists', () => {
+    expect(detectScheduleLoss('daily', false)).toBe(false);
   });
 });

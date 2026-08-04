@@ -4,8 +4,8 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { AppState, AppStateStatus } from 'react-native';
 import { DEFAULT_LANGUAGE, Language, getLanguageByCode } from '@/constants/languages';
 import { ForumPost, SEED_POSTS } from '@/constants/forum-data';
-import { BackupSchedule, BackupTimeWindow, BACKUP_SCHEDULE_LABELS, isBackupDue } from '@/utils/backupSchedule';
-import { writeSilentBackup } from '@/utils/silentBackup';
+import { BackupSchedule, BackupTimeWindow, BACKUP_SCHEDULE_LABELS, isBackupDue, resolveScheduleOnHydration } from '@/utils/backupSchedule';
+import { AUTO_BACKUP_FILENAME, writeSilentBackup } from '@/utils/silentBackup';
 
 // ─── Encounter types ─────────────────────────────────────────────────────────
 
@@ -95,6 +95,14 @@ interface AppContextValue {
   setBackupSchedule: (schedule: BackupSchedule) => Promise<void>;
   backupTimeWindow: BackupTimeWindow;
   setBackupTimeWindow: (window: BackupTimeWindow) => Promise<void>;
+  /**
+   * True when the backup schedule key was absent during hydration but an
+   * auto-backup file was found on disk — indicating that storage was wiped
+   * (e.g. during an app update) while a schedule was previously active.
+   * Consumers should prompt the user to re-confirm their schedule.
+   */
+  backupScheduleLost: boolean;
+  dismissBackupScheduleLost: () => void;
 
   // Language
   language: Language;
@@ -191,6 +199,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [backupSchedule, setBackupScheduleState]         = useState<BackupSchedule>('off');
   const [backupTimeWindow, setBackupTimeWindowState]     = useState<BackupTimeWindow>('any');
   const [lastAutoBackupAt, setLastAutoBackupAt]  = useState<string | null>(null);
+  const [backupScheduleLost, setBackupScheduleLost]      = useState(false);
   const [language, setLanguageState]             = useState<Language>(DEFAULT_LANGUAGE);
   const [encounters, setEncounters]           = useState<Encounter[]>([]);
 
@@ -214,6 +223,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   // ── Hydrate from AsyncStorage ─────────────────────────────────────────────
   useEffect(() => {
+    // Run storage reads and file-existence check in parallel so neither blocks
+    // the other during the cold-start hydration pass.
+    const autoBackupFileUri =
+      (FileSystem.documentDirectory ?? FileSystem.cacheDirectory ?? '') +
+      AUTO_BACKUP_FILENAME;
+
     Promise.all([
       AsyncStorage.getItem(STORAGE_ENCOUNTERS),
       AsyncStorage.getItem(STORAGE_DEADLINES),
@@ -231,7 +246,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       AsyncStorage.getItem(STORAGE_LAST_AUTO_BACKUP),
       AsyncStorage.getItem(STORAGE_BACKUP_SCHEDULE),
       AsyncStorage.getItem(STORAGE_BACKUP_TIME_WINDOW),
-    ]).then(([enc, dead, font, tour, hc, forum, helpful, lang, lock, pin, timeout, bioUnlock, autoBak, lastBak, sched, timeWin]) => {
+      // Check whether an auto-backup file already exists on disk. Used below to
+      // detect a storage wipe that lost the schedule setting while leaving the
+      // backup file intact (common on Android after an app update or storage clear).
+      FileSystem.getInfoAsync(autoBackupFileUri).then((info) => info.exists).catch(() => false),
+    ]).then(([enc, dead, font, tour, hc, forum, helpful, lang, lock, pin, timeout, bioUnlock, autoBak, lastBak, sched, timeWin, backupFileExists]) => {
       if (enc)      setEncounters(JSON.parse(enc) as Encounter[]);
       if (dead)     setSavedDeadlines(JSON.parse(dead) as SavedDeadline[]);
       if (font)     setFontSizeState(font as FontSizeLevel);
@@ -245,12 +264,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (timeout)  setLockTimeoutState(Number(timeout));
       if (bioUnlock !== null) setBiometricUnlockState(bioUnlock !== 'false'); // default true
       if (lastBak)  setLastAutoBackupAt(lastBak);
-      // Migrate: old boolean auto-backup → schedule; new schedule key wins if present
-      if (sched) {
-        setBackupScheduleState(sched as BackupSchedule);
-      } else if (autoBak === 'true') {
-        setBackupScheduleState('each'); // migrate old "enabled" toggle → 'each'
-      }
+
+      // ── Schedule hydration (covers normal, legacy-migration, storage-wipe, first-install) ──
+      // resolveScheduleOnHydration is a pure function that handles all four cases in
+      // one place so they can't drift out of sync.
+      const schedResult = resolveScheduleOnHydration(
+        sched as string | null,
+        autoBak,
+        backupFileExists as boolean,
+      );
+      setBackupScheduleState(schedResult.schedule);
+      if (schedResult.scheduleLost) setBackupScheduleLost(true);
+
       if (timeWin) setBackupTimeWindowState(timeWin as BackupTimeWindow);
     }).catch(() => {}).finally(() => setHydrated(true));
   }, []);
@@ -296,6 +321,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // ── Backup schedule setter ────────────────────────────────────────────────
   const setBackupSchedule = useCallback(async (schedule: BackupSchedule) => {
     setBackupScheduleState(schedule);
+    // Any explicit schedule selection clears the loss warning — the user has
+    // acknowledged the situation whether they used the banner CTA or the row directly.
+    setBackupScheduleLost(false);
     await AsyncStorage.setItem(STORAGE_BACKUP_SCHEDULE, schedule);
     // Keep legacy key in sync so old restore paths still work
     await AsyncStorage.setItem(STORAGE_AUTO_BACKUP, schedule !== 'off' ? 'true' : 'false');
@@ -311,6 +339,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const setAutoBackupEnabled = useCallback(async (enabled: boolean) => {
     await setBackupSchedule(enabled ? 'each' : 'off');
   }, [setBackupSchedule]);
+
+  // Dismiss the "schedule was lost" banner once the user has acknowledged it
+  // or re-set their schedule via the picker.
+  const dismissBackupScheduleLost = useCallback(() => {
+    setBackupScheduleLost(false);
+  }, []);
 
   // ── Scheduled backup: cold-start check (runs once after hydration) ──────
   useEffect(() => {
@@ -483,6 +517,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         autoBackupEnabled: backupSchedule !== 'off', setAutoBackupEnabled, lastAutoBackupAt,
         backupSchedule, setBackupSchedule,
         backupTimeWindow, setBackupTimeWindow,
+        backupScheduleLost, dismissBackupScheduleLost,
         language, setLanguage, isRTL,
         encounters, addEncounter, deleteEncounter, importEncounters,
         translateText, isTranslating,
