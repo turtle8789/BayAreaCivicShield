@@ -27,6 +27,7 @@ import { useColors } from '@/hooks/useColors';
 import { useRTL } from '@/hooks/useRTL';
 import { useT } from '@/hooks/useTranslation';
 import { aesDecryptStrong, aesEncryptStrong } from '@/utils/encryption';
+import { verifyBackupContent } from '@/utils/verifyAutoBackup';
 
 
 function SettingsRow({
@@ -492,6 +493,98 @@ export default function SettingsScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   };
 
+  // ── Verify last auto-backup ───────────────────────────────────────────────
+  const [isVerifyingBackup, setIsVerifyingBackup] = useState(false);
+
+  const handleVerifyBackup = async () => {
+    if (isVerifyingBackup) return;
+    setIsVerifyingBackup(true);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    try {
+      const fileUri =
+        (FileSystem.documentDirectory ?? FileSystem.cacheDirectory ?? '') +
+        'civicshield-auto-backup.json';
+
+      const info = await FileSystem.getInfoAsync(fileUri);
+      if (!info.exists) {
+        Alert.alert(
+          'Verify backup',
+          'No auto-backup file found on this device.\n\nWait for the next scheduled backup, or record an encounter to trigger one.',
+        );
+        return;
+      }
+
+      let content: string;
+      try {
+        content = await FileSystem.readAsStringAsync(fileUri, {
+          encoding: FileSystem.EncodingType.UTF8,
+        });
+      } catch {
+        Alert.alert(
+          'Verify backup — read error',
+          'The auto-backup file exists but could not be read. Please do a manual backup from this screen to ensure your data is safe.',
+        );
+        return;
+      }
+
+      const outcome = verifyBackupContent(content, lastAutoBackupAt, backupSchedule, encounters.length);
+
+      switch (outcome.status) {
+        case 'corrupt_json':
+          Alert.alert(
+            'Verify backup — file corrupt',
+            'The auto-backup file exists but contains invalid data.\n\nPlease do a manual backup from this screen to ensure your data is safe.',
+          );
+          return;
+        case 'unrecognised':
+          Alert.alert(
+            'Verify backup — unrecognised file',
+            'The backup file does not appear to be a valid CivicShield Pro backup.\n\nPlease do a manual backup to create a fresh one.',
+          );
+          return;
+        case 'missing_timestamp':
+          Alert.alert(
+            'Verify backup — missing timestamp',
+            'The backup file is missing a valid timestamp. It may be corrupt or from an incompatible version.\n\nPlease do a manual backup from this screen to create a fresh one.',
+          );
+          return;
+        case 'no_record':
+          Alert.alert(
+            'Verify backup',
+            'No successful scheduled backup has been recorded yet. The file on disk cannot be confirmed as current.\n\nPlease do a manual backup from this screen to create a verified copy.',
+          );
+          return;
+        case 'overdue':
+          Alert.alert(
+            'Verify backup — backup overdue',
+            `The last recorded backup (${formatLastBackup(lastAutoBackupAt)}) is older than your scheduled interval.\n\nThe scheduled backup may not have run yet. Open the app again to trigger it, or do a manual backup now.`,
+          );
+          return;
+        case 'stale':
+          Alert.alert(
+            'Verify backup — file may be stale',
+            `The file on disk (${formatLastBackup(outcome.fileTs)}) does not match the last recorded backup time (${formatLastBackup(outcome.recordedTs)}).\n\nThe scheduled backup may have failed to update the file. Please do a manual backup to create a fresh one.`,
+          );
+          return;
+        case 'ok': {
+          const countNote =
+            outcome.encounterCount === outcome.currentCount
+              ? `Encounters: ${outcome.encounterCount} ✓`
+              : `Encounters in backup: ${outcome.encounterCount} (current log: ${outcome.currentCount})`;
+          Alert.alert(
+            '✓ Backup verified',
+            `The auto-backup file is present and up to date.\n\n${countNote}\nFile size: ${outcome.fileSizeKb} KB\n${formatLastBackup(outcome.exportedAt)}`,
+          );
+          return;
+        }
+      }
+    } catch {
+      Alert.alert('Verify backup', 'Could not read the backup file. Please try again.');
+    } finally {
+      setIsVerifyingBackup(false);
+    }
+  };
+
   /** Share the latest auto-backup file so users can move it to email, Files, or cloud storage. */
   const [isSharingAutoBackup, setIsSharingAutoBackup] = useState(false);
   const handleShareAutoBackup = async () => {
@@ -775,20 +868,37 @@ export default function SettingsScreen() {
               setShowSchedulePicker(true);
             }}
           />
-          {/* Share auto-backup — only shown when auto-backup is on and a backup exists */}
-          {backupSchedule !== 'off' && lastAutoBackupAt ? (
+          {/* Verify + Share auto-backup — only shown when auto-backup is on */}
+          {backupSchedule !== 'off' ? (
             <>
               <View style={styles.divider} />
               <SettingsRow
-                icon="share-2"
-                label="Share auto-backup"
+                icon="check-circle"
+                label="Verify last backup"
                 description={
-                  isSharingAutoBackup
-                    ? 'Preparing…'
-                    : `Latest: ${formatLastBackup(lastAutoBackupAt)} · Tap to share or restore`
+                  isVerifyingBackup
+                    ? 'Reading…'
+                    : lastAutoBackupAt
+                    ? `Check the backup file · ${formatLastBackup(lastAutoBackupAt)}`
+                    : 'No auto-backup recorded yet — tap to check'
                 }
-                onPress={handleShareAutoBackup}
+                onPress={handleVerifyBackup}
               />
+              {lastAutoBackupAt ? (
+                <>
+                  <View style={styles.divider} />
+                  <SettingsRow
+                    icon="share-2"
+                    label="Share auto-backup"
+                    description={
+                      isSharingAutoBackup
+                        ? 'Preparing…'
+                        : `Latest: ${formatLastBackup(lastAutoBackupAt)} · Tap to share or restore`
+                    }
+                    onPress={handleShareAutoBackup}
+                  />
+                </>
+              ) : null}
             </>
           ) : null}
           <View style={styles.divider} />
