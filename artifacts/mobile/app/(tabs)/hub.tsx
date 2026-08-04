@@ -276,7 +276,7 @@ function HubCard({ resource: r, styles, colors, fs, t }: any) {
 // ─── Crisis hotline card ──────────────────────────────────────────────────────
 function HotlineCard({ hotline: h, styles, colors, fs, rowDir }: any) {
   const categoryColor = CATEGORY_COLORS[h.category as keyof typeof CATEGORY_COLORS];
-  const { t } = useApp() as any;
+  const { t } = useT();
   const categoryLabel = t(('hotline.cat_' + h.category) as any) || CATEGORY_LABELS[h.category as keyof typeof CATEGORY_LABELS];
   const callNumber = async () => {
     const url = `tel:${h.number.replace(/[^0-9+]/g, '')}`;
