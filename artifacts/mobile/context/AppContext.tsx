@@ -4,7 +4,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { AppState, AppStateStatus } from 'react-native';
 import { DEFAULT_LANGUAGE, Language, getLanguageByCode } from '@/constants/languages';
 import { ForumPost, SEED_POSTS } from '@/constants/forum-data';
-import { BackupSchedule, BACKUP_SCHEDULE_LABELS, isBackupDue } from '@/utils/backupSchedule';
+import { BackupSchedule, BackupTimeWindow, BACKUP_SCHEDULE_LABELS, isBackupDue } from '@/utils/backupSchedule';
 
 // ─── Encounter types ─────────────────────────────────────────────────────────
 
@@ -46,8 +46,8 @@ export interface SavedDeadline {
 }
 
 // Re-export so callers that import from AppContext still work
-export type { BackupSchedule } from '@/utils/backupSchedule';
-export { BACKUP_SCHEDULE_LABELS, isBackupDue } from '@/utils/backupSchedule';
+export type { BackupSchedule, BackupTimeWindow } from '@/utils/backupSchedule';
+export { BACKUP_SCHEDULE_LABELS, BACKUP_TIME_WINDOW_LABELS, isBackupDue } from '@/utils/backupSchedule';
 
 // ─── Accessibility / Settings ─────────────────────────────────────────────────
 
@@ -92,6 +92,8 @@ interface AppContextValue {
   lastAutoBackupAt: string | null; // ISO timestamp of last successful auto-backup
   backupSchedule: BackupSchedule;
   setBackupSchedule: (schedule: BackupSchedule) => Promise<void>;
+  backupTimeWindow: BackupTimeWindow;
+  setBackupTimeWindow: (window: BackupTimeWindow) => Promise<void>;
 
   // Language
   language: Language;
@@ -152,6 +154,7 @@ const STORAGE_LOCK_TIMEOUT     = 'civicshield_lock_timeout';
 const STORAGE_AUTO_BACKUP          = 'civicshield_auto_backup';
 const STORAGE_LAST_AUTO_BACKUP     = 'civicshield_last_auto_backup';
 const STORAGE_BACKUP_SCHEDULE      = 'civicshield_backup_schedule';
+const STORAGE_BACKUP_TIME_WINDOW   = 'civicshield_backup_time_window';
 const STORAGE_BIOMETRIC_UNLOCK     = 'civicshield_biometric_unlock';
 
 // ─── Pure backup-schedule helpers (exported for unit-testing) ────────────────
@@ -185,15 +188,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [lockTimeout, setLockTimeoutState]               = useState<number>(5); // default 5 min
   const [biometricUnlockEnabled, setBiometricUnlockState]= useState(true); // default enabled
   const [backupSchedule, setBackupScheduleState]         = useState<BackupSchedule>('off');
+  const [backupTimeWindow, setBackupTimeWindowState]     = useState<BackupTimeWindow>('any');
   const [lastAutoBackupAt, setLastAutoBackupAt]  = useState<string | null>(null);
   const [language, setLanguageState]             = useState<Language>(DEFAULT_LANGUAGE);
   const [encounters, setEncounters]           = useState<Encounter[]>([]);
 
   // Refs for the AppState foreground-check (avoids stale-closure issues in listener)
-  const backupScheduleRef   = useRef<BackupSchedule>('off');
-  const lastAutoBackupAtRef = useRef<string | null>(null);
-  const encountersRef       = useRef<Encounter[]>([]);
+  const backupScheduleRef    = useRef<BackupSchedule>('off');
+  const backupTimeWindowRef  = useRef<BackupTimeWindow>('any');
+  const lastAutoBackupAtRef  = useRef<string | null>(null);
+  const encountersRef        = useRef<Encounter[]>([]);
   useEffect(() => { backupScheduleRef.current   = backupSchedule;   }, [backupSchedule]);
+  useEffect(() => { backupTimeWindowRef.current = backupTimeWindow; }, [backupTimeWindow]);
   useEffect(() => { lastAutoBackupAtRef.current = lastAutoBackupAt; }, [lastAutoBackupAt]);
   useEffect(() => { encountersRef.current       = encounters;       }, [encounters]);
   const [isTranslating, setIsTranslating]     = useState(false);
@@ -223,7 +229,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       AsyncStorage.getItem(STORAGE_AUTO_BACKUP),
       AsyncStorage.getItem(STORAGE_LAST_AUTO_BACKUP),
       AsyncStorage.getItem(STORAGE_BACKUP_SCHEDULE),
-    ]).then(([enc, dead, font, tour, hc, forum, helpful, lang, lock, pin, timeout, bioUnlock, autoBak, lastBak, sched]) => {
+      AsyncStorage.getItem(STORAGE_BACKUP_TIME_WINDOW),
+    ]).then(([enc, dead, font, tour, hc, forum, helpful, lang, lock, pin, timeout, bioUnlock, autoBak, lastBak, sched, timeWin]) => {
       if (enc)      setEncounters(JSON.parse(enc) as Encounter[]);
       if (dead)     setSavedDeadlines(JSON.parse(dead) as SavedDeadline[]);
       if (font)     setFontSizeState(font as FontSizeLevel);
@@ -243,6 +250,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       } else if (autoBak === 'true') {
         setBackupScheduleState('each'); // migrate old "enabled" toggle → 'each'
       }
+      if (timeWin) setBackupTimeWindowState(timeWin as BackupTimeWindow);
     }).catch(() => {}).finally(() => setHydrated(true));
   }, []);
 
@@ -295,6 +303,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     await AsyncStorage.setItem(STORAGE_AUTO_BACKUP, schedule !== 'off' ? 'true' : 'false');
   }, []);
 
+  // ── Backup time-window setter ─────────────────────────────────────────────
+  const setBackupTimeWindow = useCallback(async (window: BackupTimeWindow) => {
+    setBackupTimeWindowState(window);
+    await AsyncStorage.setItem(STORAGE_BACKUP_TIME_WINDOW, window);
+  }, []);
+
   // Compat shim: keeps any existing callers that use the old boolean API working
   const setAutoBackupEnabled = useCallback(async (enabled: boolean) => {
     await setBackupSchedule(enabled ? 'each' : 'off');
@@ -305,7 +319,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!hydrated) return;
     // Refs are synced in earlier effects that run on the same render, so they
     // already hold the freshly-hydrated values when this effect executes.
-    if (isBackupDue(backupScheduleRef.current, lastAutoBackupAtRef.current)) {
+    if (isBackupDue(backupScheduleRef.current, lastAutoBackupAtRef.current, Date.now(), backupTimeWindowRef.current)) {
       performSilentBackup(encountersRef.current);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -315,7 +329,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const handleAppStateChange = (state: AppStateStatus) => {
       if (state !== 'active') return;
-      if (isBackupDue(backupScheduleRef.current, lastAutoBackupAtRef.current)) {
+      if (isBackupDue(backupScheduleRef.current, lastAutoBackupAtRef.current, Date.now(), backupTimeWindowRef.current)) {
         performSilentBackup(encountersRef.current);
       }
     };
@@ -470,6 +484,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         biometricUnlockEnabled, setBiometricUnlockEnabled,
         autoBackupEnabled: backupSchedule !== 'off', setAutoBackupEnabled, lastAutoBackupAt,
         backupSchedule, setBackupSchedule,
+        backupTimeWindow, setBackupTimeWindow,
         language, setLanguage, isRTL,
         encounters, addEncounter, deleteEncounter, importEncounters,
         translateText, isTranslating,

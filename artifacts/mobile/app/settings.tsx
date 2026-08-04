@@ -22,7 +22,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PasswordModal } from '@/components/PasswordModal';
 import { LanguagePicker } from '@/components/LanguagePicker';
 import { Encounter, FontSizeLevel, useApp } from '@/context/AppContext';
-import { BackupSchedule, BACKUP_SCHEDULE_LABELS } from '@/utils/backupSchedule';
+import { BackupSchedule, BackupTimeWindow, BACKUP_SCHEDULE_LABELS, BACKUP_TIME_WINDOW_LABELS } from '@/utils/backupSchedule';
 import { useColors } from '@/hooks/useColors';
 import { useRTL } from '@/hooks/useRTL';
 import { useT } from '@/hooks/useTranslation';
@@ -196,6 +196,7 @@ export default function SettingsScreen() {
     encounters, clearDeadlines, savedDeadlines,
     appLockEnabled,
     backupSchedule, setBackupSchedule, lastAutoBackupAt,
+    backupTimeWindow, setBackupTimeWindow,
     importEncounters,
   } = useApp();
 
@@ -1030,6 +1031,64 @@ export default function SettingsScreen() {
               </React.Fragment>
             );
           })}
+
+          {/* Preferred time-of-day — only relevant for daily/weekly schedules */}
+          {(backupSchedule === 'daily' || backupSchedule === 'weekly') && (
+            <View style={{ marginTop: 20 }}>
+              <View style={{ height: 1, backgroundColor: colors.border, marginBottom: 16 }} />
+              <View style={{ flexDirection: rowDir, alignItems: 'center', gap: 10, marginBottom: 12 }}>
+                <View style={{ width: 28, height: 28, borderRadius: 8, backgroundColor: colors.primary + '18', alignItems: 'center', justifyContent: 'center' }}>
+                  <Feather name="sun" size={14} color={colors.primary} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: fs(14), fontFamily: 'Inter_600SemiBold', color: colors.foreground }}>
+                    Preferred time
+                  </Text>
+                  <Text style={{ fontSize: fs(11), fontFamily: 'Inter_400Regular', color: colors.mutedForeground, marginTop: 1 }}>
+                    Backup only runs during this window
+                  </Text>
+                </View>
+              </View>
+              {(['any', 'morning', 'afternoon', 'evening'] as BackupTimeWindow[]).map((win, idx, arr) => {
+                const winSelected = backupTimeWindow === win;
+                return (
+                  <React.Fragment key={win}>
+                    <Pressable
+                      style={{ flexDirection: rowDir, alignItems: 'center', gap: 12, paddingVertical: 10, paddingHorizontal: 4 }}
+                      onPress={() => {
+                        setBackupTimeWindow(win);
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      }}
+                      accessibilityRole="radio"
+                      accessibilityState={{ selected: winSelected }}
+                      accessibilityLabel={BACKUP_TIME_WINDOW_LABELS[win]}
+                    >
+                      <View style={{
+                        width: 18, height: 18, borderRadius: 9,
+                        borderWidth: 2,
+                        borderColor: winSelected ? colors.primary : colors.border,
+                        backgroundColor: winSelected ? colors.primary : 'transparent',
+                        alignItems: 'center', justifyContent: 'center',
+                      }}>
+                        {winSelected && <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: colors.primaryForeground }} />}
+                      </View>
+                      <Text style={{
+                        fontSize: fs(13),
+                        fontFamily: winSelected ? 'Inter_600SemiBold' : 'Inter_400Regular',
+                        color: winSelected ? colors.foreground : colors.mutedForeground,
+                        flex: 1,
+                      }}>
+                        {BACKUP_TIME_WINDOW_LABELS[win]}
+                      </Text>
+                    </Pressable>
+                    {idx < arr.length - 1 && (
+                      <View style={{ height: 1, backgroundColor: colors.border, marginLeft: 30 }} />
+                    )}
+                  </React.Fragment>
+                );
+              })}
+            </View>
+          )}
 
           {/* Last backup note */}
           {backupSchedule !== 'off' && (
