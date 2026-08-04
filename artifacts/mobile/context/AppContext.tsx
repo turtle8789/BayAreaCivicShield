@@ -5,6 +5,7 @@ import { AppState, AppStateStatus } from 'react-native';
 import { DEFAULT_LANGUAGE, Language, getLanguageByCode } from '@/constants/languages';
 import { ForumPost, SEED_POSTS } from '@/constants/forum-data';
 import { BackupSchedule, BackupTimeWindow, BACKUP_SCHEDULE_LABELS, isBackupDue } from '@/utils/backupSchedule';
+import { writeSilentBackup } from '@/utils/silentBackup';
 
 // ─── Encounter types ─────────────────────────────────────────────────────────
 
@@ -277,19 +278,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // ── Silent backup (shared by 'each' trigger and foreground schedule check) ──
   const performSilentBackup = useCallback(async (encs: Encounter[]) => {
     try {
-      const payload = JSON.stringify({
-        version: 1,
-        app: 'CivicShield Pro',
-        exportedAt: new Date().toISOString(),
-        encounters: encs,
-      });
-      const fileUri = (FileSystem.documentDirectory ?? FileSystem.cacheDirectory ?? '') + 'civicshield-auto-backup.json';
-      await FileSystem.writeAsStringAsync(fileUri, payload, {
-        encoding: FileSystem.EncodingType.UTF8,
-      });
-      const now = new Date().toISOString();
-      setLastAutoBackupAt(now);
-      await AsyncStorage.setItem(STORAGE_LAST_AUTO_BACKUP, now);
+      const result = await writeSilentBackup(
+        encs,
+        {
+          documentDirectory: FileSystem.documentDirectory ?? FileSystem.cacheDirectory ?? null,
+          writeAsStringAsync: (uri, content) =>
+            FileSystem.writeAsStringAsync(uri, content, { encoding: FileSystem.EncodingType.UTF8 }),
+        },
+      );
+      setLastAutoBackupAt(result.exportedAt);
+      await AsyncStorage.setItem(STORAGE_LAST_AUTO_BACKUP, result.exportedAt);
     } catch {
       // Silent — never interrupt the user's flow
     }
