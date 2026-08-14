@@ -286,7 +286,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     await AsyncStorage.setItem(STORAGE_APP_LOCK, enabled ? 'true' : 'false');
     await AsyncStorage.setItem(STORAGE_APP_PIN, pin);
     // Clear any accumulated wrong-attempt counter and lockout expiry so a
-    // freshly-set PIN always starts with zero failed attempts.
+    // freshly-set PIN always starts with zero failed attempts, AND so that
+    // stale lockout data from a previous PIN can never immediately re-lock
+    // the user after they disable and then re-enable App Lock.
     await AsyncStorage.multiRemove(['@pin_attempts', '@pin_locked_until']);
   }, []);
 

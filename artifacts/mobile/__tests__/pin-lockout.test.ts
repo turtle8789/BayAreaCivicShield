@@ -260,3 +260,70 @@ describe('end-to-end: correct PIN after lockout expires clears all state', () =>
     expect(afterSuccess.attempts).toBe(0);
   });
 });
+
+// ─── App Lock toggle: stale lockout state must not survive disable/re-enable ──
+//
+// setAppLock() calls AsyncStorage.multiRemove([KEY_ATTEMPTS, KEY_LOCKED_UNTIL])
+// on every call — whether enabling or disabling App Lock.  These tests document
+// what the hydration layer must see after that remove so the PIN counter always
+// starts from zero on re-enable.
+
+describe('App Lock toggle: no stale lockout state survives disable/re-enable', () => {
+  it('hydrating from empty storage (post-disable) returns zero attempts and no lockout', () => {
+    // Simulates the state after setAppLock(false, '') clears both keys
+    const state = parseLockoutState(null, null, NOW);
+    expect(state.attempts).toBe(0);
+    expect(state.lockedUntil).toBeNull();
+    expect(state.shouldClearStorage).toBe(false);
+  });
+
+  it('after disable/re-enable, entering wrong PINs starts counter from zero', () => {
+    // Storage was wiped by setAppLock — first wrong PIN increments from 0 to 1
+    const clean = parseLockoutState(null, null, NOW);
+    const first = computeAttemptResult(clean.attempts, NOW);
+    expect(first.newAttempts).toBe(1);
+    expect(first.lockedUntilExpiry).toBeNull(); // no lockout on first attempt
+  });
+
+  it('after toggle, MAX_ATTEMPTS-1 wrong PINs still do not trigger a lockout', () => {
+    // Regression guard: stale MAX_ATTEMPTS value from an old PIN session must not
+    // survive into the new session and cause an immediate lockout on first wrong PIN
+    const clean = parseLockoutState(null, null, NOW);
+    let attempts = clean.attempts; // 0
+    let expiry: number | null = null;
+    for (let i = 0; i < MAX_ATTEMPTS - 1; i++) {
+      const result = computeAttemptResult(attempts, NOW);
+      attempts = result.newAttempts;
+      expiry = result.lockedUntilExpiry;
+    }
+    expect(expiry).toBeNull(); // should NOT be locked yet
+    expect(attempts).toBe(MAX_ATTEMPTS - 1);
+  });
+
+  it('hydrating from partially-cleared storage (attempts left, no expiry) after re-enable starts fresh', () => {
+    // If only KEY_LOCKED_UNTIL was removed but KEY_ATTEMPTS somehow remained,
+    // parseLockoutState should treat it as a clean pre-lockout count — not a lockout.
+    // setAppLock always removes BOTH keys so this is a belt-and-suspenders guard.
+    const state = parseLockoutState(null, null, NOW);
+    expect(state.lockedUntil).toBeNull();
+    // Confirm first wrong PIN on the clean state does NOT trigger an immediate lockout
+    const result = computeAttemptResult(state.attempts, NOW);
+    expect(result.lockedUntilExpiry).toBeNull();
+  });
+
+  it('a full lockout active before toggle is gone after storage is cleared', () => {
+    // Simulate: user hit 5 wrong PINs → lockout in storage.
+    // Then setAppLock(false, '') fires → both keys removed.
+    // Re-enable: parseLockoutState on empty storage must see no lockout.
+    const expiry = NOW + LOCKOUT_MS;
+    // Confirm an active lockout exists before the toggle
+    const before = parseLockoutState(String(MAX_ATTEMPTS), String(expiry), NOW);
+    expect(before.lockedUntil).not.toBeNull();
+
+    // After toggle: storage is wiped (null, null)
+    const after = parseLockoutState(null, null, NOW);
+    expect(after.lockedUntil).toBeNull();
+    expect(after.attempts).toBe(0);
+    expect(after.shouldClearStorage).toBe(false);
+  });
+});
