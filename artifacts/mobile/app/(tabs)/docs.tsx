@@ -55,19 +55,32 @@ export interface ExtractionResult {
   actions: string[];
 }
 
-const MONTHS =
-  'January|February|March|April|May|June|July|August|September|October|November|December';
+// English months
+const MONTHS_EN = 'January|February|March|April|May|June|July|August|September|October|November|December';
+// Spanish months
+const MONTHS_ES = 'enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre';
+// Telugu months (transliterated common forms)
+const MONTHS_TE = 'జనవరి|ఫిబ్రవరి|మార్చి|ఏప్రిల్|మే|జూన్|జులై|ఆగస్టు|సెప్టెంబర్|అక్టోబర్|నవంబర్|డిసెంబర్';
+const ALL_MONTHS = `${MONTHS_EN}|${MONTHS_ES}|${MONTHS_TE}`;
 
 export function extractFromText(raw: string): ExtractionResult {
   const lines = raw.split(/\r?\n/);
 
   const datePatterns: RegExp[] = [
-    /\b\d{1,2}\/\d{1,2}\/\d{4}\b/g,
-    new RegExp(`\\b(?:${MONTHS})\\s+\\d{1,2},?\\s+\\d{4}\\b`, 'gi'),
-    new RegExp(`\\b\\d{1,2}\\s+(?:${MONTHS})\\s+\\d{4}\\b`, 'gi'),
+    // Numeric: 12/31/2025, 31-12-2025, 2025-12-31
+    /\b\d{1,2}[\/\-]\d{1,2}[\/\-]\d{4}\b/g,
+    /\b\d{4}[\/\-]\d{1,2}[\/\-]\d{1,2}\b/g,
+    // English: "March 15, 2025" / "15 March 2025" / "by March 15"
+    new RegExp(`\\b(?:${ALL_MONTHS})\\s+\\d{1,2},?\\s+\\d{4}\\b`, 'gi'),
+    new RegExp(`\\b\\d{1,2}\\s+(?:${ALL_MONTHS})\\s+\\d{4}\\b`, 'gi'),
+    new RegExp(`\\bby\\s+(?:${ALL_MONTHS})\\s+\\d{1,2},?\\s+\\d{4}\\b`, 'gi'),
+    // Spanish: "15 de marzo de 2025" / "antes del 15 de marzo"
+    new RegExp(`\\b\\d{1,2}\\s+de\\s+(?:${MONTHS_ES})\\s+de\\s+\\d{4}\\b`, 'gi'),
+    new RegExp(`\\b(?:antes del?|después del?|el día)\\s+\\d{1,2}\\s+de\\s+(?:${MONTHS_ES})\\b`, 'gi'),
+    // Relative: "within 30 days" / "en 30 días" / "in 30 days"
     /\bwithin\s+\d+\s+days?\b/gi,
-    new RegExp(`\\bby\\s+(?:${MONTHS})\\s+\\d{1,2},?\\s+\\d{4}\\b`, 'gi'),
-    /\b(?:on|before|after)\s+\d{1,2}\/\d{1,2}\/\d{4}\b/gi,
+    /\ben\s+\d+\s+días?\b/gi,
+    /\b(?:on|before|after|antes del?|después del?)\s+\d{1,2}[\/\-]\d{1,2}[\/\-]\d{4}\b/gi,
   ];
 
   const dates: string[] = [];
@@ -79,7 +92,7 @@ export function extractFromText(raw: string): ExtractionResult {
   }
 
   const deadlineRx =
-    /\b(must|required|deadline|due|respond|file|appear|hearing|court\s*date|action\s*required|notice|warning|comply|submit|failure\s+to)\b/i;
+    /\b(must|required|deadline|due|respond|file|appear|hearing|court\s*date|action\s*required|notice|warning|comply|submit|failure\s+to|debe|requerido|plazo|fecha\s*l[íi]mite|comparecer|presentar|aviso|advertencia|cumplir|responder|audiencia|tribunal|notificaci[oó]n|నిర్ణీత|హాజరు|సమర్పించు|అవసరం|గడువు)\b/i;
   const deadlines: string[] = [];
   for (const line of lines) {
     const t = line.trim();
@@ -90,7 +103,7 @@ export function extractFromText(raw: string): ExtractionResult {
   }
 
   const penaltyRx =
-    /\b(penalty|fine|arrest|warrant|failure\s+to|consequences|charged|prosecution|imprisonment|revoked)\b/i;
+    /\b(penalty|fine|arrest|warrant|failure\s+to|consequences|charged|prosecution|imprisonment|revoked|multa|arresto|orden\s+de\s+arresto|consecuencias|cargos|procesamiento|encarcelamiento|revocado|penalidad|detecci[oó]n|deportaci[oó]n|జరిమానా|అరెస్టు|నిర్బంధం|పరిణామాలు|రద్దు)\b/i;
   const penalties: string[] = [];
   for (const line of lines) {
     const t = line.trim();
@@ -100,7 +113,8 @@ export function extractFromText(raw: string): ExtractionResult {
     }
   }
 
-  const actionRx = /^\s*\d+[.)]\s|^\s*[-•]\s|bring|provide|submit|pay\b|appear\b|complete|sign\b/i;
+  const actionRx =
+    /^\s*\d+[.)]\s|^\s*[-•◦]\s|\b(bring|provide|submit|pay|appear|complete|sign|contact|call|visit|attach|include|traer|proporcionar|presentar|pagar|comparecer|completar|firmar|contactar|llamar|adjuntar|incluir|llevar|తీసుకురండి|సమర్పించు|చెల్లించు|హాజరు|సంప్రదించు|సంతకం)\b/i;
   const actions: string[] = [];
   for (const line of lines) {
     const t = line.trim();

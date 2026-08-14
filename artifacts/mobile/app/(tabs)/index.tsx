@@ -251,7 +251,7 @@ export default function HomeScreen() {
                 {/* Footer row: source · date  +  View Case Details → */}
                 <View style={{ flexDirection: rowDir, alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
                   <Text style={styles.deadlineSource}>
-                    {d.source} · {new Date(d.savedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    {d.source} · {new Date(d.savedAt).toLocaleDateString(language.code, { month: 'short', day: 'numeric' })}
                   </Text>
                   {d.docText ? (
                     <Pressable
