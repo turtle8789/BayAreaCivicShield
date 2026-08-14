@@ -286,7 +286,7 @@ export default function DocsScreen() {
 
   // ── Save deadlines to dashboard ───────────────────────────────────────────
   const handleSaveDeadline = async (text: string, key: string) => {
-    await addDeadline(text, 'Document Analyzer', inputText);
+    await addDeadline(text, t('docs.source_label'), inputText);
     setSavedIds((prev) => new Set(prev).add(key));
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     Alert.alert(t('docs.saved_title'), t('docs.saved_msg'));
@@ -296,15 +296,15 @@ export default function DocsScreen() {
     if (!result) return;
     const all = [
       ...result.deadlines,
-      ...result.dates.map((d) => `Date: ${d}`),
-      ...result.penalties.map((p) => `Penalty: ${p}`),
+      ...result.dates.map((d) => `${t('docs.prefix_date')}: ${d}`),
+      ...result.penalties.map((p) => `${t('docs.prefix_penalty')}: ${p}`),
     ];
     if (all.length === 0) {
       Alert.alert(t('docs.nothing_save_title'), t('docs.nothing_save_msg'));
       return;
     }
     for (const item of all.slice(0, 5)) {
-      await addDeadline(item, 'Document Analyzer', inputText);
+      await addDeadline(item, t('docs.source_label'), inputText);
     }
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     Alert.alert(
@@ -316,12 +316,12 @@ export default function DocsScreen() {
   const handleCopy = async () => {
     if (!result) return;
     const parts = [
-      result.dates.length > 0 ? `DATES:\n${result.dates.map((d) => `• ${d}`).join('\n')}` : '',
-      result.deadlines.length > 0 ? `\nDEADLINES:\n${result.deadlines.map((d) => `• ${d}`).join('\n')}` : '',
-      result.penalties.length > 0 ? `\nPENALTIES:\n${result.penalties.map((d) => `• ${d}`).join('\n')}` : '',
-      result.actions.length > 0 ? `\nREQUIRED ACTIONS:\n${result.actions.map((d) => `• ${d}`).join('\n')}` : '',
+      result.dates.length > 0 ? `${t('docs.important_dates')}:\n${result.dates.map((d) => `• ${d}`).join('\n')}` : '',
+      result.deadlines.length > 0 ? `\n${t('docs.deadlines_section')}:\n${result.deadlines.map((d) => `• ${d}`).join('\n')}` : '',
+      result.penalties.length > 0 ? `\n${t('docs.penalties_section')}:\n${result.penalties.map((d) => `• ${d}`).join('\n')}` : '',
+      result.actions.length > 0 ? `\n${t('docs.actions_section')}:\n${result.actions.map((d) => `• ${d}`).join('\n')}` : '',
     ].filter(Boolean).join('');
-    await Clipboard.setStringAsync(parts || 'No items found.');
+    await Clipboard.setStringAsync(parts || t('docs.no_items_found'));
     Alert.alert(t('docs.copied_title'), t('docs.copied_msg'));
   };
 

@@ -68,13 +68,6 @@ export default function HomeScreen() {
       route: '/(tabs)/resources',
     },
     {
-      title: t('home.feature_hotlines'),
-      description: t('home.desc_hotlines'),
-      iconName: 'phone-call',
-      accentColor: '#E05252',
-      route: '/(tabs)/resources',
-    },
-    {
       title: t('home.feature_forum'),
       description: t('home.desc_forum'),
       iconName: 'message-circle',
